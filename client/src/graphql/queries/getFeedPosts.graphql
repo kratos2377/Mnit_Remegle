@@ -1,0 +1,5 @@
+query getFeedPosts($cursor: String , $limit: Int!) {
+    getFeedPosts(cursor: $cursor , limit:$limit){
+      ...PostSnippet
+    }
+}

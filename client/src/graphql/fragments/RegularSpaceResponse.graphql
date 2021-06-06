@@ -1,0 +1,7 @@
+fragment RegularSpace on Spaces {
+    spaceId
+    adminId
+    type
+    spaceName
+    spaceDescription
+}

@@ -1,0 +1,11 @@
+fragment RegularUser on User {
+  id
+  username
+  fullName
+  email
+  studentId
+  gender
+  avatarUrl
+  isBanned
+  bio
+}

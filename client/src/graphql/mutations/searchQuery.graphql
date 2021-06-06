@@ -1,0 +1,5 @@
+mutation SearchQuery($searchName: String!) {
+  searchQuery(searchName: $searchName){
+      ...UserAndSpacesResponse
+  }
+}
