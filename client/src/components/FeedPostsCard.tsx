@@ -11,8 +11,6 @@ interface FeedScreenProps {
 
 export const FeedPostsCard: React.FC<FeedScreenProps> = ( {post}) => {
 
-        console.log("Post Data")
-        console.log(post)
 
         const LeftContent = (url: string) =>   <Image
         style={{width: 50, height: 50}}
@@ -26,7 +24,7 @@ export const FeedPostsCard: React.FC<FeedScreenProps> = ( {post}) => {
                   <Text style={{color: 'black'}}>{post.content}</Text> 
                 
                 <View style={{flexDirection: 'row' , flex: 1}}>
-                    <IconButton icon="chevron-up-box-outline" size = {20} onPress={() => console.log(post)}/>     
+                    <IconButton icon="chevron-up-box-outline" size = {20} onPress={() => console.log("upvote")}/>     
                     <IconButton icon="chevron-down-box-outline" size = {20} onPress={() => console.log("downvote")} />     
                 </View>
 

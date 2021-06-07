@@ -241,6 +241,16 @@ export class PostResolver {
     return post;
   }
 
+  @Query(() => [Post] , {nullable: true})
+  @UseMiddleware(isAuth)
+  async getAllUserPosts(
+    @Ctx() {req}: MyContext
+  ): Promise<Post[] | null> {
+    const result = Post.find({where: {creatorId: req.session.userId}})
+
+    return result;
+  }
+
   @Mutation(() => Post, { nullable: true })
   @UseMiddleware(isAuth)
   @UseMiddleware(isBanned)

@@ -3,5 +3,6 @@ fragment RegularSpace on Spaces {
     adminId
     type
     spaceName
+    spaceAvatarUrl
     spaceDescription
 }

@@ -369,7 +369,7 @@ export type RegularErrorFragment = (
 
 export type RegularSpaceFragment = (
   { __typename?: 'Spaces' }
-  & Pick<Spaces, 'spaceId' | 'adminId' | 'type' | 'spaceName' | 'spaceDescription'>
+  & Pick<Spaces, 'spaceId' | 'adminId' | 'type' | 'spaceName' | 'spaceAvatarUrl' | 'spaceDescription'>
 );
 
 export type RegularUserFragment = (
@@ -531,6 +531,7 @@ export const RegularSpaceFragmentDoc = gql`
   adminId
   type
   spaceName
+  spaceAvatarUrl
   spaceDescription
 }
     `;

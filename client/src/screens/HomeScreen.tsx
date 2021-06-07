@@ -27,7 +27,6 @@ export default function HomeScreen() {
     console.log(userData)
 
    if(userData){
-     console.log(userData)
      setLoggedIn(true);
    } 
   }

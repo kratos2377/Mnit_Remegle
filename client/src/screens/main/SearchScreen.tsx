@@ -1,8 +1,10 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import React, { useState } from "react";
-import { View, Text } from "react-native";
+import React, { useState , useEffect } from "react";
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import { Avatar, ListItem } from "react-native-elements";
 import { Colors, Searchbar } from "react-native-paper";
-import { useSearchQueryMutation } from "../../generated/graphql";
+import { RegularSpaceFragment, RegularUserFragment, useSearchQueryMutation } from "../../generated/graphql";
+import { RenderSearchTabs } from "../extra-screens/RenderSearchTabs";
 import { SpaceSearchScreen } from "../extra-screens/SpaceSearchScreen";
 import { UserSearchScreen } from "../extra-screens/UserSearchScreen";
 
@@ -12,9 +14,16 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
   const TopTab = createMaterialTopTabNavigator();
   const [searchText, setSearchText] = useState("");
   const [search] = useSearchQueryMutation();
-  var [searchFeedSpaces, setSpaces] = useState([]);
-  var [searchFeedUsers, setUsers] = useState([]);
+  var [searchFeedSpaces, setSpaces] = useState<RegularSpaceFragment[]>([]);
+  var [searchFeedUsers, setUsers] = useState<RegularUserFragment[]>([]);
   const searchHandler = async () => {
+
+    if(searchText === ""){
+      setSpaces([])
+      setUsers([])
+      return;
+    }
+
     const values = {
       searchName: searchText,
     };
@@ -23,18 +32,39 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
     setSpaces([...response.data?.searchQuery?.spaces]);
     setUsers([...response.data?.searchQuery?.users]);
 
-    console.log(response.data?.searchQuery);
+    console.log(searchFeedSpaces)
+    console.log(searchFeedUsers)
   };
+
+  useEffect(() => {
+   
+  } , [searchFeedSpaces , searchFeedUsers])
+
+  const reRender = () =>  <RenderSearchTabs users = {searchFeedUsers} spaces={searchFeedSpaces} />
+
+  const renderUserItem = (item : RegularUserFragment) => (
+    <TouchableOpacity onPress={() => console.log(item.id)}>
+      <View>
+        <ListItem key={item.id} bottomDivider>
+          <Avatar source={{ uri: item.avatarUrl }} />
+          <ListItem.Content>
+            <ListItem.Title style={{color: 'black'}}>{item.fullName}</ListItem.Title>
+            <ListItem.Subtitle>{item.studentId}</ListItem.Subtitle>
+          </ListItem.Content>
+        </ListItem>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View>
       <Searchbar
-      style={{marginBottom:10}}
+        style={{ marginBottom: 10 }}
         placeholder="Search Here..."
         onChangeText={(value) => {
           setSearchText(value);
 
-          if (value === "") {
+          if (value.trim().length == 0 ) {
             setSpaces([]);
             setSpaces([]);
           }
@@ -44,50 +74,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
       />
 
       {searchFeedSpaces.length !== 0 || searchFeedUsers.length !== 0 ? (
-        <TopTab.Navigator
-          initialRouteName="Users"
-          tabBarOptions={{
-            activeTintColor: Colors.white,
-            labelStyle: {
-              textTransform: "uppercase",
-            },
-            inactiveTintColor: Colors.black,
-            indicatorStyle: {
-              height: null,
-              top: "10%",
-              bottom: "10%",
-              width: "45%",
-              left: "2.5%",
-              borderRadius: 100,
-              backgroundColor: Colors.blue500,
-            },
-            style: {
-              alignSelf: "center",
-              width: "50%",
-              borderRadius: 100,
-              borderColor: "blue",
-              backgroundColor: "white",
-              elevation: 5, // shadow on Android
-              shadowOpacity: 0.1, // shadow on iOS,
-              shadowRadius: 4, // shadow blur on iOS
-            },
-            tabStyle: {
-              borderRadius: 100,
-            },
-          }}
-          swipeEnabled={true}
-        >
-          <TopTab.Screen
-            name="Users"
-            component={UserSearchScreen}
-            initialParams={{ usersArray: searchFeedUsers }}
-          />
-          <TopTab.Screen
-            name="Spaces"
-            component={SpaceSearchScreen}
-            initialParams={{ spacesArray: searchFeedSpaces }}
-          />
-        </TopTab.Navigator>
+        reRender()
       ) : null}
     </View>
   );
