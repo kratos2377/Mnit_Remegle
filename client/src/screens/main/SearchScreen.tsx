@@ -1,9 +1,13 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import React, { useState , useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, FlatList, Button } from "react-native";
 import { Avatar, ListItem } from "react-native-elements";
 import { Colors, Searchbar } from "react-native-paper";
-import { RegularSpaceFragment, RegularUserFragment, useSearchQueryMutation } from "../../generated/graphql";
+import {
+  RegularSpaceFragment,
+  RegularUserFragment,
+  useSearchQueryMutation,
+} from "../../generated/graphql";
 import { RenderSearchTabs } from "../extra-screens/RenderSearchTabs";
 import { SpaceSearchScreen } from "../extra-screens/SpaceSearchScreen";
 import { UserSearchScreen } from "../extra-screens/UserSearchScreen";
@@ -16,11 +20,12 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
   const [search] = useSearchQueryMutation();
   var [searchFeedSpaces, setSpaces] = useState<RegularSpaceFragment[]>([]);
   var [searchFeedUsers, setUsers] = useState<RegularUserFragment[]>([]);
+  const [display, setDispaly] = useState<"Users" | "Spaces">("Users");
+  const [displayItem, setDisplayItem] = useState([]);
   const searchHandler = async () => {
-
-    if(searchText === ""){
-      setSpaces([])
-      setUsers([])
+    if (searchText === "") {
+      setSpaces([]);
+      setUsers([]);
       return;
     }
 
@@ -32,24 +37,44 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
     setSpaces([...response.data?.searchQuery?.spaces]);
     setUsers([...response.data?.searchQuery?.users]);
 
-    console.log(searchFeedSpaces)
-    console.log(searchFeedUsers)
+    // console.log(searchFeedSpaces)
+    // console.log(searchFeedUsers)
   };
 
   useEffect(() => {
-   
-  } , [searchFeedSpaces , searchFeedUsers])
+    reRender();
+  }, [searchFeedSpaces, searchFeedUsers]);
 
-  const reRender = () =>  <RenderSearchTabs users = {searchFeedUsers} spaces={searchFeedSpaces} />
+  const reRender = () => (
+    <RenderSearchTabs users={searchFeedUsers} spaces={searchFeedSpaces} />
+  );
 
-  const renderUserItem = (item : RegularUserFragment) => (
-    <TouchableOpacity onPress={() => console.log(item.id)}>
+  const renderUserItem = (item) => (
+    <TouchableOpacity onPress={() => console.log(item.item.id)}>
       <View>
-        <ListItem key={item.id} bottomDivider>
-          <Avatar source={{ uri: item.avatarUrl }} />
+        <ListItem key={item.item.id} bottomDivider>
+          <Avatar source={{ uri: item.item.avatarUrl }} />
           <ListItem.Content>
-            <ListItem.Title style={{color: 'black'}}>{item.fullName}</ListItem.Title>
-            <ListItem.Subtitle>{item.studentId}</ListItem.Subtitle>
+            <ListItem.Title style={{ color: "black" }}>
+              {item.item.fullName}
+            </ListItem.Title>
+            <ListItem.Subtitle>{item.item.studentId}</ListItem.Subtitle>
+          </ListItem.Content>
+        </ListItem>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderSpaceItem = (item) =>  (
+      <TouchableOpacity onPress={() => console.log(item.item.spaceId)}>
+      <View>
+        <ListItem key={item.item.spaceId} bottomDivider>
+          <Avatar source={{ uri: item.item.spaceAvatarUrl }} />
+          <ListItem.Content>
+            <ListItem.Title style={{ color: "black" }}>
+              {item.item.spaceName}
+            </ListItem.Title>
+            <ListItem.Subtitle>{item.item.type}</ListItem.Subtitle>
           </ListItem.Content>
         </ListItem>
       </View>
@@ -64,7 +89,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
         onChangeText={(value) => {
           setSearchText(value);
 
-          if (value.trim().length == 0 ) {
+          if (value.trim().length == 0) {
             setSpaces([]);
             setSpaces([]);
           }
@@ -74,8 +99,37 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
       />
 
       {searchFeedSpaces.length !== 0 || searchFeedUsers.length !== 0 ? (
-        reRender()
-      ) : null}
+        <View>
+          <View style={{ flexDirection: "row", flex: 1 }}>
+            <Button title="Users" onPress={() => setDispaly("Users")} />
+            <Button title="Spaces" onPress={() => setDispaly("Spaces")} />
+          </View>
+
+          {display === "Users" ? (
+            searchFeedUsers.length === 0 ? (
+              <Text>No Users With This Name Exist</Text>
+            ) : (
+              <FlatList
+                data={searchFeedUsers}
+                keyExtractor={(item) => item.id}
+                renderItem={renderUserItem}
+              />
+            )
+          ) : searchFeedSpaces.length === 0 ? (
+            <Text>No Spaces With This Name Exist</Text>
+          ) : (
+            <FlatList
+              data={searchFeedSpaces}
+              keyExtractor={(item) => item.spaceId}
+              renderItem={renderSpaceItem}
+            />
+          )}
+        </View>
+      ) : (
+        <View>
+          <Text>Search KR na be</Text>
+        </View>
+      )}
     </View>
   );
 };

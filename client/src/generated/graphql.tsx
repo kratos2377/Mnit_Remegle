@@ -240,6 +240,7 @@ export type Query = {
   getFeedPosts: Array<Post>;
   getPostsByUserId?: Maybe<Array<Post>>;
   checkifUserFollowSpace: Array<Post>;
+  getAllUserPosts?: Maybe<Array<Post>>;
   getSpaces?: Maybe<Array<Spaces>>;
   getSpaceByName: Array<Spaces>;
   getPostsofSpace?: Maybe<Array<Post>>;
@@ -440,6 +441,17 @@ export type SearchQueryMutation = (
     { __typename?: 'UserandSpaces' }
     & UserAndSpacesResponseFragment
   )> }
+);
+
+export type GetAllUserPostsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllUserPostsQuery = (
+  { __typename?: 'Query' }
+  & { getAllUserPosts?: Maybe<Array<(
+    { __typename?: 'Post' }
+    & PostSnippetFragment
+  )>> }
 );
 
 export type GetFeedPostsQueryVariables = Exact<{
@@ -646,6 +658,40 @@ export function useSearchQueryMutation(baseOptions?: Apollo.MutationHookOptions<
 export type SearchQueryMutationHookResult = ReturnType<typeof useSearchQueryMutation>;
 export type SearchQueryMutationResult = Apollo.MutationResult<SearchQueryMutation>;
 export type SearchQueryMutationOptions = Apollo.BaseMutationOptions<SearchQueryMutation, SearchQueryMutationVariables>;
+export const GetAllUserPostsDocument = gql`
+    query GetAllUserPosts {
+  getAllUserPosts {
+    ...PostSnippet
+  }
+}
+    ${PostSnippetFragmentDoc}`;
+
+/**
+ * __useGetAllUserPostsQuery__
+ *
+ * To run a query within a React component, call `useGetAllUserPostsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllUserPostsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllUserPostsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllUserPostsQuery(baseOptions?: Apollo.QueryHookOptions<GetAllUserPostsQuery, GetAllUserPostsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllUserPostsQuery, GetAllUserPostsQueryVariables>(GetAllUserPostsDocument, options);
+      }
+export function useGetAllUserPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllUserPostsQuery, GetAllUserPostsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllUserPostsQuery, GetAllUserPostsQueryVariables>(GetAllUserPostsDocument, options);
+        }
+export type GetAllUserPostsQueryHookResult = ReturnType<typeof useGetAllUserPostsQuery>;
+export type GetAllUserPostsLazyQueryHookResult = ReturnType<typeof useGetAllUserPostsLazyQuery>;
+export type GetAllUserPostsQueryResult = Apollo.QueryResult<GetAllUserPostsQuery, GetAllUserPostsQueryVariables>;
 export const GetFeedPostsDocument = gql`
     query getFeedPosts($cursor: String, $limit: Int!) {
   getFeedPosts(cursor: $cursor, limit: $limit) {

@@ -37,6 +37,7 @@ export class SearchResolver {
       .orWhere('l.firstName ilike :firstName', { firstName: `%${searchName}%` })
       .orWhere('l.lastName ilike :lastName', { lastName: `%${searchName}%` })
       .orWhere('l.lastName ilike :username', { username: `%${searchName}%` })
+      .orWhere('l.studentId ilike :studentId' , {studentId: `%${searchName}`})
       .getMany();
 
     const spaces = await getConnection()

@@ -23,7 +23,7 @@ export const FeedPostsCard: React.FC<FeedScreenProps> = ( {post}) => {
                   <Text  style={{margin: 10 , color: 'black'}}>{post.title}</Text> 
                   <Text style={{color: 'black'}}>{post.content}</Text> 
                 
-                <View style={{flexDirection: 'row' , flex: 1}}>
+                <View style={{flexDirection: 'row'}}>
                     <IconButton icon="chevron-up-box-outline" size = {20} onPress={() => console.log("upvote")}/>     
                     <IconButton icon="chevron-down-box-outline" size = {20} onPress={() => console.log("downvote")} />     
                 </View>
