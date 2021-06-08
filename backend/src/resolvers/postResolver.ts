@@ -127,7 +127,7 @@ export class PostResolver {
   @UseMiddleware(isAuth)
   async vote(
     @Arg('postId') postId: string,
-    @Arg('value') value: number,
+    @Arg('value', () => Int) value: number,
     @Ctx() { req }: MyContext
   ) {
     const isUpdoot = value !== -1;
@@ -241,14 +241,14 @@ export class PostResolver {
     return post;
   }
 
-  @Query(() => [Post] , {nullable: true})
+  @Query(() => [Post], { nullable: true })
   @UseMiddleware(isAuth)
-  async getAllUserPosts(
-    @Ctx() {req}: MyContext
-  ): Promise<Post[] | null> {
-    const result = Post.find({where: {creatorId: req.session.userId}})
+  async getAllUserPosts(@Ctx() { req }: MyContext): Promise<Post[] | null> {
+    const result = await Post.find({
+      where: { creatorId: req.session.userId }
+    });
 
-    return result;
+    return result.reverse();
   }
 
   @Mutation(() => Post, { nullable: true })

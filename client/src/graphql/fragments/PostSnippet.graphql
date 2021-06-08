@@ -6,6 +6,7 @@ fragment PostSnippet on Post {
   title
   content
   createdAt
+  spaceName
   creator {
     id
     avatarUrl

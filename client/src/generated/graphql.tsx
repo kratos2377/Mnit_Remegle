@@ -73,7 +73,7 @@ export type Mutation = {
 
 
 export type MutationVoteArgs = {
-  value: Scalars['Float'];
+  value: Scalars['Int'];
   postId: Scalars['String'];
 };
 
@@ -351,7 +351,7 @@ export type UserandSpaces = {
 
 export type PostSnippetFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'postId' | 'creatorId' | 'points' | 'voteStatus' | 'title' | 'content' | 'createdAt'>
+  & Pick<Post, 'postId' | 'creatorId' | 'points' | 'voteStatus' | 'title' | 'content' | 'createdAt' | 'spaceName'>
   & { creator: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'avatarUrl' | 'studentId' | 'fullName' | 'username'>
@@ -375,7 +375,7 @@ export type RegularSpaceFragment = (
 
 export type RegularUserFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'id' | 'username' | 'fullName' | 'email' | 'studentId' | 'gender' | 'avatarUrl' | 'isBanned' | 'bio'>
+  & Pick<User, 'id' | 'username' | 'fullName' | 'email' | 'studentId' | 'gender' | 'avatarUrl' | 'instagramAcc' | 'twitterAcc' | 'isBanned' | 'bio'>
 );
 
 export type RegularUserResponseFragment = (
@@ -443,6 +443,17 @@ export type SearchQueryMutation = (
   )> }
 );
 
+export type VoteMutationVariables = Exact<{
+  value: Scalars['Int'];
+  postId: Scalars['String'];
+}>;
+
+
+export type VoteMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'vote'>
+);
+
 export type GetAllUserPostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -488,6 +499,7 @@ export const PostSnippetFragmentDoc = gql`
   title
   content
   createdAt
+  spaceName
   creator {
     id
     avatarUrl
@@ -518,6 +530,8 @@ export const RegularUserFragmentDoc = gql`
   studentId
   gender
   avatarUrl
+  instagramAcc
+  twitterAcc
   isBanned
   bio
 }
@@ -658,6 +672,38 @@ export function useSearchQueryMutation(baseOptions?: Apollo.MutationHookOptions<
 export type SearchQueryMutationHookResult = ReturnType<typeof useSearchQueryMutation>;
 export type SearchQueryMutationResult = Apollo.MutationResult<SearchQueryMutation>;
 export type SearchQueryMutationOptions = Apollo.BaseMutationOptions<SearchQueryMutation, SearchQueryMutationVariables>;
+export const VoteDocument = gql`
+    mutation Vote($value: Int!, $postId: String!) {
+  vote(value: $value, postId: $postId)
+}
+    `;
+export type VoteMutationFn = Apollo.MutationFunction<VoteMutation, VoteMutationVariables>;
+
+/**
+ * __useVoteMutation__
+ *
+ * To run a mutation, you first call `useVoteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useVoteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [voteMutation, { data, loading, error }] = useVoteMutation({
+ *   variables: {
+ *      value: // value for 'value'
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useVoteMutation(baseOptions?: Apollo.MutationHookOptions<VoteMutation, VoteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<VoteMutation, VoteMutationVariables>(VoteDocument, options);
+      }
+export type VoteMutationHookResult = ReturnType<typeof useVoteMutation>;
+export type VoteMutationResult = Apollo.MutationResult<VoteMutation>;
+export type VoteMutationOptions = Apollo.BaseMutationOptions<VoteMutation, VoteMutationVariables>;
 export const GetAllUserPostsDocument = gql`
     query GetAllUserPosts {
   getAllUserPosts {

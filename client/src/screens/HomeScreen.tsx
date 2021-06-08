@@ -13,6 +13,9 @@ import { VideoChatScreen } from './main/VideoChatScreen';
 import { ProfileScreen } from './main/ProfileScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { UserRegister } from './auth/UserRegister';
+import {  MainScreen } from './MainScree';
+import { CreatePostScreen } from './MainScreensStack/CreatePostScreen';
+import { CreateSpaceScreen } from './MainScreensStack/CreateSpaceScreen';
 
 
 
@@ -20,7 +23,8 @@ export default function HomeScreen() {
   
   const [loggedIn , setLoggedIn] = useState(false);
   const Stack  = createStackNavigator<AuthParamList>(); 
-  const Tab = createBottomTabNavigator();
+  const MainStack = createStackNavigator<Mai>();
+
    const itemId = 42 as number
   const tryLogin = async () => {
     const userData = await AsyncStorage.getItem('userData') 
@@ -29,10 +33,6 @@ export default function HomeScreen() {
    if(userData){
      setLoggedIn(true);
    } 
-  }
-  
-  const test = () => {
-    console.log("WORKING")
   }
   
 
@@ -61,39 +61,12 @@ export default function HomeScreen() {
 
     return (
      <NavigationContainer>
-      <Tab.Navigator initialRouteName="Feed" tabBarOptions={{ showLabel: false }}>
-      <Tab.Screen name="Feed" component={FeedScreen}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="home" color={color} size={26} />
-            ),
-           
-        }}
-      />
-      <Tab.Screen name="Search" component={SearchScreen}
-           options={{
-            tabBarIcon: ({ color, size }) => (
-                <MaterialCommunityIcons name="magnify" color={color} size={26} />
-            ),
-        }}
-      />
-      <Tab.Screen name="Video" component={VideoChatScreen}
-         options={{
-          tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="message-video" color={color} size={26} />
-          ),
-      }}
-      
-      />
-      <Tab.Screen name="Profile" component={ProfileScreen}
-         options={{
-          tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="account-circle" color={color} size={26} />
-          ),
-      }}
-      
-      />
-      </Tab.Navigator>
+      <MainStack.Navigator initialRouteName="Main">
+        <MainStack.Screen name = "Main" component={MainScreen}  options={{headerShown: false}}/>
+        <MainStack.Screen name = "CreatePost" component={CreatePostScreen}  />
+        <MainStack.Screen name = "CreateSpace" component={CreateSpaceScreen}  />
+        <MainStack.Screen name = "Feed" component={FeedScreen}  />
+      </MainStack.Navigator>
      </NavigationContainer>
     )
 }
