@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, SafeAreaView } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { IconButton, Colors } from "react-native-paper";
 import { Button, Input } from "react-native-elements";
 import { AuthNavProps } from "../../utils/AuthParamList";
 import { useLoginMutation } from "../../generated/graphql";
-import AsyncStorage from "@react-native-community/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const LoginScreen = ({ navigation , route }: AuthNavProps<"Login"> ) => {
   const  {fn}  = route.params ;
@@ -68,7 +68,8 @@ export const LoginScreen = ({ navigation , route }: AuthNavProps<"Login"> ) => {
   };
 
   return (
-    <View>
+   <SafeAreaView>
+      <View>
       {error ? (
         <View>
           <Text>{errorMessage}</Text>
@@ -115,5 +116,6 @@ export const LoginScreen = ({ navigation , route }: AuthNavProps<"Login"> ) => {
         onPress={() => navigation.replace("Register")}
       />
     </View>
+   </SafeAreaView>
   );
 };

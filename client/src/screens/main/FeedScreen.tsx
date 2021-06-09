@@ -51,7 +51,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           }}
         >
           <IconButton
-            icon="chevron-up-box-outline"
+            icon="chevron-triple-up"
             size={20}
             color= {item.item.voteStatus === 1 ? 'green': 'black'}
             onPress={ async () => {
@@ -71,7 +71,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
 
           <Text>{item.item.points}</Text>
           <IconButton
-            icon="chevron-down-box-outline"
+            icon="chevron-triple-down"
             size={20}
             color = {item.item.voteStatus === -1 ? 'red' : 'black'}
             onPress={async () => {

@@ -403,6 +403,17 @@ export type UserAndSpacesResponseFragment = (
   )>> }
 );
 
+export type CreateSpaceMutationVariables = Exact<{
+  spaceName: Scalars['String'];
+  spaceDescription: Scalars['String'];
+}>;
+
+
+export type CreateSpaceMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'createSpace'>
+);
+
 export type LoginMutationVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -572,6 +583,38 @@ export const UserAndSpacesResponseFragmentDoc = gql`
 }
     ${RegularUserFragmentDoc}
 ${RegularSpaceFragmentDoc}`;
+export const CreateSpaceDocument = gql`
+    mutation CreateSpace($spaceName: String!, $spaceDescription: String!) {
+  createSpace(spaceName: $spaceName, spaceDescription: $spaceDescription)
+}
+    `;
+export type CreateSpaceMutationFn = Apollo.MutationFunction<CreateSpaceMutation, CreateSpaceMutationVariables>;
+
+/**
+ * __useCreateSpaceMutation__
+ *
+ * To run a mutation, you first call `useCreateSpaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSpaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSpaceMutation, { data, loading, error }] = useCreateSpaceMutation({
+ *   variables: {
+ *      spaceName: // value for 'spaceName'
+ *      spaceDescription: // value for 'spaceDescription'
+ *   },
+ * });
+ */
+export function useCreateSpaceMutation(baseOptions?: Apollo.MutationHookOptions<CreateSpaceMutation, CreateSpaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSpaceMutation, CreateSpaceMutationVariables>(CreateSpaceDocument, options);
+      }
+export type CreateSpaceMutationHookResult = ReturnType<typeof useCreateSpaceMutation>;
+export type CreateSpaceMutationResult = Apollo.MutationResult<CreateSpaceMutation>;
+export type CreateSpaceMutationOptions = Apollo.BaseMutationOptions<CreateSpaceMutation, CreateSpaceMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {

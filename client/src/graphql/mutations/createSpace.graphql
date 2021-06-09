@@ -1,0 +1,3 @@
+mutation CreateSpace($spaceName: String! , $spaceDescription: String!){
+    createSpace(spaceName: $spaceName , spaceDescription: $spaceDescription)
+}

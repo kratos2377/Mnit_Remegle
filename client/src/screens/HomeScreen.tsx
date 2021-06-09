@@ -1,6 +1,6 @@
 import React , {useState , useEffect} from 'react'
 import {View , Text} from 'react-native'
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen } from './auth/Login';
@@ -16,6 +16,7 @@ import { UserRegister } from './auth/UserRegister';
 import {  MainScreen } from './MainScree';
 import { CreatePostScreen } from './MainScreensStack/CreatePostScreen';
 import { CreateSpaceScreen } from './MainScreensStack/CreateSpaceScreen';
+import { MainParamList } from '../utils/MainParamList';
 
 
 
@@ -23,7 +24,7 @@ export default function HomeScreen() {
   
   const [loggedIn , setLoggedIn] = useState(false);
   const Stack  = createStackNavigator<AuthParamList>(); 
-  const MainStack = createStackNavigator<Mai>();
+  const MainStack = createStackNavigator<MainParamList>();
 
    const itemId = 42 as number
   const tryLogin = async () => {
@@ -63,9 +64,9 @@ export default function HomeScreen() {
      <NavigationContainer>
       <MainStack.Navigator initialRouteName="Main">
         <MainStack.Screen name = "Main" component={MainScreen}  options={{headerShown: false}}/>
-        <MainStack.Screen name = "CreatePost" component={CreatePostScreen}  />
-        <MainStack.Screen name = "CreateSpace" component={CreateSpaceScreen}  />
-        <MainStack.Screen name = "Feed" component={FeedScreen}  />
+        <MainStack.Screen name = "CreatePost" component={CreatePostScreen} options={{headerShown: false}} />
+        <MainStack.Screen name = "CreateSpace" component={CreateSpaceScreen} options={{headerShown: false}} />
+        <MainStack.Screen name = "Feed" component={FeedScreen} />
       </MainStack.Navigator>
      </NavigationContainer>
     )

@@ -1,9 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
 import HomeScreen from './src/screens/HomeScreen';
 
+
+const host = Platform.OS === "web" ? 'http://localhost:5000' : "http://10.0.2.2:5000";
 
 const client = new ApolloClient({
   uri: 'http://localhost:5000/graphql',
@@ -14,7 +16,7 @@ const client = new ApolloClient({
 export default function App() {
   return (
    <ApolloProvider client={client}>
-    <HomeScreen/>
+      <HomeScreen/>
    </ApolloProvider>
   );
 }

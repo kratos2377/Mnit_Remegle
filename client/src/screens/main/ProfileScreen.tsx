@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Image, FlatList } from "react-native";
 import { Avatar, Card, Colors, IconButton } from "react-native-paper";
 import { SocialIcon } from "react-native-elements";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import * as Linking from 'expo-linking'
 import { useGetAllUserPostsQuery, useMeQuery, useVoteMutation } from "../../generated/graphql";
 
 interface ProfileScreenProps {}
@@ -127,11 +128,11 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({}) => {
             <View style={{flexDirection: 'row'}}>
               <SocialIcon
                 type="instagram"
-                onPress={() => console.log("Instagram")}
+                onPress={() => Linking.openURL('https://instagram.com')}
               />
               <SocialIcon
                 type="twitter"
-                onPress={() => console.log("twitter")}
+                onPress={() => Linking.openURL('https://twitter.com')}
               />
             </View>
           </Card>
