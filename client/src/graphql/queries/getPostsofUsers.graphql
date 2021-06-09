@@ -1,0 +1,5 @@
+query GetPostsByUserId($id: String!){
+    getPostsByUserId(id: $id){
+        ...PostSnippet
+    }
+}

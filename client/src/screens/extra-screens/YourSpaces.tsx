@@ -11,7 +11,7 @@ import { useGetAllSpacesByUserQuery } from "../../generated/graphql";
 
 interface YourSpacesProps {}
 
-export const YourSpaces: React.FC<YourSpacesProps> = ({}) => {
+export const YourSpaces = ({}) => {
   const { data, loading, variables } = useGetAllSpacesByUserQuery();
   
   const renderSpaceItem = (item) => (

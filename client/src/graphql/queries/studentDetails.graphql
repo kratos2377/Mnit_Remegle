@@ -1,0 +1,5 @@
+query StudentDetails($id: String!) {
+    studentDetails(id: $id) {
+        ...RegularUser
+    }
+}

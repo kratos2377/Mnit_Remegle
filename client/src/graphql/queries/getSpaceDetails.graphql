@@ -1,0 +1,12 @@
+query GetSpaceDetails($spaceId: String) {
+    getSpaceDetails(spaceId: $spaceId){
+         spaceId
+    adminId
+    type
+    spaceName
+    spaceAvatarUrl
+    spaceDescription
+    bannedUserIds
+    followingIds
+    }
+}

@@ -127,7 +127,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
               {
                 icon: "postage-stamp",
                 label: "Edit Profile",
-                onPress: () => console.log("Edit Profile"),
+                onPress: () => navigation.navigate("UpdateScreen"),
               },
               {
                 icon: "account-group",

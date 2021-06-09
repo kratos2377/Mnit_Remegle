@@ -1,27 +1,29 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList, Button } from "react-native";
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import { Avatar, ListItem } from "react-native-elements";
-import { Colors, Searchbar } from "react-native-paper";
+import { Button, Colors, Searchbar } from "react-native-paper";
 import {
   RegularSpaceFragment,
   RegularUserFragment,
   useSearchQueryMutation,
 } from "../../generated/graphql";
+import { MainNavProps } from "../../utils/MainParamList";
 import { UserSearchScreen } from "../extra-screens/UserSearchScreen";
 
 interface SearchScreenProps {}
 
-export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
+export const SearchScreen = ({navigation} : MainNavProps<"SearchScreen">) => {
   const TopTab = createMaterialTopTabNavigator();
   const [searchText, setSearchText] = useState("");
   const [search] = useSearchQueryMutation();
   var [searchFeedSpaces, setSpaces] = useState<RegularSpaceFragment[]>([]);
   var [searchFeedUsers, setUsers] = useState<RegularUserFragment[]>([]);
+
   const [display, setDispaly] = useState<"Users" | "Spaces">("Users");
   const [displayItem, setDisplayItem] = useState([]);
   const searchHandler = async () => {
-    if (searchText === "") {
+    if (searchText == "") {
       setSpaces([]);
       setUsers([]);
       return;
@@ -40,13 +42,19 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
   };
 
   useEffect(() => {
-  }, [searchFeedSpaces, searchFeedUsers]);
+    if(searchText === ""){
+      setSpaces([]);
+      setUsers([]);
+    }
+  }, [searchText]);
 
   
 
   const renderUserItem = (item) => (
-    <TouchableOpacity onPress={() => console.log(item.item.id)}>
-      <View>
+    <TouchableOpacity onPress={() => navigation.navigate("GoToProfile" , {
+      id: item.item.id
+    })}>
+      <View style={{margin: 10}}>
         <ListItem key={item.item.id} bottomDivider>
           <Avatar source={{ uri: item.item.avatarUrl }} />
           <ListItem.Content>
@@ -62,7 +70,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
 
   const renderSpaceItem = (item) =>  (
       <TouchableOpacity onPress={() => console.log(item.item.spaceId)}>
-      <View>
+      <View style={{ margin: 10}}>
         <ListItem key={item.item.spaceId} bottomDivider>
           <Avatar source={{ uri: item.item.spaceAvatarUrl }} />
           <ListItem.Content>
@@ -95,9 +103,9 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
 
       {searchFeedSpaces.length !== 0 || searchFeedUsers.length !== 0 ? (
         <View>
-          <View style={{ flexDirection: "row", flex: 1 }}>
-            <Button title="Users" onPress={() => setDispaly("Users")} />
-            <Button title="Spaces" onPress={() => setDispaly("Spaces")} />
+          <View style={{ flexDirection: "row", flex: 1 , justifyContent: 'space-around'}}>
+            <Button icon="account" onPress={() => setDispaly("Users")} > Users</Button>
+            <Button icon="bank" onPress={() => setDispaly("Spaces")}> Spaces</Button>
           </View>
 
           {display === "Users" ? (

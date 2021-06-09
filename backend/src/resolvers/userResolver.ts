@@ -54,8 +54,8 @@ class UserResponse {
   @Field(() => User, { nullable: true })
   user?: User;
 
-  @Field(() => String ,  { nullable: true })
-  sessionId?: string
+  @Field(() => String, { nullable: true })
+  sessionId?: string;
 }
 
 @Resolver(User)
@@ -84,10 +84,12 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
+  @UseMiddleware(isAuth)
   async studentDetails(
-    @Arg('studentId') studentId: string
+    @Arg('id') id: string
   ): Promise<User | null> {
-    const user = await User.findOne({ where: { studentId: studentId } });
+    const user = await User.findOne({ where: { id: id } });
+    console.log(user)
 
     if (!user) {
       return null;
@@ -111,7 +113,9 @@ export class UserResolver {
   }
 
   @Mutation(() => UserResponse)
-  async confirmUserCheck(@Arg('studentId') studentId: string): Promise<UserResponse> {
+  async confirmUserCheck(
+    @Arg('studentId') studentId: string
+  ): Promise<UserResponse> {
     studentId = studentId.toLowerCase();
 
     const valid = await MnitStudent.findOne({
@@ -233,8 +237,8 @@ export class UserResolver {
     @Arg('password') password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    console.log(usernameOrEmail)
-    console.log(password)
+    console.log(usernameOrEmail);
+    console.log(password);
     const user = await User.findOne(
       usernameOrEmail.includes('@')
         ? { where: { email: usernameOrEmail } }
@@ -266,14 +270,18 @@ export class UserResolver {
     }
 
     req.session.userId = user.id;
-    console.log(req.session.userId)
-    console.log(req.session)
 
-    if(req.sessionID){
-      await redis.lpush(`${user.id}` , req.sessionID)
-
+    if (req.sessionID) {
+      await redis.lpush(`${user.id}`, req.sessionID);
     }
-    return { user , sessionId: req.sessionID};
+    return { user, sessionId: req.sessionID };
+  }
+
+  @Mutation(() => User)
+  async usernameUsers(@Arg('username') username: string): Promise<User> {
+    const user = (await User.findOne({ username })) as User;
+
+    return user;
   }
 
   @Mutation(() => UserResponse)
@@ -285,14 +293,16 @@ export class UserResolver {
     @Arg('instagramAcc') instagramAcc: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await User.findOne({ where: { username: username } });
+    const user = (await User.find({ username })) as User[];
 
-    if (user?.id !== req.session.userId) {
-      return {
-        boolResult : {
-          value: false,
-          message: 'username in use'
-        }
+    if (user.length !== 0) {
+      if (user[0].id !== req.session.userId) {
+        return {
+          boolResult: {
+            value: false,
+            message: 'username in use'
+          }
+        };
       }
     }
 
@@ -307,11 +317,11 @@ export class UserResolver {
     );
 
     return {
-      boolResult : {
+      boolResult: {
         value: true,
-        message: 'updated',
+        message: 'updated'
       }
-    }
+    };
   }
 
   @Mutation(() => Boolean)

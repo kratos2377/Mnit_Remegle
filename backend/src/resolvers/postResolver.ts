@@ -64,6 +64,7 @@ export class PostResolver {
     return post;
   }
 
+
   @Query(() => [Post], { nullable: true })
   async getAllPosts(): Promise<Post[] | null> {
     const posts = (await Post.find({})) as Post[];
@@ -185,8 +186,9 @@ export class PostResolver {
   }
 
   @Query(() => [Post], { nullable: true })
-  async getPostsByUserId(@Arg('id') studentId: string): Promise<Post[] | null> {
-    const postsArray = Post.find({ where: { creatorId: studentId } });
+  @UseMiddleware(isAuth)
+  async getPostsByUserId(@Arg('id') id: string): Promise<Post[] | null> {
+    const postsArray = Post.find({ where: { creatorId: id } });
 
     return postsArray;
   }

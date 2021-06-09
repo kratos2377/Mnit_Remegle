@@ -69,14 +69,16 @@ export class SpaceResolver {
     return space;
   }
 
-  @Query(() => [Spaces] , {nullable: true})
+  @Query(() => [Spaces], { nullable: true })
   async getAllSpacesofUser(
-    @Ctx() {req} : MyContext
+    @Ctx() { req }: MyContext
   ): Promise<Spaces[] | null> {
-      const spaces = (await Spaces.find({where: {adminId: req.session.userId}})) as Spaces[]
-        
-      return spaces
-    }
+    const spaces = (await Spaces.find({
+      where: { adminId: req.session.userId }
+    })) as Spaces[];
+
+    return spaces;
+  }
 
   @Query(() => [Spaces])
   @UseMiddleware(isAuth)
@@ -86,6 +88,16 @@ export class SpaceResolver {
     const space = (await Spaces.find({
       where: { spaceName: spaceName }
     })) as Spaces[];
+
+    return space;
+  }
+
+  @Query(() => Spaces)
+  @UseMiddleware(isAuth)
+  async getSpaceDetails(@Arg('spaceId') spaceId: string): Promise<Spaces> {
+    const space = (await Spaces.findOne({
+      where: { spaceId: spaceId }
+    })) as Spaces;
 
     return space;
   }
@@ -109,12 +121,11 @@ export class SpaceResolver {
 
     const spaceArr = [user.id];
 
-
     const spaceAcc = await Spaces.create({
       spaceName: spaceName,
       spaceDescription: spaceDescription,
       adminId: req.session.userId,
-      followingIds: spaceArr,
+      followingIds: spaceArr
     }).save();
 
     user.spacesFollowed.push(spaceAcc.spaceId);
@@ -132,7 +143,7 @@ export class SpaceResolver {
     studentId = studentId.toLowerCase();
 
     const user = (await User.findOne({
-      where: { studentId: studentId }
+      where: { id: req.session.userId }
     })) as User;
 
     const space = (await Spaces.findOne({
@@ -192,18 +203,11 @@ export class SpaceResolver {
 
   @Query(() => [Post], { nullable: true })
   async getPostsofSpace(
-    @Arg('spaceName') spaceName: string
+    @Arg('postSpaceId') postSpaceId: string
   ): Promise<Post[] | null> {
-    const posts = await getConnection().query(
-      `
-         select p.*
-         from post p
-         where p.spaceName = $1
-         order by p.createdAt DESC
-         `,
-
-      [spaceName]
-    );
+    const posts = (await Post.find({
+      where: { postSpaceId: postSpaceId }
+    })) as Post[];
 
     return posts;
   }

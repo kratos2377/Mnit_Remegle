@@ -1,27 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, FlatList } from "react-native";
-import {
-  Appbar,
-  Card,
-  IconButton,
-} from "react-native-paper";
+import React, { useState } from "react";
+import { FlatList, ScrollView, View, Text, Image } from "react-native";
 import { SocialIcon } from "react-native-elements";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import * as Linking from "expo-linking";
+import { Appbar, Card, IconButton } from "react-native-paper";
 import {
-  useGetAllUserPostsQuery,
-  useMeQuery,
+  useGetPostsByUserIdQuery,
+  useStudentDetailsQuery,
   useVoteMutation,
 } from "../../generated/graphql";
+import * as Linking from "expo-linking";
 import { MainNavProps } from "../../utils/MainParamList";
 
-interface ProfileScreenProps {}
+interface GoToProfileScreenProps {}
 
-export const ProfileScreen = ({
-  navigation,
-}: MainNavProps<"Profile">) => {
-  const { data, error, variables } = useGetAllUserPostsQuery();
-  const { data: userData, error: userError } = useMeQuery();
+export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfile">) => {
+    console.log(route?.params?.id)
+
+  const { data, error , variables } = useGetPostsByUserIdQuery({
+    variables: {
+      id: route.params?.id,
+    },
+    notifyOnNetworkStatusChange: true,
+});
+
+  const { data: userData, error: userError } = useStudentDetailsQuery({
+    variables: {
+        id: route.params?.id,
+    }
+  });
+
+  console.log(data)
+  console.log(userData)
 
   const [voteMut] = useVoteMutation();
   const [loadingState, setLoadingState] =
@@ -108,14 +116,12 @@ export const ProfileScreen = ({
     <View style={{ flex: 1, width: "100%" }}>
       <ScrollView>
         <Appbar.Header style={{ backgroundColor: "white" }}>
+          <Appbar.BackAction onPress={() => navigation.pop()}/>
           <Appbar.Content
-            title={userData?.me?.username}
-            subtitle={userData?.me.studentId}
+            title={userData?.studentDetails?.username}
+            subtitle={userData?.studentDetails?.studentId}
           />
-          <Appbar.Action
-            icon="dots-vertical-circle"
-            onPress={() => navigation.navigate("Settings")}
-          />
+          
         </Appbar.Header>
 
         <View style={{ marginBottom: 10, marginTop: 10 }}>
@@ -129,10 +135,14 @@ export const ProfileScreen = ({
           >
             <Image
               style={{ width: 200, height: 200, borderRadius: 100 }}
-              source={{ uri: userData?.me?.avatarUrl }}
+              source={{ uri: userData?.studentDetails?.avatarUrl }}
             />
-            <Text style={{ marginBottom: 10 }}>{userData?.me?.fullName}</Text>
-            <Text style={{ marginBottom: 10 }}>{userData?.me?.bio}</Text>
+            <Text style={{ marginBottom: 10 }}>
+              {userData?.studentDetails?.fullName}
+            </Text>
+            <Text style={{ marginBottom: 10 }}>
+              {userData?.studentDetails?.bio}
+            </Text>
             <View style={{ flexDirection: "row" }}>
               <SocialIcon
                 type="instagram"
@@ -148,7 +158,7 @@ export const ProfileScreen = ({
         <View style={{ flex: 1 }}>
           <FlatList
             numColumns={1}
-            data={data?.getAllUserPosts}
+            data={data?.getPostsByUserId}
             keyExtractor={(item) => item.postId}
             renderItem={renderPostItem}
           />

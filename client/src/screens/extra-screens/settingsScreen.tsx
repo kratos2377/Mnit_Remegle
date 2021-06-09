@@ -8,7 +8,7 @@ import { MainNavProps } from '../../utils/MainParamList';
 
 interface settingsScreenProps {}
 
-export const SettingsScreen: React.FC<settingsScreenProps> = ({navigation}: MainNavProps<"Settings">) => {
+export const SettingsScreen = ({navigation}: MainNavProps<"Settings">) => {
 
    const [logout] = useLogoutMutation()
    const [error , setError] = useState("")

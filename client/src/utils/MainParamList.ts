@@ -5,11 +5,14 @@ export type MainParamList = {
   Main: undefined;
   CreatePost: undefined;
   CreateSpace: undefined;
+  SearchScreen: undefined;
   Feed: undefined;
   Settings: undefined;
   Profile: undefined;
   YourSpaces: undefined;
   UpdateScreen: undefined
+  GoToProfile: undefined,
+  GoToSpace: undefined;
 };
 
 export type MainNavProps<T extends keyof MainParamList> = {

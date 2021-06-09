@@ -4,7 +4,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  OneToMany
+  OneToMany,
 } from 'typeorm';
 import { Post } from './Post';
 import { Updoot } from './Updoot';
@@ -15,7 +15,8 @@ export class User extends BaseEntity {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   id!: string;
-
+ 
+ 
   @Field()
   @Column('text', { unique: true })
   studentId!: string;
@@ -32,7 +33,8 @@ export class User extends BaseEntity {
   public get fullName() : string {
     return `${this.firstName} ${this.lastName}`
   }
-
+ 
+ 
   @Field()
   @Column('text', { unique: true })
   username!: string;

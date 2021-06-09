@@ -40,7 +40,10 @@
    },
    "scripts": {
       "start": "ts-node-dev --respawn src/index.ts",
-      "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+      "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+      "typeorm": "ts-node ./node_modules/typeorm/cli.js",
+      "build": "tsc",
+    "watch": "tsc -w"
    },
    "keywords": [],
    "author": "",

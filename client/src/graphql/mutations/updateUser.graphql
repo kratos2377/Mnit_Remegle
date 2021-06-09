@@ -1,0 +1,5 @@
+mutation UpdateUser($username: String! , $bio: String! , $twitterAcc: String! , $instagramAcc: String!) {
+    updateUserDetails(username: $username , bio:$bio , twitterAcc: $twitterAcc , instagramAcc: $instagramAcc){
+        ...RegularUserResponse
+    }
+}
