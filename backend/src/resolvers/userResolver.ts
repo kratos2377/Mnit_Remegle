@@ -276,7 +276,7 @@ export class UserResolver {
     return { user , sessionId: req.sessionID};
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => UserResponse)
   @UseMiddleware(isAuth)
   async updateUserDetails(
     @Arg('username') username: string,
@@ -284,11 +284,16 @@ export class UserResolver {
     @Arg('twitterAcc') twitterAcc: string,
     @Arg('instagramAcc') instagramAcc: string,
     @Ctx() { req }: MyContext
-  ): Promise<boolean> {
+  ): Promise<UserResponse> {
     const user = await User.findOne({ where: { username: username } });
 
-    if (user) {
-      return false;
+    if (user?.id !== req.session.userId) {
+      return {
+        boolResult : {
+          value: false,
+          message: 'username in use'
+        }
+      }
     }
 
     await User.update(
@@ -301,7 +306,12 @@ export class UserResolver {
       }
     );
 
-    return true;
+    return {
+      boolResult : {
+        value: true,
+        message: 'updated',
+      }
+    }
   }
 
   @Mutation(() => Boolean)

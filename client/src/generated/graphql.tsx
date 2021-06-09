@@ -242,6 +242,7 @@ export type Query = {
   checkifUserFollowSpace: Array<Post>;
   getAllUserPosts?: Maybe<Array<Post>>;
   getSpaces?: Maybe<Array<Spaces>>;
+  getAllSpacesofUser?: Maybe<Array<Spaces>>;
   getSpaceByName: Array<Spaces>;
   getPostsofSpace?: Maybe<Array<Post>>;
   hello: Scalars['String'];
@@ -471,6 +472,17 @@ export type VoteMutationVariables = Exact<{
 export type VoteMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'vote'>
+);
+
+export type GetAllSpacesByUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllSpacesByUserQuery = (
+  { __typename?: 'Query' }
+  & { getAllSpacesofUser?: Maybe<Array<(
+    { __typename?: 'Spaces' }
+    & RegularSpaceFragment
+  )>> }
 );
 
 export type GetAllUserPostsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -785,6 +797,40 @@ export function useVoteMutation(baseOptions?: Apollo.MutationHookOptions<VoteMut
 export type VoteMutationHookResult = ReturnType<typeof useVoteMutation>;
 export type VoteMutationResult = Apollo.MutationResult<VoteMutation>;
 export type VoteMutationOptions = Apollo.BaseMutationOptions<VoteMutation, VoteMutationVariables>;
+export const GetAllSpacesByUserDocument = gql`
+    query GetAllSpacesByUser {
+  getAllSpacesofUser {
+    ...RegularSpace
+  }
+}
+    ${RegularSpaceFragmentDoc}`;
+
+/**
+ * __useGetAllSpacesByUserQuery__
+ *
+ * To run a query within a React component, call `useGetAllSpacesByUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllSpacesByUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllSpacesByUserQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllSpacesByUserQuery(baseOptions?: Apollo.QueryHookOptions<GetAllSpacesByUserQuery, GetAllSpacesByUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllSpacesByUserQuery, GetAllSpacesByUserQueryVariables>(GetAllSpacesByUserDocument, options);
+      }
+export function useGetAllSpacesByUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllSpacesByUserQuery, GetAllSpacesByUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllSpacesByUserQuery, GetAllSpacesByUserQueryVariables>(GetAllSpacesByUserDocument, options);
+        }
+export type GetAllSpacesByUserQueryHookResult = ReturnType<typeof useGetAllSpacesByUserQuery>;
+export type GetAllSpacesByUserLazyQueryHookResult = ReturnType<typeof useGetAllSpacesByUserLazyQuery>;
+export type GetAllSpacesByUserQueryResult = Apollo.QueryResult<GetAllSpacesByUserQuery, GetAllSpacesByUserQueryVariables>;
 export const GetAllUserPostsDocument = gql`
     query GetAllUserPosts {
   getAllUserPosts {

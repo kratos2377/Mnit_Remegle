@@ -18,6 +18,8 @@ import { CreatePostScreen } from './MainScreensStack/CreatePostScreen';
 import { CreateSpaceScreen } from './MainScreensStack/CreateSpaceScreen';
 import { MainParamList } from '../utils/MainParamList';
 import { SettingsScreen } from './extra-screens/settingsScreen';
+import { YourSpaces } from './extra-screens/YourSpaces';
+import { UpdateScreen } from './extra-screens/UpdateScreen';
 
 
 
@@ -69,6 +71,8 @@ export default function HomeScreen() {
         <MainStack.Screen name = "Feed" component={FeedScreen} />
         <MainStack.Screen name = "Settings" component={SettingsScreen} />
         <MainStack.Screen name = "Profile" component={ProfileScreen} />
+        <MainStack.Screen name = "YourSpaces" component={YourSpaces} />
+        <MainStack.Screen name = "UpdateScreen" component={UpdateScreen} options={{headerShown: false}}  />
       </MainStack.Navigator>
      </NavigationContainer>
     )

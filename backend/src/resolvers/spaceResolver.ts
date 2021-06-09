@@ -73,7 +73,7 @@ export class SpaceResolver {
   async getAllSpacesofUser(
     @Ctx() {req} : MyContext
   ): Promise<Spaces[] | null> {
-      const spaces = (await Spaces.find({where: {creatorId: req.session.userId}})) as Spaces[]
+      const spaces = (await Spaces.find({where: {adminId: req.session.userId}})) as Spaces[]
         
       return spaces
     }

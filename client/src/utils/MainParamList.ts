@@ -8,7 +8,8 @@ export type MainParamList = {
   Feed: undefined;
   Settings: undefined;
   Profile: undefined;
-  Login: undefined;
+  YourSpaces: undefined;
+  UpdateScreen: undefined
 };
 
 export type MainNavProps<T extends keyof MainParamList> = {
