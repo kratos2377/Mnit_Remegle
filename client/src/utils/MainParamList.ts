@@ -6,6 +6,9 @@ export type MainParamList = {
   CreatePost: undefined;
   CreateSpace: undefined;
   Feed: undefined;
+  Settings: undefined;
+  Profile: undefined;
+  Login: undefined;
 };
 
 export type MainNavProps<T extends keyof MainParamList> = {

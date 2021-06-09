@@ -17,6 +17,7 @@ import {  MainScreen } from './MainScree';
 import { CreatePostScreen } from './MainScreensStack/CreatePostScreen';
 import { CreateSpaceScreen } from './MainScreensStack/CreateSpaceScreen';
 import { MainParamList } from '../utils/MainParamList';
+import { SettingsScreen } from './extra-screens/settingsScreen';
 
 
 
@@ -26,7 +27,6 @@ export default function HomeScreen() {
   const Stack  = createStackNavigator<AuthParamList>(); 
   const MainStack = createStackNavigator<MainParamList>();
 
-   const itemId = 42 as number
   const tryLogin = async () => {
     const userData = await AsyncStorage.getItem('userData') 
     console.log(userData)
@@ -67,6 +67,8 @@ export default function HomeScreen() {
         <MainStack.Screen name = "CreatePost" component={CreatePostScreen} options={{headerShown: false}} />
         <MainStack.Screen name = "CreateSpace" component={CreateSpaceScreen} options={{headerShown: false}} />
         <MainStack.Screen name = "Feed" component={FeedScreen} />
+        <MainStack.Screen name = "Settings" component={SettingsScreen} />
+        <MainStack.Screen name = "Profile" component={ProfileScreen} />
       </MainStack.Navigator>
      </NavigationContainer>
     )

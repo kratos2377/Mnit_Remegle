@@ -8,8 +8,6 @@ import {
   RegularUserFragment,
   useSearchQueryMutation,
 } from "../../generated/graphql";
-import { RenderSearchTabs } from "../extra-screens/RenderSearchTabs";
-import { SpaceSearchScreen } from "../extra-screens/SpaceSearchScreen";
 import { UserSearchScreen } from "../extra-screens/UserSearchScreen";
 
 interface SearchScreenProps {}
@@ -42,12 +40,9 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({}) => {
   };
 
   useEffect(() => {
-    reRender();
   }, [searchFeedSpaces, searchFeedUsers]);
 
-  const reRender = () => (
-    <RenderSearchTabs users={searchFeedUsers} spaces={searchFeedSpaces} />
-  );
+  
 
   const renderUserItem = (item) => (
     <TouchableOpacity onPress={() => console.log(item.item.id)}>
