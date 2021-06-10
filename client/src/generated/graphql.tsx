@@ -250,6 +250,7 @@ export type Query = {
   getSpaces?: Maybe<Array<Spaces>>;
   getAllSpacesofUser?: Maybe<Array<Spaces>>;
   getSpaceByName: Array<Spaces>;
+  getSpaceDetails: Spaces;
   getPostsofSpace?: Maybe<Array<Post>>;
   hello: Scalars['String'];
   me?: Maybe<User>;
@@ -283,8 +284,13 @@ export type QueryGetSpaceByNameArgs = {
 };
 
 
+export type QueryGetSpaceDetailsArgs = {
+  spaceId: Scalars['String'];
+};
+
+
 export type QueryGetPostsofSpaceArgs = {
-  spaceName: Scalars['String'];
+  postSpaceId: Scalars['String'];
 };
 
 
@@ -318,6 +324,7 @@ export type Spaces = {
   spaceDescription: Scalars['String'];
   spaceAvatarUrl: Scalars['String'];
   followingIds: Array<User>;
+  bannedUserIds: Array<User>;
 };
 
 export type User = {
@@ -408,6 +415,21 @@ export type UserAndSpacesResponseFragment = (
     { __typename?: 'Spaces' }
     & RegularSpaceFragment
   )>> }
+);
+
+export type CreatePostsMutationVariables = Exact<{
+  title: Scalars['String'];
+  content: Scalars['String'];
+  spaceName: Scalars['String'];
+}>;
+
+
+export type CreatePostsMutation = (
+  { __typename?: 'Mutation' }
+  & { createPosts?: Maybe<(
+    { __typename?: 'Post' }
+    & PostSnippetFragment
+  )> }
 );
 
 export type CreateSpaceMutationVariables = Exact<{
@@ -532,6 +554,19 @@ export type GetFeedPostsQuery = (
   )> }
 );
 
+export type GetPostsOfSpacesQueryVariables = Exact<{
+  postSpaceId: Scalars['String'];
+}>;
+
+
+export type GetPostsOfSpacesQuery = (
+  { __typename?: 'Query' }
+  & { getPostsofSpace?: Maybe<Array<(
+    { __typename?: 'Post' }
+    & PostSnippetFragment
+  )>> }
+);
+
 export type GetPostsByUserIdQueryVariables = Exact<{
   id: Scalars['String'];
 }>;
@@ -543,6 +578,26 @@ export type GetPostsByUserIdQuery = (
     { __typename?: 'Post' }
     & PostSnippetFragment
   )>> }
+);
+
+export type GetSpaceDetailsQueryVariables = Exact<{
+  spaceId: Scalars['String'];
+}>;
+
+
+export type GetSpaceDetailsQuery = (
+  { __typename?: 'Query' }
+  & { getSpaceDetails: (
+    { __typename?: 'Spaces' }
+    & Pick<Spaces, 'spaceId' | 'adminId' | 'type' | 'spaceName' | 'spaceAvatarUrl' | 'spaceDescription'>
+    & { bannedUserIds: Array<(
+      { __typename?: 'User' }
+      & Pick<User, 'id'>
+    )>, followingIds: Array<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'fullName' | 'username' | 'avatarUrl' | 'studentId'>
+    )> }
+  ) }
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -651,6 +706,41 @@ export const UserAndSpacesResponseFragmentDoc = gql`
 }
     ${RegularUserFragmentDoc}
 ${RegularSpaceFragmentDoc}`;
+export const CreatePostsDocument = gql`
+    mutation CreatePosts($title: String!, $content: String!, $spaceName: String!) {
+  createPosts(title: $title, content: $content, spaceName: $spaceName) {
+    ...PostSnippet
+  }
+}
+    ${PostSnippetFragmentDoc}`;
+export type CreatePostsMutationFn = Apollo.MutationFunction<CreatePostsMutation, CreatePostsMutationVariables>;
+
+/**
+ * __useCreatePostsMutation__
+ *
+ * To run a mutation, you first call `useCreatePostsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePostsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPostsMutation, { data, loading, error }] = useCreatePostsMutation({
+ *   variables: {
+ *      title: // value for 'title'
+ *      content: // value for 'content'
+ *      spaceName: // value for 'spaceName'
+ *   },
+ * });
+ */
+export function useCreatePostsMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostsMutation, CreatePostsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePostsMutation, CreatePostsMutationVariables>(CreatePostsDocument, options);
+      }
+export type CreatePostsMutationHookResult = ReturnType<typeof useCreatePostsMutation>;
+export type CreatePostsMutationResult = Apollo.MutationResult<CreatePostsMutation>;
+export type CreatePostsMutationOptions = Apollo.BaseMutationOptions<CreatePostsMutation, CreatePostsMutationVariables>;
 export const CreateSpaceDocument = gql`
     mutation CreateSpace($spaceName: String!, $spaceDescription: String!) {
   createSpace(spaceName: $spaceName, spaceDescription: $spaceDescription)
@@ -990,6 +1080,41 @@ export function useGetFeedPostsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type GetFeedPostsQueryHookResult = ReturnType<typeof useGetFeedPostsQuery>;
 export type GetFeedPostsLazyQueryHookResult = ReturnType<typeof useGetFeedPostsLazyQuery>;
 export type GetFeedPostsQueryResult = Apollo.QueryResult<GetFeedPostsQuery, GetFeedPostsQueryVariables>;
+export const GetPostsOfSpacesDocument = gql`
+    query GetPostsOfSpaces($postSpaceId: String!) {
+  getPostsofSpace(postSpaceId: $postSpaceId) {
+    ...PostSnippet
+  }
+}
+    ${PostSnippetFragmentDoc}`;
+
+/**
+ * __useGetPostsOfSpacesQuery__
+ *
+ * To run a query within a React component, call `useGetPostsOfSpacesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPostsOfSpacesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPostsOfSpacesQuery({
+ *   variables: {
+ *      postSpaceId: // value for 'postSpaceId'
+ *   },
+ * });
+ */
+export function useGetPostsOfSpacesQuery(baseOptions: Apollo.QueryHookOptions<GetPostsOfSpacesQuery, GetPostsOfSpacesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPostsOfSpacesQuery, GetPostsOfSpacesQueryVariables>(GetPostsOfSpacesDocument, options);
+      }
+export function useGetPostsOfSpacesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPostsOfSpacesQuery, GetPostsOfSpacesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPostsOfSpacesQuery, GetPostsOfSpacesQueryVariables>(GetPostsOfSpacesDocument, options);
+        }
+export type GetPostsOfSpacesQueryHookResult = ReturnType<typeof useGetPostsOfSpacesQuery>;
+export type GetPostsOfSpacesLazyQueryHookResult = ReturnType<typeof useGetPostsOfSpacesLazyQuery>;
+export type GetPostsOfSpacesQueryResult = Apollo.QueryResult<GetPostsOfSpacesQuery, GetPostsOfSpacesQueryVariables>;
 export const GetPostsByUserIdDocument = gql`
     query GetPostsByUserId($id: String!) {
   getPostsByUserId(id: $id) {
@@ -1025,6 +1150,56 @@ export function useGetPostsByUserIdLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetPostsByUserIdQueryHookResult = ReturnType<typeof useGetPostsByUserIdQuery>;
 export type GetPostsByUserIdLazyQueryHookResult = ReturnType<typeof useGetPostsByUserIdLazyQuery>;
 export type GetPostsByUserIdQueryResult = Apollo.QueryResult<GetPostsByUserIdQuery, GetPostsByUserIdQueryVariables>;
+export const GetSpaceDetailsDocument = gql`
+    query GetSpaceDetails($spaceId: String!) {
+  getSpaceDetails(spaceId: $spaceId) {
+    spaceId
+    adminId
+    type
+    spaceName
+    spaceAvatarUrl
+    spaceDescription
+    bannedUserIds {
+      id
+    }
+    followingIds {
+      id
+      fullName
+      username
+      avatarUrl
+      studentId
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetSpaceDetailsQuery__
+ *
+ * To run a query within a React component, call `useGetSpaceDetailsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSpaceDetailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSpaceDetailsQuery({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *   },
+ * });
+ */
+export function useGetSpaceDetailsQuery(baseOptions: Apollo.QueryHookOptions<GetSpaceDetailsQuery, GetSpaceDetailsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSpaceDetailsQuery, GetSpaceDetailsQueryVariables>(GetSpaceDetailsDocument, options);
+      }
+export function useGetSpaceDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSpaceDetailsQuery, GetSpaceDetailsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSpaceDetailsQuery, GetSpaceDetailsQueryVariables>(GetSpaceDetailsDocument, options);
+        }
+export type GetSpaceDetailsQueryHookResult = ReturnType<typeof useGetSpaceDetailsQuery>;
+export type GetSpaceDetailsLazyQueryHookResult = ReturnType<typeof useGetSpaceDetailsLazyQuery>;
+export type GetSpaceDetailsQueryResult = Apollo.QueryResult<GetSpaceDetailsQuery, GetSpaceDetailsQueryVariables>;
 export const MeDocument = gql`
     query me {
   me {

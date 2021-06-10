@@ -1,0 +1,6 @@
+mutation CreatePosts($title: String! , $content: String! , $spaceName: String!) {
+    createPosts(title: $title , content: $content , spaceName: $spaceName){
+        ...PostSnippet
+    }
+
+}

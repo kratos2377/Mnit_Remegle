@@ -1,0 +1,5 @@
+query GetPostsOfSpaces($postSpaceId: String!){
+    getPostsofSpace(postSpaceId: $postSpaceId) {
+        ...PostSnippet
+    }
+}

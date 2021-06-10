@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Image, FlatList } from "react-native";
-import {
-  Appbar,
-  Card,
-  IconButton,
-} from "react-native-paper";
+import { Appbar, Card, IconButton } from "react-native-paper";
 import { SocialIcon } from "react-native-elements";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Linking from "expo-linking";
@@ -17,9 +13,7 @@ import { MainNavProps } from "../../utils/MainParamList";
 
 interface ProfileScreenProps {}
 
-export const ProfileScreen = ({
-  navigation,
-}: MainNavProps<"Profile">) => {
+export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
   const { data, error, variables } = useGetAllUserPostsQuery();
   const { data: userData, error: userError } = useMeQuery();
 
@@ -147,7 +141,6 @@ export const ProfileScreen = ({
         </View>
         <View style={{ flex: 1 }}>
           <FlatList
-            numColumns={1}
             data={data?.getAllUserPosts}
             keyExtractor={(item) => item.postId}
             renderItem={renderPostItem}

@@ -1,6 +1,6 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from "react-native";
 import { Avatar, ListItem } from "react-native-elements";
 import { Button, Colors, Searchbar } from "react-native-paper";
 import {
@@ -69,7 +69,9 @@ export const SearchScreen = ({navigation} : MainNavProps<"SearchScreen">) => {
   );
 
   const renderSpaceItem = (item) =>  (
-      <TouchableOpacity onPress={() => console.log(item.item.spaceId)}>
+      <TouchableOpacity onPress={() =>  navigation.navigate("GoToSpace" , {
+        id: item.item.spaceId
+      })}>
       <View style={{ margin: 10}}>
         <ListItem key={item.item.spaceId} bottomDivider>
           <Avatar source={{ uri: item.item.spaceAvatarUrl }} />
@@ -85,8 +87,9 @@ export const SearchScreen = ({navigation} : MainNavProps<"SearchScreen">) => {
   );
 
   return (
-    <View>
-      <Searchbar
+    <SafeAreaView style={{ flex: 1, width: "100%" }}>
+     <ScrollView>
+     <Searchbar
         style={{ marginBottom: 10 }}
         placeholder="Search Here..."
         onChangeText={(value) => {
@@ -102,8 +105,9 @@ export const SearchScreen = ({navigation} : MainNavProps<"SearchScreen">) => {
       />
 
       {searchFeedSpaces.length !== 0 || searchFeedUsers.length !== 0 ? (
-        <View>
-          <View style={{ flexDirection: "row", flex: 1 , justifyContent: 'space-around'}}>
+      
+        <View style={{flex: 1 , width: '100%'}}>
+        <View style={{ flexDirection: "row", flex: 1 , justifyContent: 'space-around'}}>
             <Button icon="account" onPress={() => setDispaly("Users")} > Users</Button>
             <Button icon="bank" onPress={() => setDispaly("Spaces")}> Spaces</Button>
           </View>
@@ -112,7 +116,7 @@ export const SearchScreen = ({navigation} : MainNavProps<"SearchScreen">) => {
             searchFeedUsers.length === 0 ? (
               <Text>No Users With This Name Exist</Text>
             ) : (
-              <FlatList
+                 <FlatList
                 data={searchFeedUsers}
                 keyExtractor={(item) => item.id}
                 renderItem={renderUserItem}
@@ -121,18 +125,21 @@ export const SearchScreen = ({navigation} : MainNavProps<"SearchScreen">) => {
           ) : searchFeedSpaces.length === 0 ? (
             <Text>No Spaces With This Name Exist</Text>
           ) : (
-            <FlatList
+             <FlatList
               data={searchFeedSpaces}
               keyExtractor={(item) => item.spaceId}
               renderItem={renderSpaceItem}
             />
+           
           )}
         </View>
+       
       ) : (
-        <View>
-          <Text>Search KR na be</Text>
+        <View style={{alignSelf:'center'}}>
+          <Text>Press Top Left Search Icon To Start Searching </Text>
         </View>
       )}
-    </View>
+     </ScrollView>
+    </SafeAreaView>
   );
 };

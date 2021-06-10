@@ -1,18 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, FlatList } from "react-native";
-import { Card, FAB, IconButton, Portal, Provider } from "react-native-paper";
+import { View, Text, Image, FlatList, ScrollView } from "react-native";
+import {
+  Appbar,
+  Card,
+  FAB,
+  IconButton,
+  Portal,
+  Provider,
+} from "react-native-paper";
 import { FeedPostsCard } from "../../components/FeedPostsCard";
-import { useGetFeedPostsQuery, useVoteMutation } from "../../generated/graphql";
+import {
+  useGetFeedPostsQuery,
+  useMeQuery,
+  useVoteMutation,
+} from "../../generated/graphql";
 import { MainNavProps } from "../../utils/MainParamList";
 
 interface FeedScreenProps {}
 
 export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
-   
   const [voteMut] = useVoteMutation();
-  const [loadingState, setLoadingState] = useState<
-  "updoot-loading" | "downdoot-loading" | "not-loading"
->("not-loading");
+  const [loadingState, setLoadingState] =
+    useState<"updoot-loading" | "downdoot-loading" | "not-loading">(
+      "not-loading"
+    );
 
   const [state, setState] = useState({ open: false });
 
@@ -28,13 +39,20 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
     notifyOnNetworkStatusChange: true,
   });
 
+  const { data: userData } = useMeQuery();
+
   const LeftContent = (url: string) => (
-    <Image style={{ width: 50, height: 50 ,  borderRadius:25 }} source={{ uri: url }} />
+    <Image
+      style={{ width: 50, height: 50, borderRadius: 25 }}
+      source={{ uri: url }}
+    />
   );
 
   const RightContent = (spaceName: string) => (
-    <Text style={{marginBottom:10, marginRight:5}}>Space Name: {spaceName}</Text>
-  )
+    <Text style={{ marginBottom: 10, marginRight: 5 }}>
+      Space Name: {spaceName}
+    </Text>
+  );
 
   const renderPostCardItem = (item) => (
     <View style={{ flexDirection: "row" }}>
@@ -53,8 +71,8 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           <IconButton
             icon="chevron-triple-up"
             size={20}
-            color= {item.item.voteStatus === 1 ? 'green': 'black'}
-            onPress={ async () => {
+            color={item.item.voteStatus === 1 ? "green" : "black"}
+            onPress={async () => {
               if (item.item.voteStatus === 1) {
                 return;
               }
@@ -73,7 +91,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           <IconButton
             icon="chevron-triple-down"
             size={20}
-            color = {item.item.voteStatus === -1 ? 'red' : 'black'}
+            color={item.item.voteStatus === -1 ? "red" : "black"}
             onPress={async () => {
               if (item.item.voteStatus === -1) {
                 return;
@@ -110,11 +128,32 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
       {data == null ? (
         <Text>No Data</Text>
       ) : (
-        <FlatList
-          data={data?.getFeedPosts}
-          keyExtractor={(item) => item.postId}
-          renderItem={renderPostCardItem}
-        />
+        <ScrollView style={{  width: "100%" }}>
+          <Appbar.Header
+            style={{
+              backgroundColor: "white",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 30,
+            }}
+          >
+            <Image
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 25,
+                margin: 20,
+              }}
+              source={{ uri: userData?.me?.avatarUrl }}
+            />
+            <Text style={{fontSize: 20}}>{userData?.me?.studentId}</Text>
+          </Appbar.Header>
+          <FlatList
+            data={data?.getFeedPosts}
+            keyExtractor={(item) => item.postId}
+            renderItem={renderPostCardItem}
+          />
+        </ScrollView>
       )}
 
       <Provider>

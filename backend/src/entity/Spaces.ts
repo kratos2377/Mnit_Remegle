@@ -40,6 +40,7 @@ export class Spaces extends BaseEntity {
   @OneToMany(() => Post, (post) => post.space)
   posts: Post[];
 
+  
   @Column('text', { array: true, default: [] })
   bannedUserIds: string[];
 

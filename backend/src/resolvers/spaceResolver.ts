@@ -61,6 +61,18 @@ export class SpaceResolver {
     )) as User[];
     return users;
   }
+  @FieldResolver(() => [User])
+  async bannedUserIds(@Root() space: Spaces) {
+    const spaceAcc = (await Spaces.findOne({
+      where: {
+        spaceName: space.spaceName
+      }
+    })) as Spaces;
+    const users = (await User.findByIds(
+      spaceAcc.bannedUserIds as string[]
+    )) as User[];
+    return users;
+  }
 
   @Query(() => [Spaces], { nullable: true })
   async getSpaces(): Promise<Spaces[] | null> {
@@ -136,7 +148,7 @@ export class SpaceResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async followSpace(
-    @Arg('spaceName') spaceName: string,
+    @Arg('spaceId') spaceId: string,
     @Arg('studentId') studentId: string,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
@@ -147,7 +159,7 @@ export class SpaceResolver {
     })) as User;
 
     const space = (await Spaces.findOne({
-      where: { spaceName: spaceName }
+      where: { spaceId: spaceId }
     })) as Spaces;
 
     if (req.session.userId !== user.id) {
@@ -174,7 +186,7 @@ export class SpaceResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async unfollowSpace(
-    @Arg('spaceName') spaceName: string,
+    @Arg('spaceId') spaceId: string,
     @Arg('studentId') studentId: string,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
@@ -183,7 +195,7 @@ export class SpaceResolver {
     })) as User;
 
     const spaceS = (await Spaces.findOne({
-      where: { spaceName: spaceName }
+      where: { spaceId: spaceId }
     })) as Spaces;
 
     if (req.session.userId === spaceS.adminId) {
@@ -209,7 +221,7 @@ export class SpaceResolver {
       where: { postSpaceId: postSpaceId }
     })) as Post[];
 
-    return posts;
+    return posts.reverse();
   }
 
   @Mutation(() => SpaceResponse)
