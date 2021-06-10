@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, FlatList, ScrollView } from "react-native";
 import {
+  ActivityIndicator,
   Appbar,
   Button,
   Card,
+  Dialog,
   FAB,
   IconButton,
+  Paragraph,
   Portal,
   Provider,
 } from "react-native-paper";
 import { FeedPostsCard } from "../../components/FeedPostsCard";
 import {
+  useDeletePostMutation,
   useGetFeedPostsQuery,
   useMeQuery,
   useVoteMutation,
@@ -29,7 +33,15 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
 
   const [state, setState] = useState({ open: false });
   var userId: string = "";
+  const [postDeletingLoading ,setPostDeletingLoading]= useState(false)
+  const [postDeleteDialog , setPostDeleteDialog] = useState(false);
+  const [postDeleteSuccess , setPostDeleteSuccess] = useState(false);
+  const [postIdDelete , setpostIdDelete] = useState("")
+  const [postDelete] = useDeletePostMutation()
 
+
+
+  const hidePostDeleteDialog = () => setPostDeleteDialog(false)
 
 
   const onStateChange = ({ open }) => setState({ open });
@@ -58,6 +70,32 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
     getDetails();
   }, []);
 
+const deletePostHandler = async () => {
+
+  setPostDeletingLoading(true)
+  setPostDeleteDialog(false)
+
+
+  const response = await postDelete({
+    variables:  {
+      postId: postIdDelete
+    }
+  })
+
+  if(!(response.data?.deletePost)){
+
+  }
+
+  setPostDeletingLoading(false)
+
+  setPostDeleteSuccess(true)
+
+  setInterval(() => {
+    setPostDeleteSuccess(false)
+  } , 1000)
+  
+}
+
   const LeftContent = (url: string) => (
     <Image
       style={{ width: 50, height: 50, borderRadius: 25 }}
@@ -73,11 +111,12 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
     spaceId: string,
     postId: string
   ) => (
-    <View>
+    <View style={{flexDirection: 'column'}}>
          {userId.toString == creatorId.toString ? (
         
 
-<IconButton
+  <View style={{flexDirection:'row'}}>
+    <IconButton
 style={{alignSelf: 'flex-end'}}
           icon="circle-edit-outline"
           onPress={() =>
@@ -88,10 +127,16 @@ style={{alignSelf: 'flex-end'}}
             })
           } 
           />
+
+          <IconButton icon="delete" onPress = {() =>  {
+            setpostIdDelete(postId)
+            setPostDeleteDialog(true)
+          }} />
+  </View>
       
       ) : null }
 
-      <Text style={{ marginBottom: 10, marginRight: 5 }}>
+      <Text style={{ marginTop: 5, marginRight: 5 }}>
         {<Button onPress={() => {
           navigation.navigate("GoToSpace" , {
             id: spaceId
@@ -214,6 +259,48 @@ style={{alignSelf: 'flex-end'}}
           />
         </ScrollView>
       )}
+
+      <Provider>
+      <Portal>
+        <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
+          <Dialog.Content>
+            <View style={{flexDirection: 'row'}}>
+           <ActivityIndicator />
+           <Text style={{marginLeft:5 , fontSize: 20}}>Deleting Post...</Text>
+            </View>
+          </Dialog.Content>
+        </Dialog>
+      </Portal>
+      </Provider>
+
+      <Provider>
+      <Portal>
+        <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
+          <Dialog.Title>Delete Post</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={deletePostHandler} color='blue'>Yes</Button>
+            <Button onPress={hidePostDeleteDialog} color='red'>No</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      </Provider>
+
+      <Provider>
+      <Portal>
+        <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
+          <Dialog.Title>Success</Dialog.Title>
+          <Dialog.Content>
+            <View style={{flexDirection: 'row' , padding:10}}>
+           <IconButton onPress={() => {}} icon="check" color="green" size={30} />
+           <Text style={{marginLeft:5 , fontSize: 20}}>Deleting Post...</Text>
+            </View>
+          </Dialog.Content>
+        </Dialog>
+      </Portal>
+      </Provider>
 
       <Provider>
         <Portal>

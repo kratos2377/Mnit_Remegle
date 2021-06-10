@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, FlatList } from "react-native";
-import { Appbar, Button, Card, IconButton } from "react-native-paper";
+import { View, Text, ScrollView, Image, FlatList, ActivityIndicator } from "react-native";
+import { Appbar, Button, Card, Dialog, IconButton, Paragraph, Portal, Provider } from "react-native-paper";
 import { SocialIcon } from "react-native-elements";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Linking from "expo-linking";
 import {
+  useDeletePostMutation,
   useGetAllUserPostsQuery,
   useMeQuery,
   useVoteMutation,
@@ -25,6 +26,13 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
     );
 
     var userId = ""
+    const [postDeletingLoading ,setPostDeletingLoading]= useState(false)
+  const [postDeleteDialog , setPostDeleteDialog] = useState(false);
+  const [postDeleteSuccess , setPostDeleteSuccess] = useState(false);
+  const [postIdDelete , setpostIdDelete] = useState("")
+  const [postDelete] = useDeletePostMutation()
+
+  const hidePostDeleteDialog = () => setPostDeleteDialog(false)
 
     useEffect(() => {
       const getDetails = async () => {
@@ -37,6 +45,33 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
   
       getDetails();
     }, []);
+
+    const deletePostHandler = async () => {
+
+      setPostDeletingLoading(true)
+      setPostDeleteDialog(false)
+    
+    
+      const response = await postDelete({
+        variables:  {
+          postId: postIdDelete
+        }
+      })
+    
+      if(!(response.data?.deletePost)){
+    
+      }
+    
+      setPostDeletingLoading(false)
+    
+      setPostDeleteSuccess(true)
+    
+      setInterval(() => {
+        setPostDeleteSuccess(false)
+      } , 1000)
+      
+    }
+    
   
     const LeftContent = (url: string) => (
       <Image
@@ -57,17 +92,24 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
            {userId.toString == creatorId.toString ? (
           
   
-  <IconButton
-  style={{alignSelf: 'flex-end'}}
-            icon="circle-edit-outline"
-            onPress={() =>
-              navigation.navigate("EditPostScreen", {
-                title: title,
-                content: content,
-                postId: postId
-              })
-            } 
-            />
+          <View style={{flexDirection:'row'}}>
+          <IconButton
+      style={{alignSelf: 'flex-end'}}
+                icon="circle-edit-outline"
+                onPress={() =>
+                  navigation.navigate("EditPostScreen", {
+                    title: title,
+                    content: content,
+                    postId: postId
+                  })
+                } 
+                />
+      
+                <IconButton icon="delete" onPress = {() =>  {
+                  setpostIdDelete(postId)
+                  setPostDeleteDialog(true)
+                }} />
+        </View>
         
         ) : null }
   
@@ -211,6 +253,48 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
           />
         </View>
       </ScrollView>
+
+      <Provider>
+      <Portal>
+        <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
+          <Dialog.Content>
+            <View style={{flexDirection: 'row'}}>
+           <ActivityIndicator />
+           <Text style={{marginLeft:5 , fontSize: 20}}>Deleting Post...</Text>
+            </View>
+          </Dialog.Content>
+        </Dialog>
+      </Portal>
+      </Provider>
+
+      <Provider>
+      <Portal>
+        <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
+          <Dialog.Title>Delete Post</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={deletePostHandler} color='blue'>Yes</Button>
+            <Button onPress={hidePostDeleteDialog} color='red'>No</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+      </Provider>
+
+      <Provider>
+      <Portal>
+        <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
+          <Dialog.Title>Success</Dialog.Title>
+          <Dialog.Content>
+            <View style={{flexDirection: 'row' , padding:10}}>
+           <IconButton onPress={() => {}} icon="check" color="green" size={30} />
+           <Text style={{marginLeft:5 , fontSize: 20}}>Deleting Post...</Text>
+            </View>
+          </Dialog.Content>
+        </Dialog>
+      </Portal>
+      </Provider>
     </View>
   );
 };
