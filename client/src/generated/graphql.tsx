@@ -363,7 +363,7 @@ export type UserandSpaces = {
 
 export type PostSnippetFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'postId' | 'creatorId' | 'points' | 'voteStatus' | 'title' | 'content' | 'createdAt' | 'spaceName'>
+  & Pick<Post, 'postId' | 'creatorId' | 'points' | 'voteStatus' | 'postSpaceId' | 'title' | 'content' | 'createdAt' | 'spaceName'>
   & { creator: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'avatarUrl' | 'studentId' | 'fullName' | 'username'>
@@ -385,9 +385,33 @@ export type RegularSpaceFragment = (
   & Pick<Spaces, 'spaceId' | 'adminId' | 'type' | 'spaceName' | 'spaceAvatarUrl' | 'spaceDescription'>
 );
 
+export type RegularSpaceBoolErrorFragment = (
+  { __typename?: 'FieldSpaceBoolError' }
+  & Pick<FieldSpaceBoolError, 'value' | 'message'>
+);
+
+export type RegularSpaceErrorFragment = (
+  { __typename?: 'FieldSpaceError' }
+  & Pick<FieldSpaceError, 'field' | 'message'>
+);
+
+export type RegularSpaceResponseFragment = (
+  { __typename?: 'SpaceResponse' }
+  & { errors?: Maybe<Array<(
+    { __typename?: 'FieldSpaceError' }
+    & RegularSpaceErrorFragment
+  )>>, boolResult?: Maybe<(
+    { __typename?: 'FieldSpaceBoolError' }
+    & RegularSpaceBoolErrorFragment
+  )>, space?: Maybe<(
+    { __typename?: 'Spaces' }
+    & RegularSpaceFragment
+  )> }
+);
+
 export type RegularUserFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'id' | 'username' | 'fullName' | 'email' | 'studentId' | 'gender' | 'avatarUrl' | 'instagramAcc' | 'twitterAcc' | 'isBanned' | 'bio'>
+  & Pick<User, 'id' | 'username' | 'fullName' | 'email' | 'studentId' | 'gender' | 'godAdmin' | 'avatarUrl' | 'instagramAcc' | 'twitterAcc' | 'isBanned' | 'bio'>
 );
 
 export type RegularUserResponseFragment = (
@@ -452,6 +476,29 @@ export type CreateSpaceMutationVariables = Exact<{
 export type CreateSpaceMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'createSpace'>
+);
+
+export type DeletePostMutationVariables = Exact<{
+  postId: Scalars['String'];
+}>;
+
+
+export type DeletePostMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deletePost'>
+);
+
+export type DeleteSpaceMutationVariables = Exact<{
+  spaceId: Scalars['String'];
+}>;
+
+
+export type DeleteSpaceMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteSpace: (
+    { __typename?: 'SpaceResponse' }
+    & RegularSpaceResponseFragment
+  ) }
 );
 
 export type FollowSpaceMutationVariables = Exact<{
@@ -530,6 +577,21 @@ export type UnFollowSpaceMutationVariables = Exact<{
 export type UnFollowSpaceMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'unfollowSpace'>
+);
+
+export type UpdatePostMutationVariables = Exact<{
+  postId: Scalars['String'];
+  title: Scalars['String'];
+  content: Scalars['String'];
+}>;
+
+
+export type UpdatePostMutation = (
+  { __typename?: 'Mutation' }
+  & { updatePost?: Maybe<(
+    { __typename?: 'Post' }
+    & PostSnippetFragment
+  )> }
 );
 
 export type UpdateUserMutationVariables = Exact<{
@@ -671,6 +733,7 @@ export const PostSnippetFragmentDoc = gql`
   creatorId
   points
   voteStatus
+  postSpaceId
   title
   content
   createdAt
@@ -684,6 +747,43 @@ export const PostSnippetFragmentDoc = gql`
   }
 }
     `;
+export const RegularSpaceErrorFragmentDoc = gql`
+    fragment RegularSpaceError on FieldSpaceError {
+  field
+  message
+}
+    `;
+export const RegularSpaceBoolErrorFragmentDoc = gql`
+    fragment RegularSpaceBoolError on FieldSpaceBoolError {
+  value
+  message
+}
+    `;
+export const RegularSpaceFragmentDoc = gql`
+    fragment RegularSpace on Spaces {
+  spaceId
+  adminId
+  type
+  spaceName
+  spaceAvatarUrl
+  spaceDescription
+}
+    `;
+export const RegularSpaceResponseFragmentDoc = gql`
+    fragment RegularSpaceResponse on SpaceResponse {
+  errors {
+    ...RegularSpaceError
+  }
+  boolResult {
+    ...RegularSpaceBoolError
+  }
+  space {
+    ...RegularSpace
+  }
+}
+    ${RegularSpaceErrorFragmentDoc}
+${RegularSpaceBoolErrorFragmentDoc}
+${RegularSpaceFragmentDoc}`;
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
   field
@@ -704,6 +804,7 @@ export const RegularUserFragmentDoc = gql`
   email
   studentId
   gender
+  godAdmin
   avatarUrl
   instagramAcc
   twitterAcc
@@ -726,16 +827,6 @@ export const RegularUserResponseFragmentDoc = gql`
     ${RegularErrorFragmentDoc}
 ${RegularBoolErrorFragmentDoc}
 ${RegularUserFragmentDoc}`;
-export const RegularSpaceFragmentDoc = gql`
-    fragment RegularSpace on Spaces {
-  spaceId
-  adminId
-  type
-  spaceName
-  spaceAvatarUrl
-  spaceDescription
-}
-    `;
 export const UserAndSpacesResponseFragmentDoc = gql`
     fragment UserAndSpacesResponse on UserandSpaces {
   users {
@@ -847,6 +938,70 @@ export function useCreateSpaceMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateSpaceMutationHookResult = ReturnType<typeof useCreateSpaceMutation>;
 export type CreateSpaceMutationResult = Apollo.MutationResult<CreateSpaceMutation>;
 export type CreateSpaceMutationOptions = Apollo.BaseMutationOptions<CreateSpaceMutation, CreateSpaceMutationVariables>;
+export const DeletePostDocument = gql`
+    mutation DeletePost($postId: String!) {
+  deletePost(postId: $postId)
+}
+    `;
+export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, DeletePostMutationVariables>;
+
+/**
+ * __useDeletePostMutation__
+ *
+ * To run a mutation, you first call `useDeletePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeletePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deletePostMutation, { data, loading, error }] = useDeletePostMutation({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useDeletePostMutation(baseOptions?: Apollo.MutationHookOptions<DeletePostMutation, DeletePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, options);
+      }
+export type DeletePostMutationHookResult = ReturnType<typeof useDeletePostMutation>;
+export type DeletePostMutationResult = Apollo.MutationResult<DeletePostMutation>;
+export type DeletePostMutationOptions = Apollo.BaseMutationOptions<DeletePostMutation, DeletePostMutationVariables>;
+export const DeleteSpaceDocument = gql`
+    mutation DeleteSpace($spaceId: String!) {
+  deleteSpace(spaceId: $spaceId) {
+    ...RegularSpaceResponse
+  }
+}
+    ${RegularSpaceResponseFragmentDoc}`;
+export type DeleteSpaceMutationFn = Apollo.MutationFunction<DeleteSpaceMutation, DeleteSpaceMutationVariables>;
+
+/**
+ * __useDeleteSpaceMutation__
+ *
+ * To run a mutation, you first call `useDeleteSpaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteSpaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteSpaceMutation, { data, loading, error }] = useDeleteSpaceMutation({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *   },
+ * });
+ */
+export function useDeleteSpaceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteSpaceMutation, DeleteSpaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteSpaceMutation, DeleteSpaceMutationVariables>(DeleteSpaceDocument, options);
+      }
+export type DeleteSpaceMutationHookResult = ReturnType<typeof useDeleteSpaceMutation>;
+export type DeleteSpaceMutationResult = Apollo.MutationResult<DeleteSpaceMutation>;
+export type DeleteSpaceMutationOptions = Apollo.BaseMutationOptions<DeleteSpaceMutation, DeleteSpaceMutationVariables>;
 export const FollowSpaceDocument = gql`
     mutation FollowSpace($spaceId: String!) {
   followSpace(spaceId: $spaceId)
@@ -1070,6 +1225,41 @@ export function useUnFollowSpaceMutation(baseOptions?: Apollo.MutationHookOption
 export type UnFollowSpaceMutationHookResult = ReturnType<typeof useUnFollowSpaceMutation>;
 export type UnFollowSpaceMutationResult = Apollo.MutationResult<UnFollowSpaceMutation>;
 export type UnFollowSpaceMutationOptions = Apollo.BaseMutationOptions<UnFollowSpaceMutation, UnFollowSpaceMutationVariables>;
+export const UpdatePostDocument = gql`
+    mutation UpdatePost($postId: String!, $title: String!, $content: String!) {
+  updatePost(postId: $postId, title: $title, content: $content) {
+    ...PostSnippet
+  }
+}
+    ${PostSnippetFragmentDoc}`;
+export type UpdatePostMutationFn = Apollo.MutationFunction<UpdatePostMutation, UpdatePostMutationVariables>;
+
+/**
+ * __useUpdatePostMutation__
+ *
+ * To run a mutation, you first call `useUpdatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updatePostMutation, { data, loading, error }] = useUpdatePostMutation({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *      title: // value for 'title'
+ *      content: // value for 'content'
+ *   },
+ * });
+ */
+export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<UpdatePostMutation, UpdatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdatePostMutation, UpdatePostMutationVariables>(UpdatePostDocument, options);
+      }
+export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
+export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
+export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
 export const UpdateUserDocument = gql`
     mutation UpdateUser($username: String!, $bio: String!, $twitterAcc: String!, $instagramAcc: String!) {
   updateUserDetails(

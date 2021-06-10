@@ -1,0 +1,4 @@
+fragment RegularSpaceError on FieldSpaceError {
+  field
+  message
+}

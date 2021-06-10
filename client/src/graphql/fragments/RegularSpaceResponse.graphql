@@ -1,8 +1,13 @@
-fragment RegularSpace on Spaces {
-    spaceId
-    adminId
-    type
-    spaceName
-    spaceAvatarUrl
-    spaceDescription
+fragment RegularSpaceResponse on SpaceResponse {
+  errors {
+    ...RegularSpaceError
+  }
+
+  boolResult {
+    ...RegularSpaceBoolError
+  }
+
+  space {
+    ...RegularSpace
+  }
 }

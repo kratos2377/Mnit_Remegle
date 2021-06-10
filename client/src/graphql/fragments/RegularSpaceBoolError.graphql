@@ -1,0 +1,4 @@
+fragment RegularSpaceBoolError on FieldSpaceBoolError {
+  value
+  message
+}

@@ -1,0 +1,5 @@
+mutation DeleteSpace($spaceId: String!){
+    deleteSpace(spaceId: $spaceId){
+        ...RegularSpaceResponse
+    }
+}

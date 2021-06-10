@@ -22,6 +22,7 @@ import { YourSpaces } from "./extra-screens/YourSpaces";
 import { UpdateScreen } from "./extra-screens/UpdateScreen";
 import { GoToProfileScreen } from "./MainScreensStack/GoToProfileScreen";
 import { GoToSpaceScreen } from "./MainScreensStack/GoToSpaceScreen";
+import { EditPostScreen } from "./extra-screens/EditPostScreen";
 
 export default function HomeScreen() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -107,6 +108,11 @@ export default function HomeScreen() {
         <MainStack.Screen
           name="GoToSpace"
           component={GoToSpaceScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="EditPostScreen"
+          component={EditPostScreen}
           options={{ headerShown: false }}
         />
       </MainStack.Navigator>

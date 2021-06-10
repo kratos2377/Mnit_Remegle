@@ -13,7 +13,6 @@ import { MainNavProps } from "../../utils/MainParamList";
 interface GoToProfileScreenProps {}
 
 export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfile">) => {
-    console.log(route?.params?.id)
 
   const { data, error , variables } = useGetPostsByUserIdQuery({
     variables: {

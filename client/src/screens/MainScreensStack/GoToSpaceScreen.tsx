@@ -15,6 +15,7 @@ import {
 } from "react-native-paper";
 import {
   useCreateSpaceMutation,
+  useDeleteSpaceMutation,
   useFollowSpaceMutation,
   useGetPostsOfSpacesQuery,
   useGetSpaceDetailsQuery,
@@ -33,10 +34,18 @@ export const GoToSpaceScreen = ({
   route,
 }: MainNavProps<"GoToSpace">) => {
   var userId: string = "";
+  
+  const [spaceDeleteLoading , setSpaceDeleteLoading] = useState(false);
+  
+  const [deleteSpaceDialog , setDeleteSpaceDialog] = useState(false)
+  const [spaceDeleteName , setSpaceDeleteName] = useState("")
+  const [spaceDeleteId , setSpaceDeleteId] = useState("")
+  const [successDelete , setSuccessDelete] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [following, setFollowing] = useState(false);
-  const [followSpace] = useFollowSpaceMutation()
-  const [unFollowSpace] = useUnFollowSpaceMutation()
+  const [followSpace] = useFollowSpaceMutation();
+  const [unFollowSpace] = useUnFollowSpaceMutation();
+  const [deleteSpace] = useDeleteSpaceMutation()
   const { data: postData } = useGetPostsOfSpacesQuery({
     variables: {
       postSpaceId: route?.params.id,
@@ -48,16 +57,44 @@ export const GoToSpaceScreen = ({
       spaceId: route?.params.id,
     },
   });
-  
-  const [snackVisible , setSnackVisible ] = useState(false)
+
+const hideSpaceDialog = () => setDeleteSpaceDialog(false)
+
+  const [snackVisible, setSnackVisible] = useState(false);
   const [display, setDisplay] = useState<"Post" | "User">("Post");
   const [voteMut] = useVoteMutation();
   const [loadingState, setLoadingState] =
     useState<"updoot-loading" | "downdoot-loading" | "not-loading">(
       "not-loading"
     );
+  var userId = "";
 
-  const onDismissSnackBar = () => setSnackVisible(false)
+  const deleteSpaceHandler = async () => {
+    setSpaceDeleteLoading(true)
+   const response = await deleteSpace({
+     variables: {
+       spaceId: data?.getSpaceDetails?.spaceId
+     }
+   })
+  
+   setSpaceDeleteLoading(false)
+
+   if(!(response.data?.deleteSpace?.boolResult?.value)){
+
+   }
+
+   setSuccessDelete(true)
+
+   setInterval(() => {
+    setSuccessDelete(false)
+    navigation.pop()
+   } ,  1000)
+
+   
+
+ }
+
+  const onDismissSnackBar = () => setSnackVisible(false);
 
   const RightContent = (followers: number) => <Text>Users: {followers}</Text>;
 
@@ -72,6 +109,7 @@ export const GoToSpaceScreen = ({
     const getDetails = async () => {
       const userData = await AsyncStorage.getItem("userData");
       const newData = JSON.parse(userData);
+      userId = newData.id;
       for (var i = 0; i < data?.getSpaceDetails?.followingIds?.length; i++) {
         if (data?.getSpaceDetails.followingIds[i].id == newData.id) {
           setFollowing(true);
@@ -84,29 +122,54 @@ export const GoToSpaceScreen = ({
     getDetails();
   }, [data]);
 
-  const renderUserItem = (item) => (
-    <TouchableOpacity
-      onPress={() =>
-        navigation.navigate("GoToProfile", {
-          id: item.item.id,
-        })
-      }
-    >
-      <View style={{ margin: 10 }}>
-        <ListItem key={item.item.id} bottomDivider>
-          <Avatar source={{ uri: item.item.avatarUrl }} />
-          <ListItem.Content>
-            <ListItem.Title style={{ color: "black" }}>
-              {item.item.fullName}
-            </ListItem.Title>
-            <ListItem.Subtitle>{item.item.studentId}</ListItem.Subtitle>
-          </ListItem.Content>
-        </ListItem>
-      </View>
-    </TouchableOpacity>
+  const LeftContentPost = (url: string) => (
+    <Image
+      style={{ width: 50, height: 50, borderRadius: 25 }}
+      source={{ uri: url }}
+    />
   );
 
-  const renderPostItem = (item) => (
+  const RightContentPost = (
+    spaceName: string,
+    creatorId: string,
+    title: string,
+    content: string,
+    spaceId: string,
+    postId: string,
+  ) => (
+    <View>
+      {userId.toString == creatorId.toString ? (
+        <IconButton
+          style={{ alignSelf: "flex-end" }}
+          icon="circle-edit-outline"
+          onPress={() =>
+            navigation.navigate("EditPostScreen", {
+              title: title,
+              content: content,
+              postId: postId
+            })
+          }
+        />
+      ) : null}
+
+      <Text style={{ marginBottom: 10, marginRight: 5 }}>
+         
+        {
+          <Button
+            onPress={() => {
+              navigation.navigate("GoToSpace", {
+                id: spaceId,
+              });
+            }}
+          >
+            {spaceName}
+          </Button>
+        }
+      </Text>
+    </View>
+  );
+
+  const renderPostCardItem = (item) => (
     <View style={{ flexDirection: "row" }}>
       <Card
         style={{
@@ -121,7 +184,7 @@ export const GoToSpaceScreen = ({
           }}
         >
           <IconButton
-            icon="chevron-up-box-outline"
+            icon="chevron-triple-up"
             size={20}
             color={item.item.voteStatus === 1 ? "green" : "black"}
             onPress={async () => {
@@ -141,7 +204,7 @@ export const GoToSpaceScreen = ({
 
           <Text>{item.item.points}</Text>
           <IconButton
-            icon="chevron-down-box-outline"
+            icon="chevron-triple-down"
             size={20}
             color={item.item.voteStatus === -1 ? "red" : "black"}
             onPress={async () => {
@@ -165,7 +228,17 @@ export const GoToSpaceScreen = ({
         <Card.Title
           title={item.item.creator.fullName}
           subtitle={item.item.creator.studentId}
-          left={() => LeftContent(item.item.creator.avatarUrl)}
+          left={() => LeftContentPost(item.item.creator.avatarUrl)}
+          right={() =>
+            RightContentPost(
+              item.item.spaceName,
+              item?.item?.creatorId,
+              item.item.title,
+              item.item.content,
+              item.item.postSpaceId,
+              item.item.postId,
+            )
+          }
         />
 
         <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
@@ -174,16 +247,38 @@ export const GoToSpaceScreen = ({
     </View>
   );
 
-  const unFollow = async() => {
+  const renderUserItem = (item) => (
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("GoToProfile", {
+          id: item.item.id,
+        })
+      }
+    >
+      <View style={{ margin: 10 }}>
+        <ListItem key={item.item.id} bottomDivider>
+          <Avatar source={{ uri: item.item.avatarUrl }} />
+          <ListItem.Content>
+            <ListItem.Title style={{ color: "black" }}>
+              {item.item.fullName}
+            </ListItem.Title>
+            <ListItem.Subtitle>{item.item.studentId}</ListItem.Subtitle>
+          </ListItem.Content>
+        </ListItem>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const unFollow = async () => {
     const response = await unFollowSpace({
       variables: {
-        spaceId: data?.getSpaceDetails.spaceId
-      }
-    })
-    if(response?.data?.unfollowSpace){
-      setFollowing(false)
-    } else{
-       setSnackVisible(true)
+        spaceId: data?.getSpaceDetails.spaceId,
+      },
+    });
+    if (response?.data?.unfollowSpace) {
+      setFollowing(false);
+    } else {
+      setSnackVisible(true);
     }
     console.log(response);
   };
@@ -191,15 +286,14 @@ export const GoToSpaceScreen = ({
   const Follow = async () => {
     const response = await followSpace({
       variables: {
-        spaceId: data?.getSpaceDetails.spaceId
-      }
-    })
-  
-    if(response?.data?.unfollowSpace){
+        spaceId: data?.getSpaceDetails.spaceId,
+      },
+    });
 
+    if (response?.data?.unfollowSpace) {
       setFollowing(true);
     } else {
-      setSnackVisible(true)
+      setSnackVisible(true);
     }
     console.log(response);
   };
@@ -213,9 +307,18 @@ export const GoToSpaceScreen = ({
           <Appbar.Header style={{ backgroundColor: "white" }}>
             <Appbar.BackAction onPress={() => navigation.pop()} />
             <Appbar.Content title={data?.getSpaceDetails.spaceName} />
-            <Appbar.Action icon="postage-stamp" onPress={() => navigation.navigate("CreatePost" , {
-              spaceName: data?.getSpaceDetails.spaceName
-            })} />
+            <Appbar.Action
+              icon="postage-stamp"
+              onPress={() =>
+                navigation.navigate("CreatePost", {
+                  spaceName: data?.getSpaceDetails.spaceName,
+                })
+              }
+            />
+            <Appbar.Action
+              icon="delete"
+              onPress={deleteSpaceHandler}
+            />
             {following ? (
               <Button mode="text" color="red" onPress={unFollow}>
                 Unfollow
@@ -261,7 +364,7 @@ export const GoToSpaceScreen = ({
               numColumns={1}
               data={postData?.getPostsofSpace}
               keyExtractor={(item) => item.postId}
-              renderItem={renderPostItem}
+              renderItem={renderPostCardItem}
             />
           ) : (
             <FlatList
@@ -276,18 +379,61 @@ export const GoToSpaceScreen = ({
 
 <Provider>
 <Portal>
-        <Dialog visible={snackVisible} onDismiss={onDismissSnackBar}>
-          <Dialog.Title>Error..!</Dialog.Title>
+        <Dialog visible={deleteSpaceDialog} onDismiss={hideSpaceDialog}>
+          <Dialog.Title>Delete Space</Dialog.Title>
           <Dialog.Content>
-            <Paragraph>You Are The Admin of the Space. You Cannot Leave This Space</Paragraph>
+            <Paragraph>Are You Sure You Want To Delete {spaceDeleteName} Space</Paragraph>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={onDismissSnackBar}>Ok</Button>
+            <Button onPress={deleteSpaceHandler}>Yes</Button>
+            <Button onPress={hideSpaceDialog}>No</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>
-</Provider>
-            
+  </Provider>
+
+<Provider>
+<Portal>
+        <Dialog visible={spaceDeleteLoading} onDismiss={() => {}}>
+          <Dialog.Content>
+            <View style={{flexDirection: 'row'}}>
+              <ActivityIndicator/>
+              <Text style={{marginLeft: 5 , fontSize: 20}}>Deleting Space...</Text>
+            </View>
+          </Dialog.Content>
+        </Dialog>
+      </Portal>
+  </Provider>
+
+<Provider>
+<Portal>
+        <Dialog visible={successDelete} onDismiss={() => {}}>
+          <Dialog.Content>
+            <View style={{flexDirection: 'row'}}>
+              <IconButton onPress={() => {}} icon="check" color='green' />
+              <Text style={{marginLeft: 5 , fontSize: 20}}>Space Delete Successfully</Text>
+            </View>
+          </Dialog.Content>
+        </Dialog>
+      </Portal>
+  </Provider>
+
+
+      <Provider>
+        <Portal>
+          <Dialog visible={snackVisible} onDismiss={onDismissSnackBar}>
+            <Dialog.Title>Error..!</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph>
+                You Are The Admin of the Space. You Cannot Leave This Space
+              </Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={onDismissSnackBar}>Ok</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </Provider>
     </View>
   );
 };

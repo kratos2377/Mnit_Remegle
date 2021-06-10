@@ -13,6 +13,7 @@ export type MainParamList = {
   UpdateScreen: undefined
   GoToProfile: undefined,
   GoToSpace: undefined;
+  EditPostScreen: undefined;
 };
 
 export type MainNavProps<T extends keyof MainParamList> = {

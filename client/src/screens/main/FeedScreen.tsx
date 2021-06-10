@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, FlatList, ScrollView } from "react-native";
 import {
   Appbar,
+  Button,
   Card,
   FAB,
   IconButton,
@@ -14,6 +15,7 @@ import {
   useMeQuery,
   useVoteMutation,
 } from "../../generated/graphql";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MainNavProps } from "../../utils/MainParamList";
 
 interface FeedScreenProps {}
@@ -26,6 +28,9 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
     );
 
   const [state, setState] = useState({ open: false });
+  var userId: string = "";
+
+
 
   const onStateChange = ({ open }) => setState({ open });
 
@@ -41,6 +46,18 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
 
   const { data: userData } = useMeQuery();
 
+  useEffect(() => {
+    const getDetails = async () => {
+      const userData = await AsyncStorage.getItem("userData");
+
+      const newData = JSON.parse(userData);
+
+      userId = newData.id;
+    };
+
+    getDetails();
+  }, []);
+
   const LeftContent = (url: string) => (
     <Image
       style={{ width: 50, height: 50, borderRadius: 25 }}
@@ -48,10 +65,40 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
     />
   );
 
-  const RightContent = (spaceName: string) => (
-    <Text style={{ marginBottom: 10, marginRight: 5 }}>
-      Space Name: {spaceName}
-    </Text>
+  const RightContent = (
+    spaceName: string,
+    creatorId: string,
+    title: string,
+    content: string,
+    spaceId: string,
+    postId: string
+  ) => (
+    <View>
+         {userId.toString == creatorId.toString ? (
+        
+
+<IconButton
+style={{alignSelf: 'flex-end'}}
+          icon="circle-edit-outline"
+          onPress={() =>
+            navigation.navigate("EditPostScreen", {
+              title: title,
+              content: content,
+              postId: postId
+            })
+          } 
+          />
+      
+      ) : null }
+
+      <Text style={{ marginBottom: 10, marginRight: 5 }}>
+        {<Button onPress={() => {
+          navigation.navigate("GoToSpace" , {
+            id: spaceId
+          })
+        }}>{spaceName}</Button>}
+      </Text>
+    </View>
   );
 
   const renderPostCardItem = (item) => (
@@ -114,12 +161,24 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           title={item.item.creator.fullName}
           subtitle={item.item.creator.studentId}
           left={() => LeftContent(item.item.creator.avatarUrl)}
-          right={() => RightContent(item.item.spaceName)}
+          right={() =>
+            RightContent(
+              item.item.spaceName,
+              item?.item?.creatorId,
+              item.item.title,
+              item.item.content,
+              item.item.postSpaceId,
+              item.item.postId
+            )
+          }
         />
 
         <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
         <Text style={{ color: "black" }}>{item.item.content}</Text>
       </Card>
+    
+    
+     
     </View>
   );
 
@@ -128,7 +187,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
       {data == null ? (
         <Text>No Data</Text>
       ) : (
-        <ScrollView style={{  width: "100%" }}>
+        <ScrollView style={{ width: "100%" }}>
           <Appbar.Header
             style={{
               backgroundColor: "white",
@@ -146,7 +205,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
               }}
               source={{ uri: userData?.me?.avatarUrl }}
             />
-            <Text style={{fontSize: 20}}>{userData?.me?.studentId}</Text>
+            <Text style={{ fontSize: 20 }}>{userData?.me?.studentId}</Text>
           </Appbar.Header>
           <FlatList
             data={data?.getFeedPosts}

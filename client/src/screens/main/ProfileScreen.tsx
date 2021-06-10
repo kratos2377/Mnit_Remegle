@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Image, FlatList } from "react-native";
-import { Appbar, Card, IconButton } from "react-native-paper";
+import { Appbar, Button, Card, IconButton } from "react-native-paper";
 import { SocialIcon } from "react-native-elements";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Linking from "expo-linking";
@@ -10,6 +10,7 @@ import {
   useVoteMutation,
 } from "../../generated/graphql";
 import { MainNavProps } from "../../utils/MainParamList";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ProfileScreenProps {}
 
@@ -23,80 +24,143 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
       "not-loading"
     );
 
-  const LeftContent = (url: string) => (
-    <Image
-      style={{ width: 50, height: 50, borderRadius: 25 }}
-      source={{ uri: url }}
-    />
-  );
+    var userId = ""
 
-  const renderPostItem = (item) => (
-    <View style={{ flexDirection: "row" }}>
-      <Card
-        style={{
-          marginVertical: 10,
-        }}
-      >
-        <View
+    useEffect(() => {
+      const getDetails = async () => {
+        const userData = await AsyncStorage.getItem("userData");
+  
+        const newData = JSON.parse(userData);
+  
+        userId = newData.id;
+      };
+  
+      getDetails();
+    }, []);
+  
+    const LeftContent = (url: string) => (
+      <Image
+        style={{ width: 50, height: 50, borderRadius: 25 }}
+        source={{ uri: url }}
+      />
+    );
+  
+    const RightContent = (
+      spaceName: string,
+      creatorId: string,
+      title: string,
+      content: string,
+      spaceId: string,
+      postId: string,
+    ) => (
+      <View>
+           {userId.toString == creatorId.toString ? (
+          
+  
+  <IconButton
+  style={{alignSelf: 'flex-end'}}
+            icon="circle-edit-outline"
+            onPress={() =>
+              navigation.navigate("EditPostScreen", {
+                title: title,
+                content: content,
+                postId: postId
+              })
+            } 
+            />
+        
+        ) : null }
+  
+        <Text style={{ marginBottom: 10, marginRight: 5 }}>
+          {<Button onPress={() => {
+            navigation.navigate("GoToSpace" , {
+              id: spaceId
+            })
+          }}>{spaceName}</Button>}
+        </Text>
+      </View>
+    );
+  
+    const renderPostCardItem = (item) => (
+      <View style={{ flexDirection: "row" }}>
+        <Card
           style={{
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            marginVertical: 10,
           }}
         >
-          <IconButton
-            icon="chevron-up-box-outline"
-            size={20}
-            color={item.item.voteStatus === 1 ? "green" : "black"}
-            onPress={async () => {
-              if (item.item.voteStatus === 1) {
-                return;
-              }
-              setLoadingState("updoot-loading");
-              await voteMut({
-                variables: {
-                  postId: item.item.postId,
-                  value: 1,
-                },
-              });
-              setLoadingState("not-loading");
+          <View
+            style={{
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
             }}
+          >
+            <IconButton
+              icon="chevron-triple-up"
+              size={20}
+              color={item.item.voteStatus === 1 ? "green" : "black"}
+              onPress={async () => {
+                if (item.item.voteStatus === 1) {
+                  return;
+                }
+                setLoadingState("updoot-loading");
+                await voteMut({
+                  variables: {
+                    postId: item.item.postId,
+                    value: 1,
+                  },
+                });
+                setLoadingState("not-loading");
+              }}
+            />
+  
+            <Text>{item.item.points}</Text>
+            <IconButton
+              icon="chevron-triple-down"
+              size={20}
+              color={item.item.voteStatus === -1 ? "red" : "black"}
+              onPress={async () => {
+                if (item.item.voteStatus === -1) {
+                  return;
+                }
+                setLoadingState("downdoot-loading");
+                await voteMut({
+                  variables: {
+                    postId: item.item.postId,
+                    value: -1,
+                  },
+                });
+                setLoadingState("not-loading");
+              }}
+            />
+          </View>
+        </Card>
+  
+        <Card style={{ marginVertical: 10, flex: 1, marginHorizontal: 5 }}>
+          <Card.Title
+            title={item.item.creator.fullName}
+            subtitle={item.item.creator.studentId}
+            left={() => LeftContent(item.item.creator.avatarUrl)}
+            right={() =>
+              RightContent(
+                item.item.spaceName,
+                item?.item?.creatorId,
+                item.item.title,
+                item.item.content,
+                item.item.postSpaceId,
+                item.item.postId,
+              )
+            }
           />
-
-          <Text>{item.item.points}</Text>
-          <IconButton
-            icon="chevron-down-box-outline"
-            size={20}
-            color={item.item.voteStatus === -1 ? "red" : "black"}
-            onPress={async () => {
-              if (item.item.voteStatus === -1) {
-                return;
-              }
-              setLoadingState("downdoot-loading");
-              await voteMut({
-                variables: {
-                  postId: item.item.postId,
-                  value: -1,
-                },
-              });
-              setLoadingState("not-loading");
-            }}
-          />
-        </View>
-      </Card>
-
-      <Card style={{ marginVertical: 10, flex: 1, marginHorizontal: 5 }}>
-        <Card.Title
-          title={item.item.creator.fullName}
-          subtitle={item.item.creator.studentId}
-          left={() => LeftContent(item.item.creator.avatarUrl)}
-        />
-
-        <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
-        <Text style={{ color: "black" }}>{item.item.content}</Text>
-      </Card>
-    </View>
-  );
+  
+          <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
+          <Text style={{ color: "black" }}>{item.item.content}</Text>
+        </Card>
+      
+      
+       
+      </View>
+    );
 
   return (
     <View style={{ flex: 1, width: "100%" }}>
@@ -143,7 +207,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
           <FlatList
             data={data?.getAllUserPosts}
             keyExtractor={(item) => item.postId}
-            renderItem={renderPostItem}
+            renderItem={renderPostCardItem}
           />
         </View>
       </ScrollView>

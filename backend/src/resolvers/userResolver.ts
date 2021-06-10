@@ -85,11 +85,9 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   @UseMiddleware(isAuth)
-  async studentDetails(
-    @Arg('id') id: string
-  ): Promise<User | null> {
+  async studentDetails(@Arg('id') id: string): Promise<User | null> {
     const user = await User.findOne({ where: { id: id } });
-    console.log(user)
+    console.log(user);
 
     if (!user) {
       return null;
@@ -121,6 +119,19 @@ export class UserResolver {
     const valid = await MnitStudent.findOne({
       where: { studentId: studentId }
     });
+
+    const user = (await User.findOne({
+      where: { studentId: studentId }
+    })) as User;
+
+    if (user) {
+      return {
+        boolResult: {
+          value: false,
+          message: 'user already registered'
+        }
+      };
+    }
 
     if (!valid) {
       return {
@@ -156,13 +167,11 @@ export class UserResolver {
       where: { studentId: studentId }
     });
 
-    if (mnitkaBacha) {
-      return false;
+    if (!mnitkaBacha) {
+      await MnitStudent.create({
+        studentId: studentId.toLowerCase()
+      }).save();
     }
-
-    await MnitStudent.create({
-      studentId: studentId.toLowerCase()
-    }).save();
 
     let studentLow = studentId.toLowerCase();
 
@@ -215,10 +224,6 @@ export class UserResolver {
 
     const hashedPassword = await argon2.hash(password);
     let user;
-
-    if(studentId.toLowerCase() == '2019ucp1403'){
-
-    }
 
     user = await User.create({
       studentId: studentId.toLowerCase(),

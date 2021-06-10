@@ -3,6 +3,7 @@ fragment PostSnippet on Post {
   creatorId
   points
   voteStatus
+  postSpaceId
   title
   content
   createdAt

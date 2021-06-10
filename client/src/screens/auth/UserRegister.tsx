@@ -2,40 +2,100 @@ import React ,{useState} from 'react'
 import { View , StyleSheet , Text, Button, Picker } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input } from 'react-native-elements/dist/input/Input';
-import { Colors, IconButton } from 'react-native-paper';
+import { Colors, Dialog, IconButton, Portal, Provider } from 'react-native-paper';
+import MenuItem from 'react-native-paper/lib/typescript/components/Menu/MenuItem';
 import { useRegisterMutation } from '../../generated/graphql';
 import { AuthNavProps } from '../../utils/AuthParamList';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
 export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>) => {
    const {fn} = route.params;
-   const [name , setName] = useState("")
+   const [firstName , setFirstName] = useState("")
+   const [lastName , setLastName] = useState("")
    const [username , setUserName] = useState("")
    const [password , setPassword] = useState("")
    const [confirmpassword , setConfirmPassword] = useState("")
    const [showPassword , setShowPassword] = useState(true)
    const [showConfirmPassword , setShowConfirmPassword] = useState(true)
-   const [items, setItems] = useState([
-    {label: 'Male', value: 'Male'},
-    {label: 'Female', value: 'Female'}
-  ]);
-  const [open, setOpen] = useState(false);
-  const [gender, setGender] = useState(null);
+  const [visible , setVisible] = useState(false)
+  const [error ,setError] = useState("")
   const [selectedValue, setSelectedValue] = useState<"Choose Gender" | "Male" | "Female">("Choose Gender");
 
   const [register] = useRegisterMutation();
 
+  const handleRegister = async () => {
+     if(lastName == "" || firstName == "" || password == "" || username == "" || confirmpassword=="" || selectedValue == "Choose Gender"){
+       setVisible(true)
+       setError("All Fields Are Necesarry")
+       return;
+     }
+
+     if(password.length < 8){
+       setVisible(true)
+       setError("Password's Length Must Be Greater Than 8")
+       return;
+     }
+
+
+     if(password != confirmpassword){
+       setVisible(true)
+       setError("Passwords Don't Match")
+       return;
+     }
+     var email: string = `${route?.params?.mnitId.toLowerCase()}`+ "@mnit.ac.in"
+     const values = {
+      studentId:  `${route?.params?.mnitId.toLowerCase()}`,
+      firstName: firstName,
+      lastName: lastName,
+      email : email,
+      password : password,
+      gender: selectedValue,
+      username: username,
+     }
+
+     const response = await register({
+       variables: { data: values}
+     })
+
+     if(!(response.data?.registerUser.boolResult?.value)){
+       console.log("Error")
+       return;
+     }
+
+     const user = response.data.registerUser.user;
+
+     AsyncStorage.setItem(
+      "userData",
+      JSON.stringify({
+        id: user?.id,
+        studentId: user?.studentId,
+        gender: user?.gender,
+        isBanned: user?.isBanned,
+        godAdmin: user?.godAdmin
+      })
+    );
+
+   fn()
+
+     
+  }
+
         return (
             <View>
                 <View>
-                 <Text>Mnit ID:- 2019ucp1403</Text>
-                 <Text>Email:- 2019ucp1403@mnit.ac.in</Text>
+                 <Text>Mnit ID:- {route.params.mnitId}</Text>
+                 <Text>Email:-  {route.params.mnitId}@mnit.ac.in</Text>
                 </View>
                <View>
-               <Input placeholder ="Name" 
-               onChangeText={(value) => setName(value)}
-               value={name}
+               <Input placeholder ="First Name" 
+               onChangeText={(value) => setFirstName(value)}
+               value={firstName}
+               />
+               <Input placeholder ="Last Name" 
+               onChangeText={(value) => setLastName(value)}
+               value={lastName}
                />
                 <Input placeholder ="Username" 
                onChangeText={(value) => setUserName(value)}
@@ -90,8 +150,23 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
                </View>
 
                <View style={{margin: 20}}>
-               <Button  title="Register" onPress={() => console.log("Register")}/>
+               <Button  title="Register" onPress={handleRegister}/>
                </View>
+               <Provider>
+        <Portal>
+          <Dialog visible={visible} onDismiss={hideDialog}>
+            <Dialog.Title>Error</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph>
+                {error}
+              </Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button title="Ok" onPress={hideDialog} />
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </Provider>
             </View>
         );
 }

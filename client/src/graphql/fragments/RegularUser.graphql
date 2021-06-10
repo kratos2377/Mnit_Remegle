@@ -5,6 +5,7 @@ fragment RegularUser on User {
   email
   studentId
   gender
+  godAdmin
   avatarUrl
   instagramAcc
   twitterAcc
