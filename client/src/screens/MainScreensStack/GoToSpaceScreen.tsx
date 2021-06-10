@@ -8,11 +8,17 @@ import {
   Paragraph,
   IconButton,
   ActivityIndicator,
+  Snackbar,
+  Portal,
+  Dialog,
+  Provider,
 } from "react-native-paper";
 import {
   useCreateSpaceMutation,
+  useFollowSpaceMutation,
   useGetPostsOfSpacesQuery,
   useGetSpaceDetailsQuery,
+  useUnFollowSpaceMutation,
   useVoteMutation,
 } from "../../generated/graphql";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -29,7 +35,8 @@ export const GoToSpaceScreen = ({
   var userId: string = "";
   const [pageLoading, setPageLoading] = useState(true);
   const [following, setFollowing] = useState(false);
-  const [createPost] = useCreateSpaceMutation()
+  const [followSpace] = useFollowSpaceMutation()
+  const [unFollowSpace] = useUnFollowSpaceMutation()
   const { data: postData } = useGetPostsOfSpacesQuery({
     variables: {
       postSpaceId: route?.params.id,
@@ -41,13 +48,16 @@ export const GoToSpaceScreen = ({
       spaceId: route?.params.id,
     },
   });
-
+  
+  const [snackVisible , setSnackVisible ] = useState(false)
   const [display, setDisplay] = useState<"Post" | "User">("Post");
   const [voteMut] = useVoteMutation();
   const [loadingState, setLoadingState] =
     useState<"updoot-loading" | "downdoot-loading" | "not-loading">(
       "not-loading"
     );
+
+  const onDismissSnackBar = () => setSnackVisible(false)
 
   const RightContent = (followers: number) => <Text>Users: {followers}</Text>;
 
@@ -164,14 +174,34 @@ export const GoToSpaceScreen = ({
     </View>
   );
 
-  const unFollow = () => {
-    setFollowing(false);
-    console.log("Unfollow Space");
+  const unFollow = async() => {
+    const response = await unFollowSpace({
+      variables: {
+        spaceId: data?.getSpaceDetails.spaceId
+      }
+    })
+    if(response?.data?.unfollowSpace){
+      setFollowing(false)
+    } else{
+       setSnackVisible(true)
+    }
+    console.log(response);
   };
 
-  const Follow = () => {
-    setFollowing(true);
-    console.log("Follow Space");
+  const Follow = async () => {
+    const response = await followSpace({
+      variables: {
+        spaceId: data?.getSpaceDetails.spaceId
+      }
+    })
+  
+    if(response?.data?.unfollowSpace){
+
+      setFollowing(true);
+    } else {
+      setSnackVisible(true)
+    }
+    console.log(response);
   };
 
   return (
@@ -220,11 +250,9 @@ export const GoToSpaceScreen = ({
             }}
           >
             <Button icon="postage-stamp" onPress={() => setDisplay("Post")}>
-              {" "}
               Spaces
             </Button>
             <Button icon="account" onPress={() => setDisplay("User")}>
-              {" "}
               Users
             </Button>
           </View>
@@ -245,6 +273,21 @@ export const GoToSpaceScreen = ({
           )}
         </View>
       )}
+
+<Provider>
+<Portal>
+        <Dialog visible={snackVisible} onDismiss={onDismissSnackBar}>
+          <Dialog.Title>Error..!</Dialog.Title>
+          <Dialog.Content>
+            <Paragraph>You Are The Admin of the Space. You Cannot Leave This Space</Paragraph>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={onDismissSnackBar}>Ok</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+</Provider>
+            
     </View>
   );
 };

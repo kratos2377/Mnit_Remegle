@@ -110,14 +110,12 @@ export type MutationCreateSpaceArgs = {
 
 
 export type MutationFollowSpaceArgs = {
-  studentId: Scalars['String'];
-  spaceName: Scalars['String'];
+  spaceId: Scalars['String'];
 };
 
 
 export type MutationUnfollowSpaceArgs = {
-  studentId: Scalars['String'];
-  spaceName: Scalars['String'];
+  spaceId: Scalars['String'];
 };
 
 
@@ -312,7 +310,7 @@ export type SpaceResponse = {
   __typename?: 'SpaceResponse';
   errors?: Maybe<Array<FieldSpaceError>>;
   boolResult?: Maybe<FieldSpaceBoolError>;
-  sapce?: Maybe<Spaces>;
+  space?: Maybe<Spaces>;
 };
 
 export type Spaces = {
@@ -417,6 +415,19 @@ export type UserAndSpacesResponseFragment = (
   )>> }
 );
 
+export type ConfirmUserCheckMutationVariables = Exact<{
+  studentId: Scalars['String'];
+}>;
+
+
+export type ConfirmUserCheckMutation = (
+  { __typename?: 'Mutation' }
+  & { confirmUserCheck: (
+    { __typename?: 'UserResponse' }
+    & RegularUserResponseFragment
+  ) }
+);
+
 export type CreatePostsMutationVariables = Exact<{
   title: Scalars['String'];
   content: Scalars['String'];
@@ -441,6 +452,16 @@ export type CreateSpaceMutationVariables = Exact<{
 export type CreateSpaceMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'createSpace'>
+);
+
+export type FollowSpaceMutationVariables = Exact<{
+  spaceId: Scalars['String'];
+}>;
+
+
+export type FollowSpaceMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'followSpace'>
 );
 
 export type LoginMutationVariables = Exact<{
@@ -489,6 +510,26 @@ export type SearchQueryMutation = (
     { __typename?: 'UserandSpaces' }
     & UserAndSpacesResponseFragment
   )> }
+);
+
+export type SendConfirmationMailMutationVariables = Exact<{
+  studentId: Scalars['String'];
+}>;
+
+
+export type SendConfirmationMailMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'sendConfirmationMail'>
+);
+
+export type UnFollowSpaceMutationVariables = Exact<{
+  spaceId: Scalars['String'];
+}>;
+
+
+export type UnFollowSpaceMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'unfollowSpace'>
 );
 
 export type UpdateUserMutationVariables = Exact<{
@@ -706,6 +747,39 @@ export const UserAndSpacesResponseFragmentDoc = gql`
 }
     ${RegularUserFragmentDoc}
 ${RegularSpaceFragmentDoc}`;
+export const ConfirmUserCheckDocument = gql`
+    mutation ConfirmUserCheck($studentId: String!) {
+  confirmUserCheck(studentId: $studentId) {
+    ...RegularUserResponse
+  }
+}
+    ${RegularUserResponseFragmentDoc}`;
+export type ConfirmUserCheckMutationFn = Apollo.MutationFunction<ConfirmUserCheckMutation, ConfirmUserCheckMutationVariables>;
+
+/**
+ * __useConfirmUserCheckMutation__
+ *
+ * To run a mutation, you first call `useConfirmUserCheckMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useConfirmUserCheckMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [confirmUserCheckMutation, { data, loading, error }] = useConfirmUserCheckMutation({
+ *   variables: {
+ *      studentId: // value for 'studentId'
+ *   },
+ * });
+ */
+export function useConfirmUserCheckMutation(baseOptions?: Apollo.MutationHookOptions<ConfirmUserCheckMutation, ConfirmUserCheckMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ConfirmUserCheckMutation, ConfirmUserCheckMutationVariables>(ConfirmUserCheckDocument, options);
+      }
+export type ConfirmUserCheckMutationHookResult = ReturnType<typeof useConfirmUserCheckMutation>;
+export type ConfirmUserCheckMutationResult = Apollo.MutationResult<ConfirmUserCheckMutation>;
+export type ConfirmUserCheckMutationOptions = Apollo.BaseMutationOptions<ConfirmUserCheckMutation, ConfirmUserCheckMutationVariables>;
 export const CreatePostsDocument = gql`
     mutation CreatePosts($title: String!, $content: String!, $spaceName: String!) {
   createPosts(title: $title, content: $content, spaceName: $spaceName) {
@@ -773,6 +847,37 @@ export function useCreateSpaceMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateSpaceMutationHookResult = ReturnType<typeof useCreateSpaceMutation>;
 export type CreateSpaceMutationResult = Apollo.MutationResult<CreateSpaceMutation>;
 export type CreateSpaceMutationOptions = Apollo.BaseMutationOptions<CreateSpaceMutation, CreateSpaceMutationVariables>;
+export const FollowSpaceDocument = gql`
+    mutation FollowSpace($spaceId: String!) {
+  followSpace(spaceId: $spaceId)
+}
+    `;
+export type FollowSpaceMutationFn = Apollo.MutationFunction<FollowSpaceMutation, FollowSpaceMutationVariables>;
+
+/**
+ * __useFollowSpaceMutation__
+ *
+ * To run a mutation, you first call `useFollowSpaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useFollowSpaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [followSpaceMutation, { data, loading, error }] = useFollowSpaceMutation({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *   },
+ * });
+ */
+export function useFollowSpaceMutation(baseOptions?: Apollo.MutationHookOptions<FollowSpaceMutation, FollowSpaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<FollowSpaceMutation, FollowSpaceMutationVariables>(FollowSpaceDocument, options);
+      }
+export type FollowSpaceMutationHookResult = ReturnType<typeof useFollowSpaceMutation>;
+export type FollowSpaceMutationResult = Apollo.MutationResult<FollowSpaceMutation>;
+export type FollowSpaceMutationOptions = Apollo.BaseMutationOptions<FollowSpaceMutation, FollowSpaceMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {
@@ -903,6 +1008,68 @@ export function useSearchQueryMutation(baseOptions?: Apollo.MutationHookOptions<
 export type SearchQueryMutationHookResult = ReturnType<typeof useSearchQueryMutation>;
 export type SearchQueryMutationResult = Apollo.MutationResult<SearchQueryMutation>;
 export type SearchQueryMutationOptions = Apollo.BaseMutationOptions<SearchQueryMutation, SearchQueryMutationVariables>;
+export const SendConfirmationMailDocument = gql`
+    mutation SendConfirmationMail($studentId: String!) {
+  sendConfirmationMail(studentId: $studentId)
+}
+    `;
+export type SendConfirmationMailMutationFn = Apollo.MutationFunction<SendConfirmationMailMutation, SendConfirmationMailMutationVariables>;
+
+/**
+ * __useSendConfirmationMailMutation__
+ *
+ * To run a mutation, you first call `useSendConfirmationMailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendConfirmationMailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendConfirmationMailMutation, { data, loading, error }] = useSendConfirmationMailMutation({
+ *   variables: {
+ *      studentId: // value for 'studentId'
+ *   },
+ * });
+ */
+export function useSendConfirmationMailMutation(baseOptions?: Apollo.MutationHookOptions<SendConfirmationMailMutation, SendConfirmationMailMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendConfirmationMailMutation, SendConfirmationMailMutationVariables>(SendConfirmationMailDocument, options);
+      }
+export type SendConfirmationMailMutationHookResult = ReturnType<typeof useSendConfirmationMailMutation>;
+export type SendConfirmationMailMutationResult = Apollo.MutationResult<SendConfirmationMailMutation>;
+export type SendConfirmationMailMutationOptions = Apollo.BaseMutationOptions<SendConfirmationMailMutation, SendConfirmationMailMutationVariables>;
+export const UnFollowSpaceDocument = gql`
+    mutation UnFollowSpace($spaceId: String!) {
+  unfollowSpace(spaceId: $spaceId)
+}
+    `;
+export type UnFollowSpaceMutationFn = Apollo.MutationFunction<UnFollowSpaceMutation, UnFollowSpaceMutationVariables>;
+
+/**
+ * __useUnFollowSpaceMutation__
+ *
+ * To run a mutation, you first call `useUnFollowSpaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnFollowSpaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unFollowSpaceMutation, { data, loading, error }] = useUnFollowSpaceMutation({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *   },
+ * });
+ */
+export function useUnFollowSpaceMutation(baseOptions?: Apollo.MutationHookOptions<UnFollowSpaceMutation, UnFollowSpaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnFollowSpaceMutation, UnFollowSpaceMutationVariables>(UnFollowSpaceDocument, options);
+      }
+export type UnFollowSpaceMutationHookResult = ReturnType<typeof useUnFollowSpaceMutation>;
+export type UnFollowSpaceMutationResult = Apollo.MutationResult<UnFollowSpaceMutation>;
+export type UnFollowSpaceMutationOptions = Apollo.BaseMutationOptions<UnFollowSpaceMutation, UnFollowSpaceMutationVariables>;
 export const UpdateUserDocument = gql`
     mutation UpdateUser($username: String!, $bio: String!, $twitterAcc: String!, $instagramAcc: String!) {
   updateUserDetails(

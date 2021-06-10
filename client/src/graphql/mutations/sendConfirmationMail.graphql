@@ -1,0 +1,3 @@
+mutation SendConfirmationMail($studentId: String!){
+    sendConfirmationMail(studentId: $studentId)
+}

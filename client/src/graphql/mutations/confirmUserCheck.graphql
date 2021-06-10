@@ -1,0 +1,5 @@
+mutation ConfirmUserCheck($studentId: String!) {
+    confirmUserCheck(studentId: $studentId){
+        ...RegularUserResponse
+    }
+}

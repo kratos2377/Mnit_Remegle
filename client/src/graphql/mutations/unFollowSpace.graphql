@@ -1,0 +1,3 @@
+mutation UnFollowSpace($spaceId : String!) {
+    unfollowSpace(spaceId: $spaceId)
+}

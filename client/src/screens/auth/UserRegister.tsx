@@ -1,5 +1,5 @@
 import React ,{useState} from 'react'
-import { View , StyleSheet , Text, Button } from 'react-native';
+import { View , StyleSheet , Text, Button, Picker } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input } from 'react-native-elements/dist/input/Input';
 import { Colors, IconButton } from 'react-native-paper';
@@ -22,6 +22,7 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
   ]);
   const [open, setOpen] = useState(false);
   const [gender, setGender] = useState(null);
+  const [selectedValue, setSelectedValue] = useState<"Choose Gender" | "Male" | "Female">("Choose Gender");
 
   const [register] = useRegisterMutation();
 
@@ -40,8 +41,9 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
                onChangeText={(value) => setUserName(value)}
                value={username}/>
 
-               <View>
-               <Input placeholder ="Password" 
+               <View style={{margin: 5 , flexDirection:'row' ,width:'90%'}}>
+               <Input 
+               placeholder ="Password" 
                onChangeText={(value) => setPassword(value)}
                value={password}
                secureTextEntry={showPassword}
@@ -57,7 +59,7 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
          onPress={() => setShowPassword(true)} /> }
                </View>
     
-               <View>
+               <View style={{margin: 5 , flexDirection:'row' ,width:'90%'}}>
                <Input placeholder ="Confirm Password" 
                onChangeText={(value) => setConfirmPassword(value)}
                value={confirmpassword}
@@ -73,32 +75,32 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
          size={20}
          onPress={() => setShowConfirmPassword(true)} /> }
                </View>
-               <DropDownPicker
-      open={open}
-      value={gender}
-      items={items}
-      setOpen={setOpen}
-      maxHeight={500}
-      placeholder="Choose Gender"
-      bottomOffset={100}
-      itemSeparator={true}
-      categorySelectable={true}
-      showTickIcon={false}
-      mode="BADGE"
-      showBadgeDot={true}
-      dropDownDirection="BOTTOM"
-      setValue={setGender}
-      setItems={setItems}
-      dropDownContainerStyle={{
-        backgroundColor: "#dfdfdf",
-      }}
-    />
+              
+               <View style={styles.container}>
+      <Picker
+        selectedValue={selectedValue}
+        style={{ height: 50, width: 150 }}
+        onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+      >
+        <Picker.Item label="Male" value="Male" />
+        <Picker.Item label="Female" value="Female" />
+      </Picker>
+    </View>
 
                </View>
 
-               <Button title="Register" onPress={() => console.log("Register")}/>
+               <View style={{margin: 20}}>
+               <Button  title="Register" onPress={() => console.log("Register")}/>
+               </View>
             </View>
         );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 20,
+    marginLeft: 20,
+    alignItems: 'flex-start'
+  }
+})

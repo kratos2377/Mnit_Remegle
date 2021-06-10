@@ -44,7 +44,7 @@ class SpaceResponse {
   boolResult?: FieldSpaceBoolError;
 
   @Field(() => Spaces, { nullable: true })
-  sapce?: Spaces;
+  space?: Spaces;
 }
 
 @Resolver(Spaces)
@@ -149,10 +149,8 @@ export class SpaceResolver {
   @UseMiddleware(isAuth)
   async followSpace(
     @Arg('spaceId') spaceId: string,
-    @Arg('studentId') studentId: string,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
-    studentId = studentId.toLowerCase();
 
     const user = (await User.findOne({
       where: { id: req.session.userId }
@@ -166,9 +164,9 @@ export class SpaceResolver {
       return false;
     }
 
-    if (space.bannedUserIds.includes(studentId)) {
-      return false;
-    }
+    // if (space.bannedUserIds.includes(studentId)) {
+    //   return false;
+    // }
 
     if (!space.followingIds.includes(user.id)) {
       space.followingIds.push(user.id);
@@ -187,11 +185,10 @@ export class SpaceResolver {
   @UseMiddleware(isAuth)
   async unfollowSpace(
     @Arg('spaceId') spaceId: string,
-    @Arg('studentId') studentId: string,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
     const user = (await User.findOne({
-      where: { studentId: studentId }
+      where: { id: req.session.userId }
     })) as User;
 
     const spaceS = (await Spaces.findOne({
