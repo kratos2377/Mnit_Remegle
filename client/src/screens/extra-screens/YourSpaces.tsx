@@ -15,7 +15,9 @@ export const YourSpaces = ({}) => {
   const { data, loading, variables } = useGetAllSpacesByUserQuery();
   
   const renderSpaceItem = (item) => (
-    <TouchableOpacity onPress={() => console.log(item.item.spaceId)}>
+    <TouchableOpacity onPress={() => navigation.navigate("GoToSpace" , {
+      id: item.item.spaceId
+    })}>
       <View>
         <ListItem key={item.item.spaceId} bottomDivider>
           <Avatar source={{ uri: item.item.spaceAvatarUrl }} />

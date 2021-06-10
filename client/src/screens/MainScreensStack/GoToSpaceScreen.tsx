@@ -372,6 +372,12 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
           onPress={deleteSpaceHandler}
         /> : null
         }
+        {
+          userId === data?.getSpaceDetails.adminId ?     <Appbar.Action
+          icon="square-edit-outline"
+          onPress={() => {}}
+        /> : null
+        }
             {following ? (
               <Button mode="text" color="red" onPress={unFollow}>
                 Unfollow
