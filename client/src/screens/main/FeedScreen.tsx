@@ -32,12 +32,12 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
     );
 
   const [state, setState] = useState({ open: false });
-  var userId: string = "";
   const [postDeletingLoading ,setPostDeletingLoading]= useState(false)
   const [postDeleteDialog , setPostDeleteDialog] = useState(false);
   const [postDeleteSuccess , setPostDeleteSuccess] = useState(false);
   const [postIdDelete , setpostIdDelete] = useState("")
   const [postDelete] = useDeletePostMutation()
+  const [userId , setUserId] = useState("")
 
 
 
@@ -63,8 +63,9 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
       const userData = await AsyncStorage.getItem("userData");
 
       const newData = JSON.parse(userData);
-
-      userId = newData.id;
+    console.log("User Data")
+    console.log(newData)
+    setUserId(newData.id)
     };
 
     getDetails();
@@ -96,6 +97,8 @@ const deletePostHandler = async () => {
   
 }
 
+console.log(userId)
+
   const LeftContent = (url: string) => (
     <Image
       style={{ width: 50, height: 50, borderRadius: 25 }}
@@ -110,9 +113,10 @@ const deletePostHandler = async () => {
     content: string,
     spaceId: string,
     postId: string
-  ) => (
+  ) => {
+   
     <View style={{flexDirection: 'column'}}>
-         {userId.toString == creatorId.toString ? (
+         {userId == creatorId ? (
         
 
   <View style={{flexDirection:'row'}}>
@@ -144,7 +148,7 @@ style={{alignSelf: 'flex-end'}}
         }}>{spaceName}</Button>}
       </Text>
     </View>
-  );
+};
 
   const renderPostCardItem = (item) => (
     <View style={{ flexDirection: "row" }}>

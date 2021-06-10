@@ -34,7 +34,6 @@ export const GoToSpaceScreen = ({
   navigation,
   route,
 }: MainNavProps<"GoToSpace">) => {
-  var userId: string = "";
   
   const [spaceDeleteLoading , setSpaceDeleteLoading] = useState(false);
   
@@ -71,13 +70,20 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   const [snackVisible, setSnackVisible] = useState(false);
   const [display, setDisplay] = useState<"Post" | "User">("Post");
   const [voteMut] = useVoteMutation();
+  const[spaceDeleteLoadingError , setSpaceDeleteLoadingError] = useState(false);
   const [loadingState, setLoadingState] =
     useState<"updoot-loading" | "downdoot-loading" | "not-loading">(
       "not-loading"
     );
-  var userId = "";
+ const[userId , setUserId] = useState("")
 
   const deleteSpaceHandler = async () => {
+
+    if(userId !== data?.getSpaceDetails.adminId){
+      setSpaceDeleteLoadingError(true)
+      return;
+    }
+
     setSpaceDeleteLoading(true)
    const response = await deleteSpace({
      variables: {
@@ -143,18 +149,22 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
     const getDetails = async () => {
       const userData = await AsyncStorage.getItem("userData");
       const newData = JSON.parse(userData);
-      userId = newData.id;
+      setUserId(newData.id);
       for (var i = 0; i < data?.getSpaceDetails?.followingIds?.length; i++) {
         if (data?.getSpaceDetails.followingIds[i].id == newData.id) {
           setFollowing(true);
           setPageLoading(false);
           break;
-        }
+        } 
       }
+
+      setPageLoading(false)
     };
 
     getDetails();
   }, [data]);
+
+  const hideSpaceDeleateLoadingError = () => setSpaceDeleteLoadingError(false)
 
   const LeftContentPost = (url: string) => (
     <Image
@@ -172,7 +182,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
     postId: string,
   ) => (
     <View>
-      {userId.toString == creatorId.toString ? (
+      {userId === creatorId ? (
         <View style={{flexDirection:'row'}}>
         <IconButton
     style={{alignSelf: 'flex-end'}}
@@ -331,7 +341,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
       },
     });
 
-    if (response?.data?.unfollowSpace) {
+    if (response?.data?.followSpace) {
       setFollowing(true);
     } else {
       setSnackVisible(true);
@@ -356,10 +366,12 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
                 })
               }
             />
-            <Appbar.Action
-              icon="delete"
-              onPress={deleteSpaceHandler}
-            />
+        {
+          userId === data?.getSpaceDetails.adminId ?     <Appbar.Action
+          icon="delete"
+          onPress={deleteSpaceHandler}
+        /> : null
+        }
             {following ? (
               <Button mode="text" color="red" onPress={unFollow}>
                 Unfollow
@@ -432,6 +444,24 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
         </Dialog>
       </Portal>
   </Provider>
+
+  <Provider>
+<Portal>
+        <Dialog visible={spaceDeleteLoadingError} onDismiss={() => {}}>
+          <Dialog.Content>
+            <View style={{flexDirection: 'row'}}>
+              <ActivityIndicator/>
+              <Text style={{marginLeft: 5 , fontSize: 20}}>You Are Not Admin Of Space</Text>
+            </View>
+          </Dialog.Content>
+          <Dialog.Actions> 
+          <Button onPress={hideSpaceDeleateLoadingError}>Done</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+  </Provider>
+
+
 
 <Provider>
 <Portal>

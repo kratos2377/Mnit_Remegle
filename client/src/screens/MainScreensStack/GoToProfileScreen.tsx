@@ -36,12 +36,13 @@ export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfi
       "not-loading"
     );
 
-    var userId = "";
+  
     const [postDeletingLoading ,setPostDeletingLoading]= useState(false)
   const [postDeleteDialog , setPostDeleteDialog] = useState(false);
   const [postDeleteSuccess , setPostDeleteSuccess] = useState(false);
   const [postIdDelete , setpostIdDelete] = useState("")
   const [postDelete] = useDeletePostMutation()
+  const [userId , setUserId] = useState("")
 
   const hidePostDeleteDialog = () => setPostDeleteDialog(false)
 
@@ -51,7 +52,7 @@ export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfi
   
         const newData = JSON.parse(userData);
   
-        userId = newData.id;
+       setUserId(newData.id);
       };
   
       getDetails();
@@ -101,7 +102,7 @@ export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfi
       postId: string,
     ) => (
       <View>
-           {userId.toString == creatorId.toString ? (
+           {userId === creatorId ? (
           
   
           <View style={{flexDirection:'row'}}>

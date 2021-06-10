@@ -159,7 +159,6 @@ export class SpaceResolver {
     const space = (await Spaces.findOne({
       where: { spaceId: spaceId }
     })) as Spaces;
-
     if (req.session.userId !== user.id) {
       return false;
     }

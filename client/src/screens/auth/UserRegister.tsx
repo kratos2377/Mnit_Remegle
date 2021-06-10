@@ -2,7 +2,7 @@ import React ,{useState} from 'react'
 import { View , StyleSheet , Text, Button, Picker } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input } from 'react-native-elements/dist/input/Input';
-import { Colors, Dialog, IconButton, Portal, Provider } from 'react-native-paper';
+import { Colors, Dialog, IconButton, Paragraph, Portal, Provider } from 'react-native-paper';
 import MenuItem from 'react-native-paper/lib/typescript/components/Menu/MenuItem';
 import { useRegisterMutation } from '../../generated/graphql';
 import { AuthNavProps } from '../../utils/AuthParamList';
@@ -21,9 +21,10 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
    const [showConfirmPassword , setShowConfirmPassword] = useState(true)
   const [visible , setVisible] = useState(false)
   const [error ,setError] = useState("")
-  const [selectedValue, setSelectedValue] = useState<"Choose Gender" | "Male" | "Female">("Choose Gender");
+  const [selectedValue, setSelectedValue] = useState<"Male" | "Female">("Male");
 
   const [register] = useRegisterMutation();
+  const hideDialog = () => setVisible(false)
 
   const handleRegister = async () => {
      if(lastName == "" || firstName == "" || password == "" || username == "" || confirmpassword=="" || selectedValue == "Choose Gender"){
@@ -58,13 +59,17 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
      const response = await register({
        variables: { data: values}
      })
-
-     if(!(response.data?.registerUser.boolResult?.value)){
-       console.log("Error")
-       return;
+     
+     if(response.data?.registerUser.boolResult){
+      if(!(response.data?.registerUser.boolResult?.value)){
+        console.log(response)
+        return;
+      }
      }
 
-     const user = response.data.registerUser.user;
+    
+
+     const user = response?.data?.registerUser.user;
 
      AsyncStorage.setItem(
       "userData",
