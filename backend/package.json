@@ -43,7 +43,9 @@
       "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
       "typeorm": "ts-node ./node_modules/typeorm/cli.js",
       "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "typeorm:migration:gen": "ts-node ./node_modules/typeorm/cli.js migration:generate --name",
+    "typeorm:migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
    },
    "keywords": [],
    "author": "",

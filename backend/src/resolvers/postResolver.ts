@@ -13,7 +13,7 @@ import {
   UseMiddleware
 } from 'type-graphql';
 import { MyContext } from '../types';
-import { getConnection } from 'typeorm';
+import { getConnection, getRepository } from 'typeorm';
 import { isAuth } from '../middleware/isAuth';
 import { User } from '../entity/User';
 import { isBanned } from '../middleware/isBanned';
@@ -83,24 +83,23 @@ export class PostResolver {
   ): Promise<PaginatedPosts> {
     const realLimit = Math.min(50, limit);
     const reaLimitPlusOne = realLimit + 1;
-
     const replacements: any[] = [reaLimitPlusOne];
 
     if (cursor) {
       replacements.push(new Date(parseInt(cursor)));
-    }
+    }   
 
-    const posts = await getConnection()
-      .createQueryBuilder(Post, 'post')
+    const postsGot = await getRepository(Post)
+      .createQueryBuilder('post')         
       .innerJoin(User, 'user', 'post.postSpaceId = ANY(user.spacesFollowed)')
       .orderBy('post."createdAt"', 'DESC')
-      .where('user.id = :id', { id: req.session.userId })
-      .getMany();
+      .where('user.id = :id  ', { id: req.session.userId })
+      .getMany()      
 
    
       return {
-        posts: posts.slice(0, realLimit),
-        hasMore: posts.length === reaLimitPlusOne,
+        posts: postsGot.slice(0, realLimit),
+        hasMore: !(postsGot.length === realLimit),
       };
   }
 

@@ -48,7 +48,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
 
   const { open } = state;
 
-  const { data, error, loading, variables } = useGetFeedPostsQuery({
+  const { data, error, loading, fetchMore, variables } = useGetFeedPostsQuery({
     variables: {
       limit: 15,
       cursor: null,
@@ -257,10 +257,14 @@ style={{alignSelf: 'flex-end'}}
             <Text style={{ fontSize: 20 }}>{userData?.me?.studentId}</Text>
           </Appbar.Header>
           <FlatList
-            data={data?.getFeedPosts}
+            data={data?.getFeedPosts.posts}
             keyExtractor={(item) => item.postId}
             renderItem={renderPostCardItem}
           />
+
+          {
+
+          }
         </ScrollView>
       )}
 
