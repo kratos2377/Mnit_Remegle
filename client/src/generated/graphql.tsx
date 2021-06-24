@@ -220,6 +220,12 @@ export type MutationSearchQueryArgs = {
   searchName: Scalars['String'];
 };
 
+export type PaginatedPosts = {
+  __typename?: 'PaginatedPosts';
+  posts: Array<Post>;
+  hasMore: Scalars['Boolean'];
+};
+
 export type Post = {
   __typename?: 'Post';
   postId: Scalars['String'];
@@ -241,7 +247,7 @@ export type Query = {
   __typename?: 'Query';
   getPostsById: Post;
   getAllPosts?: Maybe<Array<Post>>;
-  getFeedPosts: Array<Post>;
+  getFeedPosts: PaginatedPosts;
   getPostsByUserId?: Maybe<Array<Post>>;
   checkifUserFollowSpace: Array<Post>;
   getAllUserPosts?: Maybe<Array<Post>>;
@@ -651,10 +657,14 @@ export type GetFeedPostsQueryVariables = Exact<{
 
 export type GetFeedPostsQuery = (
   { __typename?: 'Query' }
-  & { getFeedPosts: Array<(
-    { __typename?: 'Post' }
-    & PostSnippetFragment
-  )> }
+  & { getFeedPosts: (
+    { __typename?: 'PaginatedPosts' }
+    & Pick<PaginatedPosts, 'hasMore'>
+    & { posts: Array<(
+      { __typename?: 'Post' }
+      & PostSnippetFragment
+    )> }
+  ) }
 );
 
 export type GetPostsOfSpacesQueryVariables = Exact<{
@@ -1404,7 +1414,10 @@ export type GetAllUserPostsQueryResult = Apollo.QueryResult<GetAllUserPostsQuery
 export const GetFeedPostsDocument = gql`
     query getFeedPosts($cursor: String, $limit: Int!) {
   getFeedPosts(cursor: $cursor, limit: $limit) {
-    ...PostSnippet
+    hasMore
+    posts {
+      ...PostSnippet
+    }
   }
 }
     ${PostSnippetFragmentDoc}`;

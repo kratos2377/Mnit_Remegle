@@ -2,9 +2,11 @@ import { Post } from '../entity/Post';
 import {
   Arg,
   Ctx,
+  Field,
   FieldResolver,
   Int,
   Mutation,
+  ObjectType,
   Query,
   Resolver,
   Root,
@@ -19,13 +21,13 @@ import { isGodAdmin } from '../middleware/isGodAdmin';
 import { Spaces } from '../entity/Spaces';
 import { Updoot } from '../entity/Updoot';
 
-// @ObjectType()
-// class PaginatedPosts {
-//   @Field(() => [Post])
-//   posts: Post[];
-//   @Field()
-//   hasMore: boolean;
-// }
+@ObjectType()
+class PaginatedPosts {
+  @Field(() => [Post])
+  posts: Post[];
+  @Field()
+  hasMore: boolean;
+}
 
 @Resolver(Post)
 export class PostResolver {
@@ -72,13 +74,13 @@ export class PostResolver {
     return posts;
   }
 
-  @Query(() => [Post])
+  @Query(() => PaginatedPosts)
   @UseMiddleware(isAuth)
   async getFeedPosts(
     @Arg('limit', () => Int) limit: number,
     @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
     @Ctx() { req }: MyContext
-  ): Promise<Post[]> {
+  ): Promise<PaginatedPosts> {
     const realLimit = Math.min(50, limit);
     const reaLimitPlusOne = realLimit + 1;
 
@@ -95,33 +97,11 @@ export class PostResolver {
       .where('user.id = :id', { id: req.session.userId })
       .getMany();
 
-    // const posts = await getConnes  ction().query(
-    //   `
-    // select p.*
-    // from post p
-    // ${cursor ? `where p."createdAt" < $2` : ""}
-    // order by p."createdAt" DESC
-    // limit $1
-    // `,
-    //   replacements
-    // );
-
-    // const qb = getConnection()
-    //   .getRepository(Post)
-    //   .createQueryBuilder("p")
-    //   .innerJoinAndSelect("p.creator", "u", 'u.id = p."creatorId"')
-    //   .orderBy('p."createdAt"', "DESC")
-    //   .take(reaLimitPlusOne);
-
-    // if (cursor) {
-    //   qb.where('p."createdAt" < :cursor', {
-    //     cursor: new Date(parseInt(cursor)),
-    //   });
-    // }
-
-    // const posts = await qb.getMany();
-    // console.log("posts: ", posts);
-    return posts;
+   
+      return {
+        posts: posts.slice(0, realLimit),
+        hasMore: posts.length === reaLimitPlusOne,
+      };
   }
 
   @Mutation(() => Boolean)
