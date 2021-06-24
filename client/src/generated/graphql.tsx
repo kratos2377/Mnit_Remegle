@@ -236,6 +236,7 @@ export type Post = {
   postSpaceId: Scalars['String'];
   voteStatus?: Maybe<Scalars['Int']>;
   spaceName: Scalars['String'];
+  imageUrl: Scalars['String'];
   creator: User;
   space: Spaces;
   createdAt: Scalars['DateTime'];

@@ -21,28 +21,28 @@ import {
 } from "../../generated/graphql";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MainNavProps } from "../../utils/MainParamList";
+import { updateAfterVote } from "../../components/updateAfterVote";
 
 interface FeedScreenProps {}
 
 export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
   const [voteMut] = useVoteMutation();
-  const [loadingState, setLoadingState] =
-    useState<"updoot-loading" | "downdoot-loading" | "not-loading">(
-      "not-loading"
-    );
+  const [loadingState, setLoadingState] = useState<
+    "updoot-loading" | "downdoot-loading" | "not-loading"
+  >("not-loading");
 
   const [state, setState] = useState({ open: false });
-  const [postDeletingLoading ,setPostDeletingLoading]= useState(false)
-  const [postDeleteDialog , setPostDeleteDialog] = useState(false);
-  const [postDeleteSuccess , setPostDeleteSuccess] = useState(false);
-  const [postIdDelete , setpostIdDelete] = useState("")
-  const [postDelete] = useDeletePostMutation()
-  const [userId , setUserId] = useState("")
+  const [postDeletingLoading, setPostDeletingLoading] = useState(false);
+  const [postDeleteDialog, setPostDeleteDialog] = useState(false);
+  const [postDeleteSuccess, setPostDeleteSuccess] = useState(false);
+  const [postIdDelete, setpostIdDelete] = useState("");
+  const [postDelete] = useDeletePostMutation();
+  const [userId, setUserId] = useState("");
+  const [green , setGreen] = useState("green")
+  const [red , setRed] = useState("red")
+  const [limitPost, setLimitPost] = useState<number>(15);
 
-
-
-  const hidePostDeleteDialog = () => setPostDeleteDialog(false)
-
+  const hidePostDeleteDialog = () => setPostDeleteDialog(false);
 
   const onStateChange = ({ open }) => setState({ open });
 
@@ -50,7 +50,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
 
   const { data, error, loading, fetchMore, variables } = useGetFeedPostsQuery({
     variables: {
-      limit: 15,
+      limit: limitPost,
       cursor: null,
     },
     notifyOnNetworkStatusChange: true,
@@ -63,41 +63,37 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
       const userData = await AsyncStorage.getItem("userData");
 
       const newData = JSON.parse(userData);
-    console.log("User Data")
-    console.log(newData)
-    setUserId(newData.id)
+      console.log("User Data");
+      console.log(newData);
+      setUserId(newData.id);
     };
 
     getDetails();
   }, []);
 
-const deletePostHandler = async () => {
+  const deletePostHandler = async () => {
+    setPostDeletingLoading(true);
+    setPostDeleteDialog(false);
 
-  setPostDeletingLoading(true)
-  setPostDeleteDialog(false)
+    const response = await postDelete({
+      variables: {
+        postId: postIdDelete,
+      },
+    });
 
-
-  const response = await postDelete({
-    variables:  {
-      postId: postIdDelete
+    if (!response.data?.deletePost) {
     }
-  })
 
-  if(!(response.data?.deletePost)){
+    setPostDeletingLoading(false);
 
-  }
+    setPostDeleteSuccess(true);
 
-  setPostDeletingLoading(false)
+    setInterval(() => {
+      setPostDeleteSuccess(false);
+    }, 1000);
+  };
 
-  setPostDeleteSuccess(true)
-
-  setInterval(() => {
-    setPostDeleteSuccess(false)
-  } , 1000)
-  
-}
-
-console.log(userId)
+  console.log(userId);
 
   const LeftContent = (url: string) => (
     <Image
@@ -114,41 +110,47 @@ console.log(userId)
     spaceId: string,
     postId: string
   ) => {
-   
-    <View style={{flexDirection: 'column'}}>
-         {userId == creatorId ? (
-        
-
-  <View style={{flexDirection:'row'}}>
-    <IconButton
-style={{alignSelf: 'flex-end'}}
-          icon="circle-edit-outline"
-          onPress={() =>
-            navigation.navigate("EditPostScreen", {
-              title: title,
-              content: content,
-              postId: postId
-            })
-          } 
+    <View style={{ flexDirection: "column" }}>
+      {userId == creatorId ? (
+        <View style={{ flexDirection: "row" }}>
+          <IconButton
+            style={{ alignSelf: "flex-end" }}
+            icon="circle-edit-outline"
+            onPress={() =>
+              navigation.navigate("EditPostScreen", {
+                title: title,
+                content: content,
+                postId: postId,
+              })
+            }
           />
 
-          <IconButton icon="delete" onPress = {() =>  {
-            setpostIdDelete(postId)
-            setPostDeleteDialog(true)
-          }} />
-  </View>
-      
-      ) : null }
+          <IconButton
+            icon="delete"
+            onPress={() => {
+              setpostIdDelete(postId);
+              setPostDeleteDialog(true);
+            }}
+          />
+        </View>
+      ) : null}
 
       <Text style={{ marginTop: 5, marginRight: 5 }}>
-        {<Button onPress={() => {
-          navigation.navigate("GoToSpace" , {
-            id: spaceId
-          })
-        }}>{spaceName}</Button>}
+         
+        {
+          <Button
+            onPress={() => {
+              navigation.navigate("GoToSpace", {
+                id: spaceId,
+              });
+            }}
+          >
+            {spaceName}
+          </Button>
+        }
       </Text>
-    </View>
-};
+    </View>;
+  };
 
   const renderPostCardItem = (item) => (
     <View style={{ flexDirection: "row" }}>
@@ -167,7 +169,7 @@ style={{alignSelf: 'flex-end'}}
           <IconButton
             icon="chevron-triple-up"
             size={20}
-            color={item.item.voteStatus === 1 ? "green" : "black"}
+           
             onPress={async () => {
               if (item.item.voteStatus === 1) {
                 return;
@@ -178,16 +180,19 @@ style={{alignSelf: 'flex-end'}}
                   postId: item.item.postId,
                   value: 1,
                 },
+                update: (cache) => updateAfterVote(1 , item.item.postId , cache)
               });
               setLoadingState("not-loading");
             }}
+            color={item.item.voteStatus === 1 ? "green" : "black"}
+            aria-label="updoot post"
           />
 
           <Text>{item.item.points}</Text>
           <IconButton
             icon="chevron-triple-down"
             size={20}
-            color={item.item.voteStatus === -1 ? "red" : "black"}
+            
             onPress={async () => {
               if (item.item.voteStatus === -1) {
                 return;
@@ -198,9 +203,12 @@ style={{alignSelf: 'flex-end'}}
                   postId: item.item.postId,
                   value: -1,
                 },
+                update: (cache) => updateAfterVote(-1 , item.item.postId , cache)
               });
               setLoadingState("not-loading");
             }}
+            color={item.item.voteStatus === -1 ? "red" : "black"}
+            aria-label="downdoot post"
           />
         </View>
       </Card>
@@ -225,9 +233,6 @@ style={{alignSelf: 'flex-end'}}
         <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
         <Text style={{ color: "black" }}>{item.item.content}</Text>
       </Card>
-    
-    
-     
     </View>
   );
 
@@ -262,52 +267,78 @@ style={{alignSelf: 'flex-end'}}
             renderItem={renderPostCardItem}
           />
 
-          {
-
-          }
+          { (data && data.getFeedPosts.hasMore === true) ? (
+            <View>
+              <Button
+                icon="arrow-down-drop-circle"
+                onPress={() => {
+                  setLimitPost(limitPost + 10);
+                  fetchMore({
+                    limit: limitPost,
+                    cursor: null,
+                  });
+                }}
+              >
+                Load More
+              </Button>
+            </View>
+          ) : null}
         </ScrollView>
       )}
 
       <Provider>
-      <Portal>
-        <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
-          <Dialog.Content>
-            <View style={{flexDirection: 'row'}}>
-           <ActivityIndicator />
-           <Text style={{marginLeft:5 , fontSize: 20}}>Deleting Post...</Text>
-            </View>
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
+        <Portal>
+          <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
+            <Dialog.Content>
+              <View style={{ flexDirection: "row" }}>
+                <ActivityIndicator />
+                <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                  Deleting Post...
+                </Text>
+              </View>
+            </Dialog.Content>
+          </Dialog>
+        </Portal>
       </Provider>
 
       <Provider>
-      <Portal>
-        <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
-          <Dialog.Title>Delete Post</Dialog.Title>
-          <Dialog.Content>
-            <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={deletePostHandler} color='blue'>Yes</Button>
-            <Button onPress={hidePostDeleteDialog} color='red'>No</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+        <Portal>
+          <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
+            <Dialog.Title>Delete Post</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={deletePostHandler} color="blue">
+                Yes
+              </Button>
+              <Button onPress={hidePostDeleteDialog} color="red">
+                No
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </Provider>
 
       <Provider>
-      <Portal>
-        <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
-          <Dialog.Title>Success</Dialog.Title>
-          <Dialog.Content>
-            <View style={{flexDirection: 'row' , padding:10}}>
-           <IconButton onPress={() => {}} icon="check" color="green" size={30} />
-           <Text style={{marginLeft:5 , fontSize: 20}}>Deleting Post...</Text>
-            </View>
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
+        <Portal>
+          <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
+            <Dialog.Title>Success</Dialog.Title>
+            <Dialog.Content>
+              <View style={{ flexDirection: "row", padding: 10 }}>
+                <IconButton
+                  onPress={() => {}}
+                  icon="check"
+                  color="green"
+                  size={30}
+                />
+                <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                  Deleting Post...
+                </Text>
+              </View>
+            </Dialog.Content>
+          </Dialog>
+        </Portal>
       </Provider>
 
       <Provider>
