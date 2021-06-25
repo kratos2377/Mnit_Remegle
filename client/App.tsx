@@ -18,7 +18,7 @@ const client = new ApolloClient({
       },
       Query: {
         fields: {
-          posts: {
+          posts: {     
             keyArgs: [],
             merge(
               existing: PaginatedPosts | undefined,

@@ -40,17 +40,16 @@ export class Post extends BaseEntity {
   @Column('text')
   postSpaceId: string;
 
-  
   @Field(() => Int, { nullable: true })
-  voteStatus: number | null; 
+  voteStatus: number | null;
 
   @Field()
   @Column('text')
   spaceName: string;
-  
+
   @Field()
-  @Column('text' , {nullable: true})
-  imageUrl: string
+  @Column('text', { nullable: true })
+  imageUrl: string;
 
   @Field()
   @ManyToOne(() => User, (user) => user.posts)

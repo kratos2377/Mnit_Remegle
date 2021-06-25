@@ -21,7 +21,7 @@ import {
 } from "../../generated/graphql";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MainNavProps } from "../../utils/MainParamList";
-import { updateAfterVote } from "../../components/updateAfterVote";
+import { updateAfterVote } from "../../functions/updateAfterVote";
 
 interface FeedScreenProps {}
 

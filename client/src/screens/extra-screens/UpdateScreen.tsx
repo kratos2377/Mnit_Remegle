@@ -18,6 +18,7 @@ import {
   Portal,
   Provider,
 } from "react-native-paper";
+import { updateUserDetails } from "../../functions/updateUserDetails";
 import {
   useMeLazyQuery,
   useMeQuery,
@@ -79,6 +80,18 @@ export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
       setErrorVisible(true);
       return;
     }
+    
+    await updateUser({
+
+      variables: {
+        username: userName,
+        bio: Bio,
+        twitterAcc: Twitter,
+        instagramAcc: Insta,
+      },
+
+      update: (cache) => updateUserDetails( data?.me?.id , userName , bio , twitterAcc , instaAcc , cache)
+    });
 
     navigation.pop();
   };
