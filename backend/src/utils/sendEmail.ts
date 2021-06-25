@@ -8,7 +8,7 @@ export async function sendEmail(email: string, url: string) {
     secure: false, // true for 465, false for other ports
     auth: {
       user: 'shobityadav23@gmail.com', // generated ethereal user
-      pass: 'willoffire' // generated ethereal password
+      pass: 'attackOnDemons23bond1@' // generated ethereal password
     }
   });
 

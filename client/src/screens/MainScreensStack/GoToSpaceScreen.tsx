@@ -245,7 +245,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
               setLoadingState("updoot-loading");
               await voteMut({
                 variables: {
-                  postId: item.item.postId,
+                  postId: item.item.id,
                   value: 1,
                 },
               });
@@ -265,7 +265,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
               setLoadingState("downdoot-loading");
               await voteMut({
                 variables: {
-                  postId: item.item.postId,
+                  postId: item.item.id,
                   value: -1,
                 },
               });
@@ -287,7 +287,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
               item.item.title,
               item.item.content,
               item.item.postSpaceId,
-              item.item.postId,
+              item.item.id,
             )
           }
         />
@@ -422,7 +422,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
             <FlatList
               numColumns={1}
               data={postData?.getPostsofSpace}
-              keyExtractor={(item) => item.postId}
+              keyExtractor={(item) => item.id}
               renderItem={renderPostCardItem}
             />
           ) : (

@@ -5,6 +5,7 @@ import {
   Appbar,
   Button,
   Card,
+  Colors,
   Dialog,
   FAB,
   IconButton,
@@ -75,7 +76,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
 
     const response = await postDelete({
       variables: {
-        postId: postIdDelete,
+        id: postIdDelete,
       },
     });
 
@@ -175,7 +176,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
               setLoadingState("updoot-loading");
               await voteMut({
                 variables: {
-                  postId: item.item.postId,
+                  postId: item.item.id,
                   value: 1,
                 },
                 update: (cache) => updateAfterVote(1 , item.item.id , cache)
@@ -223,7 +224,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
               item.item.title,
               item.item.content,
               item.item.postSpaceId,
-              item.item.postId
+              item.item.id
             )
           }
         />
@@ -237,7 +238,18 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
   return (
     <View style={{ flex: 1, width: "100%" }}>
       {data == null ? (
-        <Text>No Data</Text>
+        <View style={{ alignSelf: 'center' }}>
+          <Card style={{ margin: 10 , flexDirection: 'column' , padding: 10}}>
+          <IconButton
+    icon="block-helper"
+    color={Colors.red500}
+    size={100}
+    onPress={() => {}}
+  />
+            <Text>No Posts Available</Text>
+            <Text>Follow Some Spaces To get Posts on Your Feed</Text>
+          </Card>
+           </View>
       ) : (
         <ScrollView style={{ width: "100%" }}>
           <Appbar.Header
@@ -261,7 +273,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           </Appbar.Header>
           <FlatList
             data={data?.getFeedPosts.posts}
-            keyExtractor={(item) => item.postId}
+            keyExtractor={(item) => item.id}
             renderItem={renderPostCardItem}
           />
 

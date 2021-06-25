@@ -161,7 +161,7 @@ export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfi
                 setLoadingState("updoot-loading");
                 await voteMut({
                   variables: {
-                    postId: item.item.postId,
+                    postId: item.item.id,
                     value: 1,
                   },
                 });
@@ -181,7 +181,7 @@ export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfi
                 setLoadingState("downdoot-loading");
                 await voteMut({
                   variables: {
-                    postId: item.item.postId,
+                    postId: item.item.id,
                     value: -1,
                   },
                 });
@@ -203,7 +203,7 @@ export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfi
                 item.item.title,
                 item.item.content,
                 item.item.postSpaceId,
-                item.item.postId,
+                item.item.id,
               )
             }
           />
@@ -263,7 +263,7 @@ export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfi
           <FlatList
             numColumns={1}
             data={data?.getPostsByUserId}
-            keyExtractor={(item) => item.postId}
+            keyExtractor={(item) => item.id}
             renderItem={renderPostCardItem}
           />
         </View>

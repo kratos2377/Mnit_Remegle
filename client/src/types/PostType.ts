@@ -2,7 +2,7 @@ import { UserType } from "./UserType";
 
 
 export type PostsType = {
-    postId: string,
+    id: string,
     creatorId: string,
     points: number,
     title: string,

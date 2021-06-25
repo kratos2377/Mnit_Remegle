@@ -228,7 +228,7 @@ export type PaginatedPosts = {
 
 export type Post = {
   __typename?: 'Post';
-  postId: Scalars['String'];
+  id: Scalars['String'];
   creatorId: Scalars['String'];
   points: Scalars['Float'];
   title: Scalars['String'];
@@ -370,7 +370,7 @@ export type UserandSpaces = {
 
 export type PostSnippetFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'postId' | 'creatorId' | 'points' | 'voteStatus' | 'postSpaceId' | 'title' | 'content' | 'createdAt' | 'spaceName'>
+  & Pick<Post, 'id' | 'creatorId' | 'points' | 'voteStatus' | 'postSpaceId' | 'title' | 'content' | 'createdAt' | 'spaceName'>
   & { creator: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'avatarUrl' | 'studentId' | 'fullName' | 'username'>
@@ -740,7 +740,7 @@ export type StudentDetailsQuery = (
 
 export const PostSnippetFragmentDoc = gql`
     fragment PostSnippet on Post {
-  postId
+  id
   creatorId
   points
   voteStatus

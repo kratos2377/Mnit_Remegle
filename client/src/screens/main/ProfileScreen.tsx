@@ -148,7 +148,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
                 setLoadingState("updoot-loading");
                 await voteMut({
                   variables: {
-                    postId: item.item.postId,
+                    postId: item.item.id,
                     value: 1,
                   },
                 });
@@ -168,7 +168,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
                 setLoadingState("downdoot-loading");
                 await voteMut({
                   variables: {
-                    postId: item.item.postId,
+                    postId: item.item.id,
                     value: -1,
                   },
                 });
@@ -190,7 +190,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
                 item.item.title,
                 item.item.content,
                 item.item.postSpaceId,
-                item.item.postId,
+                item.item.id,
               )
             }
           />
@@ -248,7 +248,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
         <View style={{ flex: 1 }}>
           <FlatList
             data={data?.getAllUserPosts}
-            keyExtractor={(item) => item.postId}
+            keyExtractor={(item) => item.id}
             renderItem={renderPostCardItem}
           />
         </View>
