@@ -8,10 +8,11 @@ import {
 } from "react-native";
 import { Avatar, ListItem } from "react-native-elements";
 import { useGetAllSpacesByUserQuery } from "../../generated/graphql";
+import { MainNavProps } from "../../utils/MainParamList";
 
 interface YourSpacesProps {}
 
-export const YourSpaces = ({}) => {
+export const YourSpaces = ({ navigation } : MainNavProps<"YourSpaces">) => {
   const { data, loading, variables } = useGetAllSpacesByUserQuery();
   
   const renderSpaceItem = (item) => (

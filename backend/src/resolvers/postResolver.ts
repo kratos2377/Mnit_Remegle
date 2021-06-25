@@ -51,7 +51,7 @@ export class PostResolver {
     }
 
     const updoot = await updootLoader.load({
-      postId: post.id,
+      id: post.id,
       userId: req.session.userId
     });
 
@@ -115,7 +115,7 @@ export class PostResolver {
     const { userId } = req.session;
 
     const updoot = await Updoot.findOne({
-      where: { postId: postId, userId: userId }
+      where: { id: postId, userId: userId }
     });
 
     // the user has voted on the post before
@@ -126,7 +126,7 @@ export class PostResolver {
           `
     update updoot
     set value = $1
-    where "postId" = $2 and "userId" = $3
+    where "id" = $2 and "userId" = $3
         `,
           [realValue, postId, userId]
         );
@@ -135,7 +135,7 @@ export class PostResolver {
           `
           update post
           set points = points + $1
-          where "postId" = $2
+          where "id" = $2
         `,
           [2 * realValue, postId]
         );
@@ -145,7 +145,7 @@ export class PostResolver {
       await getConnection().transaction(async (tm) => {
         await tm.query(
           `
-    insert into updoot ("userId", "postId", value)
+    insert into updoot ("userId", "id", value)
     values ($1, $2, $3)
         `,
           [userId, postId, realValue]
@@ -155,7 +155,7 @@ export class PostResolver {
           `
     update post
     set points = points + $1
-    where "postId" = $2
+    where "id" = $2
       `,
           [realValue, postId]
         );

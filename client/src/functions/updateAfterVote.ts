@@ -15,15 +15,12 @@ export const updateAfterVote = (
     id: "Post:" + postId,
     fragment: gql`
       fragment _ on Post {
-        postId
+        id
         points
         voteStatus
       }
     `,
   });
- console.log(1)
-  console.log(data)
-
   if (data) {
     if (data.voteStatus === value) {
       return;

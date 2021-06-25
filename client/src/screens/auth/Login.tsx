@@ -68,14 +68,15 @@ export const LoginScreen = ({ navigation , route }: AuthNavProps<"Login"> ) => {
   };
 
   return (
-   <SafeAreaView>
+   <SafeAreaView style={{ flexDirection: 'column',  justifyContent: 'space-around', //Centered vertically
+   flex:1}}>
       <View>
       {error ? (
         <View>
           <Text>{errorMessage}</Text>
         </View>
       ) : null}
-      <View>
+      <View  >
         <Input
           placeholder="Username Or Email"
           leftIcon={{ type: "font-awesome", name: "user" }}
@@ -83,7 +84,7 @@ export const LoginScreen = ({ navigation , route }: AuthNavProps<"Login"> ) => {
           value={userOrEmail}
         />
 
-        <View>
+        <View style={{margin: 5 , flexDirection:'row' ,width:'90%'}}>
           <Input
             placeholder="Password"
             leftIcon={{ type: "font-awesome", name: "comment" }}
@@ -97,14 +98,14 @@ export const LoginScreen = ({ navigation , route }: AuthNavProps<"Login"> ) => {
             <IconButton
               icon="lock"
               color={Colors.black}
-              size={20}
+              size={30}
               onPress={() => setShowPassword(false)}
             />
           ) : (
             <IconButton
               icon="lock-open"
               color={Colors.black}
-              size={20}
+              size={30}
               onPress={() => setShowPassword(true)}
             />
           )}
