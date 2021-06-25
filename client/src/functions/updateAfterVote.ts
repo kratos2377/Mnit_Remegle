@@ -31,7 +31,7 @@ export const updateAfterVote = (
     const newPoints =
       (data.points as number) + (!data.voteStatus ? 1 : 2) * value;
     cache.writeFragment({
-      postId: "Post:" + postId,
+      id: "Post:" + postId,
       fragment: gql`
         fragment __ on Post {
           points

@@ -51,7 +51,7 @@ export class PostResolver {
     }
 
     const updoot = await updootLoader.load({
-      postId: post.postId,
+      postId: post.id,
       userId: req.session.userId
     });
 
@@ -261,7 +261,7 @@ export class PostResolver {
     @Arg('postId') postId: string,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
-    await Post.delete({ postId: postId, creatorId: req.session.userId });
+    await Post.delete({ id: postId, creatorId: req.session.userId });
     return true;
   }
 
@@ -269,7 +269,7 @@ export class PostResolver {
   @UseMiddleware(isAuth)
   @UseMiddleware(isGodAdmin)
   async godDeletePost(@Arg('postId') postId: string): Promise<boolean> {
-    await Post.delete({ postId: postId });
+    await Post.delete({ id: postId });
     return true;
   }
 

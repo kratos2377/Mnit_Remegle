@@ -14,7 +14,7 @@ export class Updoot extends BaseEntity {
   user: User;
 
   @PrimaryColumn('text')
-  postId: string;
+  id: string;
 
   @ManyToOne(() => Post, (post) => post.updoots, {
     onDelete: 'CASCADE'

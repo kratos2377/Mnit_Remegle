@@ -1,5 +1,5 @@
 fragment PostSnippet on Post {
-  postId
+  id
   creatorId
   points
   voteStatus

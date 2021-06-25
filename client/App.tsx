@@ -13,9 +13,6 @@ const client = new ApolloClient({
   credentials: "include",
   cache: new InMemoryCache({
     typePolicies: {
-      Post: {
-        keyFields: ["postId"]
-      },
       Query: {
         fields: {
           posts: {     

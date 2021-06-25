@@ -18,7 +18,7 @@ import { User } from './User';
 export class Post extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
-  postId: string;
+  id: string;
 
   @Field()
   @Column('text')

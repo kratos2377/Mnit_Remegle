@@ -38,8 +38,6 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
   const [postIdDelete, setpostIdDelete] = useState("");
   const [postDelete] = useDeletePostMutation();
   const [userId, setUserId] = useState("");
-  const [green , setGreen] = useState("green")
-  const [red , setRed] = useState("red")
   const [limitPost, setLimitPost] = useState<number>(15);
 
   const hidePostDeleteDialog = () => setPostDeleteDialog(false);
@@ -180,7 +178,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
                   postId: item.item.postId,
                   value: 1,
                 },
-                update: (cache) => updateAfterVote(1 , item.item.postId , cache)
+                update: (cache) => updateAfterVote(1 , item.item.id , cache)
               });
               setLoadingState("not-loading");
             }}
@@ -200,10 +198,10 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
               setLoadingState("downdoot-loading");
               await voteMut({
                 variables: {
-                  postId: item.item.postId,
+                  postId: item.item.id,
                   value: -1,
                 },
-                update: (cache) => updateAfterVote(-1 , item.item.postId , cache)
+                update: (cache) => updateAfterVote(-1 , item.item.id , cache)
               });
               setLoadingState("not-loading");
             }}

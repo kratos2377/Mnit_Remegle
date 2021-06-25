@@ -9,7 +9,7 @@ export const createUpdootLoader = () =>
       const updoots = await Updoot.findByIds(keys as any);
       const updootIdsToUpdoot: Record<string, Updoot> = {};
       updoots.forEach((updoot) => {
-        updootIdsToUpdoot[`${updoot.userId}|${updoot.postId}`] = updoot;
+        updootIdsToUpdoot[`${updoot.userId}|${updoot.id}`] = updoot;
       });
 
       return keys.map(
