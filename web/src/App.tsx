@@ -1,29 +1,19 @@
 import React from 'react';
-import { Alert } from 'react-bootstrap';
-
+import { Container } from 'react-bootstrap';
+import {BrowserRouter as Router , Route} from 'react-router-dom'
+import { ChangePassword } from './pages/ChangePassword';
+import { ConfirmationMail } from './pages/ConfirmationMail';
 function App() {
 
 
-  const data = [ 'primary',
-  'secondary',
-  'success',
-  'danger',
-  'warning',
-  'info',
-  'light',
-  'dark',]
-  return (
-    <div className="App">
-    
  
-{
-  data.map((variant, idx) => (
-    <Alert key={idx} variant={variant}>
-      This is a {variant} alert—check it out!
-    </Alert>
-  ))
-}
-    </div>
+  return (
+   <Router>
+     <Container>
+        <Route path="/user/confirm/:token" component={ConfirmationMail}/>
+        <Route path="/user/change-password/:token" component={ChangePassword}/>
+     </Container>
+   </Router>
   );
 }
 
