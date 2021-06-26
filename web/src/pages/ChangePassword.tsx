@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useState  } from "react";
 import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { RouteComponentProps, useParams } from "react-router-dom";
 import { FormContainer } from "../components/FormContainer";
 import { AiFillLock, AiOutlineUnlock } from "react-icons/ai";
 import { Message } from "../components/Message";
+import { useChangeForgotPasswordMutation } from "../generated/graphql";
 
-interface ChangePasswordProps {
+interface ChangePasswordProps extends RouteComponentProps {
+}
+
+interface ChangePasswordTokenProps {
   token: string;
 }
 
-export const ChangePassword: React.FC<ChangePasswordProps> = () => {
-  const { token } = useParams<ChangePasswordProps>();
+
+
+export const ChangePassword: React.FC<ChangePasswordProps> = ({history}) => {
+
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,29 +26,50 @@ export const ChangePassword: React.FC<ChangePasswordProps> = () => {
   const [errorMessage , setErrorMessage] = useState("")
   const [changing , setChanging] = useState(false);
 
-  const passwordSubmitHandler = () => {
-     
+  const { token } = useParams<ChangePasswordTokenProps>();
+  const [changePassword] = useChangeForgotPasswordMutation()
+
+
+  
+
+  const passwordSubmitHandler =  async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
      setChanging(true)
 
-     if(password.length < 8){
+     if(password.trim().length < 8){
          setChanging(false)
-         setErrorMessage("Password Length Must Be Greater Than or Equal to 8")
          setError(true)
+         setErrorMessage("Password Length Must Be Greater Than or Equal to 8")
+         
          return;
      } 
 
-   if(password !== confirmPassword){
+   if(password.trim() !== confirmPassword.trim()){
         setChanging(false)
-        setErrorMessage("Password's Don't Match. Try Again")
         setError(true)
+        setErrorMessage("Password's Don't Match. Try Again")
+        
         return;
      }
+    const response = await changePassword({
+      variables: {
+        token: token,
+        newPassword: password,
+        confirmnewPassword: confirmPassword
+      }
+    })
 
-    console.log("success")
+
+    if(response.data){
+      history.push('/change-password/success')
+    } else {
+      setErrorMessage("Some Error Occured. Try Again")
+      setError(true);
+    }
   }
 
   return (
-    <>
+    
       <FormContainer>
           <h1>Change Password</h1>
           {error && <Message>{errorMessage}</Message>}
@@ -97,6 +124,6 @@ export const ChangePassword: React.FC<ChangePasswordProps> = () => {
          
         </Form>
       </FormContainer>
-    </>
+  
   );
 };
