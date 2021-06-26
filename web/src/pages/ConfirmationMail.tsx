@@ -5,6 +5,7 @@ import animationData from '../lotties/updating.json';
 import successAnimationData from '../lotties/success-check.json';
 import { useConfirmUserMutation } from '../generated/graphql';
 import { Alert, Col, ListGroup, Row } from 'react-bootstrap';
+import { copyFileSync } from 'fs';
 
 interface ConfirmationMailProps {
   token: string;
@@ -39,6 +40,7 @@ export const ConfirmationMail: React.FC<ConfirmationMailProps> = () => {
       useEffect(() => {
          
         const startConfirming = async () => {
+         console.log(token)
            const response = await confirm({
                variables: {
                    token: token

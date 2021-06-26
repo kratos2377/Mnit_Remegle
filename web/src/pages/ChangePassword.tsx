@@ -60,7 +60,7 @@ export const ChangePassword: React.FC<ChangePasswordProps> = ({history}) => {
     })
 
 
-    if(response.data){
+    if(response?.data?.changeForgotPassword){
       history.push('/change-password/success')
     } else {
       setErrorMessage("Some Error Occured. Try Again")

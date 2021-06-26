@@ -64,11 +64,8 @@ export const ForgotPasswordScreen = ({navigation} : AuthNavProps<"ForgotPassword
         if(response2.data?.generateforgotPasswordUrl){
             setSuccess(true)
             setLoading(false)
-            setRemoveLogin(true)
-            setInterval(() => {
-                setSuccess(false)
-                navigation.pop()
-            } , 4000)
+            // setRemoveLogin(true)
+            
         }
         return;
       }

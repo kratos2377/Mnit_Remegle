@@ -15,7 +15,7 @@ import { RegisterInput } from '../inputType/registerInput';
 import argon2 from 'argon2';
 import { MnitStudent } from '../entity/MnitStudent';
 import { redis } from '../redis';
-import { confirmUserPrefix } from '../redisPrefixes';
+import { confirmUserPrefix, forgotPasswordPrefix } from '../redisPrefixes';
 import { sendEmail } from '../utils/sendEmail';
 import { createConfirmationUrl } from '../utils/createConfirmationUrl';
 import { createPasswordChangeUrl } from '../utils/forgotPasswordEmail';
@@ -99,7 +99,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async confirmTheUser(@Arg('token') token: string): Promise<boolean> {
     const userId = await redis.get(confirmUserPrefix + token);
-
+   console.log(userId)
     if (!userId) {
       return false;
     }
@@ -357,7 +357,7 @@ export class UserResolver {
       return false;
     }
 
-    const userId = await redis.get(confirmUserPrefix + token);
+    const userId = await redis.get(forgotPasswordPrefix + token);
 
     if (!userId) {
       return false;
