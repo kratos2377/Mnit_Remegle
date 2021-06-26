@@ -38,7 +38,10 @@ export const CreateSpaceScreen = ({
   };
   const handleNo = () => setVisible(false);
   const handlePostNo = () => setPostVisible(false);
-  const handleSuccessNo = () => setSuccessVisible(false);
+  const handleSuccessNo = () => {
+    setSuccessVisible(false)
+    navigation.pop();
+  };
 
   const _goBack = () => {
     if (spaceName.trim().length === 0 && spaceDescription.trim().length === 0) {

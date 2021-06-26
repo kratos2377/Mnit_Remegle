@@ -9,6 +9,7 @@ import {
   Portal,
   Provider,
 } from "react-native-paper";
+import { updateAfterPost } from "../../functions/updateAfterEditPost";
 import { useUpdatePostMutation } from "../../generated/graphql";
 import { MainNavProps } from "../../utils/MainParamList";
 
@@ -42,9 +43,10 @@ export const EditPostScreen = ({
               title: title,
               content: content,
               postId: postId
-          }
+          },
+          update: (cache) => updateAfterPost(postId , title , content , cache)
       })
-        
+      console.log(response)
       setUpdateDialog(false)
       if(!(response.data?.updatePost)){
         setErrorDialog(true)

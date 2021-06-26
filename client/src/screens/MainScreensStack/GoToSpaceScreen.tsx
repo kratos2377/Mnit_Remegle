@@ -83,7 +83,8 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
       setSpaceDeleteLoadingError(true)
       return;
     }
-
+    
+    navigation.pop()
     setSpaceDeleteLoading(true)
    const response = await deleteSpace({
      variables: {
@@ -101,7 +102,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
 
    setInterval(() => {
     setSuccessDelete(false)
-    navigation.pop()
+    
    } ,  1000)
 
    

@@ -55,6 +55,9 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
       const response = await postDelete({
         variables:  {
           postId: postIdDelete
+        },
+        update: (cache) => {
+          cache.evict({id: "Post" + postIdDelete})
         }
       })
     
