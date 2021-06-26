@@ -7,6 +7,7 @@ import MenuItem from 'react-native-paper/lib/typescript/components/Menu/MenuItem
 import { useRegisterMutation } from '../../generated/graphql';
 import { AuthNavProps } from '../../utils/AuthParamList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 
@@ -44,6 +45,12 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
        setVisible(true)
        setError("Passwords Don't Match")
        return;
+     }
+
+     if(username.includes("@")) {
+      setVisible(true)
+      setError("Username Cannot Contain @. Try a Different Username")
+      return;
      }
      var email: string = `${route?.params?.mnitId.toLowerCase()}`+ "@mnit.ac.in"
      const values = {
@@ -88,10 +95,12 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
   }
 
         return (
-            <View>
+           <SafeAreaView style={{ flexDirection: 'column',  justifyContent: 'space-around', //Centered vertically
+           flex:1}}>
+               <View>
                 <View>
-                 <Text>Mnit ID:- {route.params.mnitId}</Text>
-                 <Text>Email:-  {route.params.mnitId}@mnit.ac.in</Text>
+                 <Text style={{margin: 5 , fontSize: 15}}>Mnit ID:- {route.params.mnitId}</Text>
+                 <Text style={{margin: 5 , fontSize: 15}}>Email:-  {route.params.mnitId}@mnit.ac.in</Text>
                 </View>
                <View>
                <Input placeholder ="First Name" 
@@ -142,6 +151,7 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
                </View>
               
                <View style={styles.container}>
+                 <Text style={{marginBottom:5 , fontSize:15}}>Choose Gender:- </Text>
       <Picker
         selectedValue={selectedValue}
         style={{ height: 50, width: 150 }}
@@ -173,6 +183,7 @@ export const UserRegister = ({navigation , route} : AuthNavProps<'UserRegister'>
         </Portal>
       </Provider>
             </View>
+           </SafeAreaView>
         );
 }
 

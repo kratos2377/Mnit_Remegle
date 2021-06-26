@@ -1,17 +1,20 @@
 import React, { useState } from "react";
-import { View, Text, Button } from "react-native";
-import { Input } from "react-native-elements";
+import { View} from "react-native";
+import { Input , Button , Text } from "react-native-elements";
 import {
   ActivityIndicator,
+  Card,
   Dialog,
   Paragraph,
   Portal,
   Provider,
 } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   useConfirmUserCheckMutation,
   useSendConfirmationMailMutation,
 } from "../../generated/graphql";
+import {Button as RPButton} from 'react-native-paper'
 import { AuthNavProps } from "../../utils/AuthParamList";
 
 export const RegisterScreen = ({ navigation }: AuthNavProps<"Register">) => {
@@ -75,7 +78,9 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<"Register">) => {
   const hideDialog = () => setVisible(false);
 
   return (
-    <View style={{ alignItems: "center", flexDirection: "column" }}>
+    <SafeAreaView style={{ flexDirection: 'column',  justifyContent: 'space-around', //Centered vertically
+    flex:1}}>
+       <View >
       <View>
         <Input
           placeholder="Mnit Student Id"
@@ -83,40 +88,42 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<"Register">) => {
           value={mnitID}
         />
       </View>
-      <Button title="Check ID" onPress={checkUserHandler} />
-      <Button
-        title="Go To Login"
-        onPress={() => {
-          setMnitId("");
-          navigation.replace("Login");
-        }}
-      />
+      <Button  style={{margin: 10 , width: '50%' ,  alignSelf: 'center'}} title="Check ID" onPress={checkUserHandler} />
+      <RPButton onPress={() => {
+         setMnitId("");
+         navigation.replace("Login");
+      }}> 
+        Go To Login
+      </RPButton>
 
       {error ? (
-        <View>
-          <Text>Your Mnit Id Is Not Confirmed</Text>
-          <Button
-            title="Send Confirmation Email"
+        <View style={{alignContent: 'center'}}>
+          <Card>
+          <Text style={{alignSelf: 'center' , fontSize: 20 }}>Your Mnit Id Is Not Confirmed</Text>
+          <RPButton
+          style={{margin: 10 , width: '50%' ,  alignSelf: 'center'}}
             onPress={sendConfirmationMail}
-          />
+          >
+            Send Confirmation Email
+          </RPButton>
+          </Card>
         </View>
       ) : null}
 
       {loading ? <ActivityIndicator /> : null}
 
       {mailError ? (
-        <View>
-          <Text>YSome Error Occurred. Try Again..!!</Text>
-          <Button
-            title="Send Confirmation Email"
-            onPress={sendConfirmationMail}
-          />
+        <View style={{alignContent: 'center'}}>
+          <Text style={{alignSelf: 'center' , fontSize: 20 , color: 'red'}}>Some Error Occurred. Try Again..!!</Text>
+         
         </View>
       ) : null}
       {success ? (
-        <View>
-          <Text>Mail Sent To {mnitID}@mnit.ac.in</Text>
-          <Text>If You Cannot Find Mail in Inbox. Check Your Spam Folder</Text>
+        <View style={{alignContent: 'center'}}>
+          <Card>
+          <Text style={{alignSelf: 'center' , fontSize: 20 , color: 'green'}}>Mail Sent To {mnitID}@mnit.ac.in</Text>
+          <Text style={{alignSelf: 'center' , fontSize: 15 }}>If You Cannot Find Mail in Inbox. Check Your Spam Folder</Text>
+          </Card>
         </View>
       ) : null}
       <Provider>
@@ -129,11 +136,14 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<"Register">) => {
               </Paragraph>
             </Dialog.Content>
             <Dialog.Actions>
-              <Button title="Ok" onPress={hideDialog} />
+              <RPButton  onPress={hideDialog} >
+                    OK
+                </RPButton>
             </Dialog.Actions>
           </Dialog>
         </Portal>
       </Provider>
     </View>
+    </SafeAreaView>
   );
 };

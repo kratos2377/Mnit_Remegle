@@ -40,7 +40,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     tryLogin();
-    //AsyncStorage.removeItem('userData')
+   // AsyncStorage.removeItem('userData')
   }, []);
 
   if (!loggedIn) {
