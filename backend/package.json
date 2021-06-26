@@ -6,6 +6,7 @@
       "connect-redis": "^5.2.0",
       "cors": "^2.8.5",
       "dataloader": "^2.0.0",
+      "dotenv": "^10.0.0",
       "express": "^4.17.1",
       "express-session": "^1.17.1",
       "graphql": "^15.5.0",
@@ -43,9 +44,9 @@
       "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
       "typeorm": "ts-node ./node_modules/typeorm/cli.js",
       "build": "tsc",
-    "watch": "tsc -w",
-    "typeorm:migration:gen": "ts-node ./node_modules/typeorm/cli.js migration:generate --name",
-    "typeorm:migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
+      "watch": "tsc -w",
+      "typeorm:migration:gen": "ts-node ./node_modules/typeorm/cli.js migration:generate --name",
+      "typeorm:migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run"
    },
    "keywords": [],
    "author": "",
