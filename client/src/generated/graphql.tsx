@@ -66,6 +66,7 @@ export type Mutation = {
   updateUserDetails: UserResponse;
   generateforgotPasswordUrl: Scalars['Boolean'];
   changeForgotPassword: Scalars['Boolean'];
+  doesUsernameExist: Scalars['Boolean'];
   forgotPassword: UserResponse;
   deleteUser: Scalars['Boolean'];
   logout: Scalars['Boolean'];
@@ -202,6 +203,11 @@ export type MutationChangeForgotPasswordArgs = {
   confirmnewPassword: Scalars['String'];
   newPassword: Scalars['String'];
   token: Scalars['String'];
+};
+
+
+export type MutationDoesUsernameExistArgs = {
+  username: Scalars['String'];
 };
 
 
@@ -506,6 +512,16 @@ export type DeleteSpaceMutation = (
     { __typename?: 'SpaceResponse' }
     & RegularSpaceResponseFragment
   ) }
+);
+
+export type DoesUsernameExistMutationVariables = Exact<{
+  username: Scalars['String'];
+}>;
+
+
+export type DoesUsernameExistMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'doesUsernameExist'>
 );
 
 export type FollowSpaceMutationVariables = Exact<{
@@ -1013,6 +1029,37 @@ export function useDeleteSpaceMutation(baseOptions?: Apollo.MutationHookOptions<
 export type DeleteSpaceMutationHookResult = ReturnType<typeof useDeleteSpaceMutation>;
 export type DeleteSpaceMutationResult = Apollo.MutationResult<DeleteSpaceMutation>;
 export type DeleteSpaceMutationOptions = Apollo.BaseMutationOptions<DeleteSpaceMutation, DeleteSpaceMutationVariables>;
+export const DoesUsernameExistDocument = gql`
+    mutation DoesUsernameExist($username: String!) {
+  doesUsernameExist(username: $username)
+}
+    `;
+export type DoesUsernameExistMutationFn = Apollo.MutationFunction<DoesUsernameExistMutation, DoesUsernameExistMutationVariables>;
+
+/**
+ * __useDoesUsernameExistMutation__
+ *
+ * To run a mutation, you first call `useDoesUsernameExistMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDoesUsernameExistMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [doesUsernameExistMutation, { data, loading, error }] = useDoesUsernameExistMutation({
+ *   variables: {
+ *      username: // value for 'username'
+ *   },
+ * });
+ */
+export function useDoesUsernameExistMutation(baseOptions?: Apollo.MutationHookOptions<DoesUsernameExistMutation, DoesUsernameExistMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DoesUsernameExistMutation, DoesUsernameExistMutationVariables>(DoesUsernameExistDocument, options);
+      }
+export type DoesUsernameExistMutationHookResult = ReturnType<typeof useDoesUsernameExistMutation>;
+export type DoesUsernameExistMutationResult = Apollo.MutationResult<DoesUsernameExistMutation>;
+export type DoesUsernameExistMutationOptions = Apollo.BaseMutationOptions<DoesUsernameExistMutation, DoesUsernameExistMutationVariables>;
 export const FollowSpaceDocument = gql`
     mutation FollowSpace($spaceId: String!) {
   followSpace(spaceId: $spaceId)

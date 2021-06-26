@@ -371,6 +371,27 @@ export class UserResolver {
     return true;
   }
 
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async doesUsernameExist(
+    @Arg('username') username: string,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
+    const user = (await User.findOne({
+      where: { username: username }
+    })) as User;
+
+    if (!user) {
+      return true;
+    }
+
+    if (user.id === req.session.userId) {
+      return true;
+    }
+
+    return false;
+  }
+
   @Mutation(() => UserResponse)
   @UseMiddleware(isAuth)
   async forgotPassword(

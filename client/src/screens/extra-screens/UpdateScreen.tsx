@@ -20,6 +20,7 @@ import {
 } from "react-native-paper";
 import { updateUserDetails } from "../../functions/updateUserDetails";
 import {
+  useDoesUsernameExistMutation,
   useMeLazyQuery,
   useMeQuery,
   useUpdateUserMutation,
@@ -37,6 +38,7 @@ export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
   const [instaAcc, setInstaAcc] = useState("");
   const [twitterAcc, setTwitterAcc] = useState("");
   const [updateUser] = useUpdateUserMutation();
+  const [usernameExist] = useDoesUsernameExistMutation()
   const [visible, setVisible] = useState(false);
   const { data, loading } = useMeQuery();
 
@@ -64,20 +66,17 @@ export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
     const Twitter = twitterAcc === "" ? data.me.twitterAcc : twitterAcc;
     const Insta = instaAcc === "" ? data.me.instagramAcc : instaAcc;
 
-    const response = await updateUser({
+    const response = await usernameExist({
       variables: {
-        username: userName,
-        bio: Bio,
-        twitterAcc: Twitter,
-        instagramAcc: Insta,
-      },
-    });
+        username : userName
+      }
+    })
 
     setVisible(false);
 
-    if (!response.data?.updateUserDetails?.boolResult?.value) {
+    if (!response.data) {
       setError("Username Already In Use. Try A Different One");
-      setErrorVisible(true);
+      setErrorVisible(true);    
       return;
     }
     
