@@ -5,6 +5,7 @@ export type AuthParamList = {
   Login: undefined;
   Register: undefined;
   UserRegister: undefined;
+  ForgotPassword: undefined;
 };
 
 export type AuthNavProps<T extends keyof AuthParamList> = {

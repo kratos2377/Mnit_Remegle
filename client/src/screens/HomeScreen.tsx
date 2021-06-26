@@ -23,6 +23,7 @@ import { UpdateScreen } from "./extra-screens/UpdateScreen";
 import { GoToProfileScreen } from "./MainScreensStack/GoToProfileScreen";
 import { GoToSpaceScreen } from "./MainScreensStack/GoToSpaceScreen";
 import { EditPostScreen } from "./extra-screens/EditPostScreen";
+import { ForgotPasswordScreen } from "./auth/ForgotPasswordScreen";
 
 export default function HomeScreen() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -62,6 +63,10 @@ export default function HomeScreen() {
             name="UserRegister"
             component={UserRegister}
             initialParams={{ fn: tryLogin }}
+          />
+          <Stack.Screen
+            name="ForgotPassword"
+            component={ForgotPasswordScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>
@@ -115,6 +120,7 @@ export default function HomeScreen() {
           component={EditPostScreen}
           options={{ headerShown: false }}
         />
+       
       </MainStack.Navigator>
     </NavigationContainer>
   );

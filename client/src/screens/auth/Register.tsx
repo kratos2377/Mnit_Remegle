@@ -22,6 +22,7 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<"Register">) => {
   const [confirm] = useConfirmUserCheckMutation();
   const [sendMail] = useSendConfirmationMailMutation();
   const [error, setError] = useState(false);
+  const [errorMessage , setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [mailError, setMailError] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -33,6 +34,12 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<"Register">) => {
         studentId: mnitID,
       },
     });
+
+    if(mnitID.length !== 11) {
+      setErrorMessage("MNIT ID is always of length 11. Check Your MNIT ID Again.")
+      setVisible(true)
+      return;
+    }
 
     if (!response.data?.confirmUserCheck.boolResult?.value) {
       if (
@@ -47,6 +54,7 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<"Register">) => {
         response?.data?.confirmUserCheck.boolResult?.message ==
         "user already registered"
       ) {
+        setErrorMessage("User Already Registered With this ID. Try a different MNIT ID.")
         setVisible(true);
         return;
       }
@@ -132,7 +140,7 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<"Register">) => {
             <Dialog.Title>Error</Dialog.Title>
             <Dialog.Content>
               <Paragraph>
-                User Already Registered. Try A Different Mnit Id
+               {errorMessage}
               </Paragraph>
             </Dialog.Content>
             <Dialog.Actions>

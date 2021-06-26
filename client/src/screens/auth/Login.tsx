@@ -125,7 +125,7 @@ export const LoginScreen = ({ navigation , route }: AuthNavProps<"Login"> ) => {
 
        <View style={{marginTop: 5 , flexDirection:'row' , justifyContent: 'center'}}> 
         
-       <RPButton mode="text"  onPress={() => console.log("Forgot")}> 
+       <RPButton mode="text"  onPress={() => navigation.push("ForgotPassword")}> 
         Forgot Password?
       </RPButton>
  

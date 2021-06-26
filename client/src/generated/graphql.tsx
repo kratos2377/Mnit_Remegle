@@ -195,7 +195,7 @@ export type MutationUpdateUserDetailsArgs = {
 
 
 export type MutationGenerateforgotPasswordUrlArgs = {
-  id: Scalars['String'];
+  studentId: Scalars['String'];
 };
 
 
@@ -532,6 +532,16 @@ export type FollowSpaceMutationVariables = Exact<{
 export type FollowSpaceMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'followSpace'>
+);
+
+export type GenerateForgotPasswordUrlMutationVariables = Exact<{
+  studentId: Scalars['String'];
+}>;
+
+
+export type GenerateForgotPasswordUrlMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'generateforgotPasswordUrl'>
 );
 
 export type LoginMutationVariables = Exact<{
@@ -1091,6 +1101,37 @@ export function useFollowSpaceMutation(baseOptions?: Apollo.MutationHookOptions<
 export type FollowSpaceMutationHookResult = ReturnType<typeof useFollowSpaceMutation>;
 export type FollowSpaceMutationResult = Apollo.MutationResult<FollowSpaceMutation>;
 export type FollowSpaceMutationOptions = Apollo.BaseMutationOptions<FollowSpaceMutation, FollowSpaceMutationVariables>;
+export const GenerateForgotPasswordUrlDocument = gql`
+    mutation GenerateForgotPasswordUrl($studentId: String!) {
+  generateforgotPasswordUrl(studentId: $studentId)
+}
+    `;
+export type GenerateForgotPasswordUrlMutationFn = Apollo.MutationFunction<GenerateForgotPasswordUrlMutation, GenerateForgotPasswordUrlMutationVariables>;
+
+/**
+ * __useGenerateForgotPasswordUrlMutation__
+ *
+ * To run a mutation, you first call `useGenerateForgotPasswordUrlMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGenerateForgotPasswordUrlMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [generateForgotPasswordUrlMutation, { data, loading, error }] = useGenerateForgotPasswordUrlMutation({
+ *   variables: {
+ *      studentId: // value for 'studentId'
+ *   },
+ * });
+ */
+export function useGenerateForgotPasswordUrlMutation(baseOptions?: Apollo.MutationHookOptions<GenerateForgotPasswordUrlMutation, GenerateForgotPasswordUrlMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GenerateForgotPasswordUrlMutation, GenerateForgotPasswordUrlMutationVariables>(GenerateForgotPasswordUrlDocument, options);
+      }
+export type GenerateForgotPasswordUrlMutationHookResult = ReturnType<typeof useGenerateForgotPasswordUrlMutation>;
+export type GenerateForgotPasswordUrlMutationResult = Apollo.MutationResult<GenerateForgotPasswordUrlMutation>;
+export type GenerateForgotPasswordUrlMutationOptions = Apollo.BaseMutationOptions<GenerateForgotPasswordUrlMutation, GenerateForgotPasswordUrlMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {

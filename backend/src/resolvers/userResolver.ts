@@ -336,7 +336,7 @@ export class UserResolver {
 
   @Mutation(() => Boolean)
   async generateforgotPasswordUrl(
-    @Arg('id') studentId: string
+    @Arg('studentId') studentId: string
   ): Promise<Boolean> {
     studentId = studentId.toLowerCase();
 

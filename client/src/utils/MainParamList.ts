@@ -14,6 +14,7 @@ export type MainParamList = {
   GoToProfile: undefined,
   GoToSpace: undefined;
   EditPostScreen: undefined;
+  ForgotPassword: undefined;
 };
 
 export type MainNavProps<T extends keyof MainParamList> = {

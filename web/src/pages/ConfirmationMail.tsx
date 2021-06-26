@@ -48,7 +48,7 @@ export const ConfirmationMail: React.FC<ConfirmationMailProps> = () => {
 
            console.log(response)
 
-           if(response.data)
+           if(response.data?.confirmTheUser)
            {
                setUpdated(true)
            }
