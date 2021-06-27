@@ -61,7 +61,7 @@ export const EditPostScreen = ({
     <View>
       <Appbar.Header style={{ backgroundColor: "white" }}>
         <Appbar.BackAction onPress={_goBack} />
-        <Appbar.Content title="Title" subtitle="Subtitle" />
+        <Appbar.Content title="Edit Post"  />
         <Appbar.Action icon="check" onPress={_updatePost} />
       </Appbar.Header>
 

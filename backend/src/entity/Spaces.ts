@@ -13,7 +13,7 @@ import { Post } from './Post';
 export class Spaces extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn('uuid')
-  spaceId: string;
+  id: string;
 
   @Field()
   @Column('text')

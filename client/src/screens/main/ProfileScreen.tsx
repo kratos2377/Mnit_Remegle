@@ -57,7 +57,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
           postId: postIdDelete
         },
         update: (cache) => {
-          cache.evict({id: "Post" + postIdDelete})
+          cache.evict({id: "Post:" + postIdDelete})
         }
       })
     

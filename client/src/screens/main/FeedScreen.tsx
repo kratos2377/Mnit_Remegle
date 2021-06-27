@@ -74,8 +74,11 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
 
     const response = await postDelete({
       variables: {
-        id: postIdDelete,
+        postId: postIdDelete,
       },
+      update: (cache) => {
+        cache.evict({id: "Post:" + postIdDelete})
+      }
     });
 
     if (!response.data?.deletePost) {
@@ -106,9 +109,9 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
     content: string,
     spaceId: string,
     postId: string
-  ) => {
+  ) => (
     <View style={{ flexDirection: "column" }}>
-      {userId == creatorId ? (
+      { userId === creatorId ?  (
         <View style={{ flexDirection: "row" }}>
           <IconButton
             style={{ alignSelf: "flex-end" }}
@@ -146,8 +149,8 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           </Button>
         }
       </Text>
-    </View>;
-  };
+    </View>
+  );
 
   const renderPostCardItem = (item) => (
     <View style={{ flexDirection: "row" }}>
@@ -222,13 +225,13 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
               item.item.title,
               item.item.content,
               item.item.postSpaceId,
-              item.item.id
+              item.item.id,
             )
           }
         />
 
         <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
-        <Text style={{ color: "black" }}>{item.item.content}</Text>
+        <Text style={{ color: "black" , marginHorizontal: 10 , marginBottom:5 }}>{item.item.content}</Text>
       </Card>
     </View>
   );

@@ -88,7 +88,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
     setSpaceDeleteLoading(true)
    const response = await deleteSpace({
      variables: {
-       spaceId: data?.getSpaceDetails?.spaceId
+       spaceId: data?.getSpaceDetails?.id
      }
    })
   
@@ -203,21 +203,6 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
               }} />
       </View>
       ) : null}
-
-      <Text style={{ marginBottom: 10, marginRight: 5 }}>
-         
-        {
-          <Button
-            onPress={() => {
-              navigation.navigate("GoToSpace", {
-                id: spaceId,
-              });
-            }}
-          >
-            {spaceName}
-          </Button>
-        }
-      </Text>
     </View>
   );
 
@@ -294,7 +279,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
         />
 
         <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
-        <Text style={{ color: "black" }}>{item.item.content}</Text>
+        <Text style={{ color: "black" , marginHorizontal: 10 , marginBottom:5}}>{item.item.content}</Text>
       </Card>
     </View>
   );
@@ -324,8 +309,11 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   const unFollow = async () => {
     const response = await unFollowSpace({
       variables: {
-        spaceId: data?.getSpaceDetails.spaceId,
+        spaceId: data?.getSpaceDetails.id,
       },
+      update: (cache) => {
+        console.log(cache)
+      }
     });
     if (response?.data?.unfollowSpace) {
       setFollowing(false);
@@ -338,8 +326,12 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   const Follow = async () => {
     const response = await followSpace({
       variables: {
-        spaceId: data?.getSpaceDetails.spaceId,
+        spaceId: data?.getSpaceDetails.id,
       },
+
+      update: (cache) => {
+        console.log(cache)
+      }
     });
 
     if (response?.data?.followSpace) {
@@ -359,14 +351,16 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
           <Appbar.Header style={{ backgroundColor: "white" }}>
             <Appbar.BackAction onPress={() => navigation.pop()} />
             <Appbar.Content title={data?.getSpaceDetails.spaceName} />
-            <Appbar.Action
+            {
+              following ? <Appbar.Action
               icon="postage-stamp"
               onPress={() =>
                 navigation.navigate("CreatePost", {
                   spaceName: data?.getSpaceDetails.spaceName,
                 })
               }
-            />
+            /> : null
+            }
         {
           userId === data?.getSpaceDetails.adminId ?     <Appbar.Action
           icon="delete"
@@ -376,7 +370,11 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
         {
           userId === data?.getSpaceDetails.adminId ?     <Appbar.Action
           icon="square-edit-outline"
-          onPress={() => {}}
+          onPress={() => navigation.navigate("EditSpaceScreen" , {
+            spaceId:  data?.getSpaceDetails.id,
+            spaceName: data?.getSpaceDetails.spaceName,
+            spaceDescription: data?.getSpaceDetails.spaceDescription
+          })}
         /> : null
         }
             {following ? (

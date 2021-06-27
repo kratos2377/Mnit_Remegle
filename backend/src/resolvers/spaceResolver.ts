@@ -108,7 +108,7 @@ export class SpaceResolver {
   @UseMiddleware(isAuth)
   async getSpaceDetails(@Arg('spaceId') spaceId: string): Promise<Spaces> {
     const space = (await Spaces.findOne({
-      where: { spaceId: spaceId }
+      where: { id: spaceId }
     })) as Spaces;
 
     return space;
@@ -140,7 +140,7 @@ export class SpaceResolver {
       followingIds: spaceArr
     }).save();
 
-    user.spacesFollowed.push(spaceAcc.spaceId);
+    user.spacesFollowed.push(spaceAcc.id);
     await user.save();
     return true;
   }
@@ -157,7 +157,7 @@ export class SpaceResolver {
     })) as User;
 
     const space = (await Spaces.findOne({
-      where: { spaceId: spaceId }
+      where: { id: spaceId }
     })) as Spaces;
     if (req.session.userId !== user.id) {
       return false;
@@ -169,7 +169,7 @@ export class SpaceResolver {
 
     if (!space.followingIds.includes(user.id)) {
       space.followingIds.push(user.id);
-      user.spacesFollowed.push(space.spaceId);
+      user.spacesFollowed.push(space.id);
 
       await space.save();
       await user.save();
@@ -191,7 +191,7 @@ export class SpaceResolver {
     })) as User;
 
     const spaceS = (await Spaces.findOne({
-      where: { spaceId: spaceId }
+      where: { id: spaceId }
     })) as Spaces;
 
     if (req.session.userId === spaceS.adminId) {
@@ -200,7 +200,7 @@ export class SpaceResolver {
     spaceS.followingIds = spaceS.followingIds.filter((id) => id !== user.id);
 
     user.spacesFollowed = user.spacesFollowed.filter(
-      (space) => space !== spaceS.spaceId
+      (space) => space !== spaceS.id
     );
 
     await spaceS.save();
@@ -252,22 +252,32 @@ export class SpaceResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
-  async changeDescription(
+  async updateSpaceDetails(
+    @Arg("spaceId") spaceId: string,
     @Arg('spaceName') spaceName: string,
-    @Arg('description') description: string,
+    @Arg('spaceDescription') description: string,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
     const space = (await Spaces.findOne({
-      where: { spaceName: spaceName }
+      where: { id: spaceId }
+    })) as Spaces;
+
+    const space2 = (await Spaces.findOne({
+      where: {spaceName: spaceName}
     })) as Spaces;
 
     if (space.adminId !== req.session.userId) {
       return false;
     }
 
+    if(space2){
+      return false;
+    }
+
     await Spaces.update(
-      { spaceName: spaceName },
+      { id: spaceId },
       {
+        spaceName : spaceName,
         spaceDescription: description
       }
     );
@@ -306,7 +316,7 @@ export class SpaceResolver {
       };
     }
 
-    await Spaces.delete({ spaceId: spaceId });
+    await Spaces.delete({ id: spaceId });
     await Post.delete({ postSpaceId: spaceId });
 
     return {

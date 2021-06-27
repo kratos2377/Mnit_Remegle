@@ -1,5 +1,5 @@
 fragment RegularSpace on Spaces {
-    spaceId
+    id
     adminId
     type
     spaceName

@@ -52,7 +52,7 @@ export type Mutation = {
   followSpace: Scalars['Boolean'];
   unfollowSpace: Scalars['Boolean'];
   changeSpaceType: SpaceResponse;
-  changeDescription: Scalars['Boolean'];
+  updateSpaceDetails: Scalars['Boolean'];
   deleteSpace: SpaceResponse;
   removeUserFromSpace: Scalars['Boolean'];
   banUser: Scalars['Boolean'];
@@ -127,9 +127,10 @@ export type MutationChangeSpaceTypeArgs = {
 };
 
 
-export type MutationChangeDescriptionArgs = {
-  description: Scalars['String'];
+export type MutationUpdateSpaceDetailsArgs = {
+  spaceDescription: Scalars['String'];
   spaceName: Scalars['String'];
+  spaceId: Scalars['String'];
 };
 
 
@@ -328,7 +329,7 @@ export type SpaceResponse = {
 
 export type Spaces = {
   __typename?: 'Spaces';
-  spaceId: Scalars['String'];
+  id: Scalars['String'];
   adminId: Scalars['String'];
   type: Scalars['String'];
   spaceName: Scalars['String'];
@@ -395,7 +396,7 @@ export type RegularErrorFragment = (
 
 export type RegularSpaceFragment = (
   { __typename?: 'Spaces' }
-  & Pick<Spaces, 'spaceId' | 'adminId' | 'type' | 'spaceName' | 'spaceAvatarUrl' | 'spaceDescription'>
+  & Pick<Spaces, 'id' | 'adminId' | 'type' | 'spaceName' | 'spaceAvatarUrl' | 'spaceDescription'>
 );
 
 export type RegularSpaceBoolErrorFragment = (
@@ -627,6 +628,18 @@ export type UpdatePostMutation = (
   )> }
 );
 
+export type UpdateSpaceDetailsMutationVariables = Exact<{
+  spaceId: Scalars['String'];
+  spaceName: Scalars['String'];
+  spaceDescription: Scalars['String'];
+}>;
+
+
+export type UpdateSpaceDetailsMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'updateSpaceDetails'>
+);
+
 export type UpdateUserMutationVariables = Exact<{
   username: Scalars['String'];
   bio: Scalars['String'];
@@ -729,7 +742,7 @@ export type GetSpaceDetailsQuery = (
   { __typename?: 'Query' }
   & { getSpaceDetails: (
     { __typename?: 'Spaces' }
-    & Pick<Spaces, 'spaceId' | 'adminId' | 'type' | 'spaceName' | 'spaceAvatarUrl' | 'spaceDescription'>
+    & Pick<Spaces, 'id' | 'adminId' | 'type' | 'spaceName' | 'spaceAvatarUrl' | 'spaceDescription'>
     & { bannedUserIds: Array<(
       { __typename?: 'User' }
       & Pick<User, 'id'>
@@ -798,7 +811,7 @@ export const RegularSpaceBoolErrorFragmentDoc = gql`
     `;
 export const RegularSpaceFragmentDoc = gql`
     fragment RegularSpace on Spaces {
-  spaceId
+  id
   adminId
   type
   spaceName
@@ -1359,6 +1372,43 @@ export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
 export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
+export const UpdateSpaceDetailsDocument = gql`
+    mutation UpdateSpaceDetails($spaceId: String!, $spaceName: String!, $spaceDescription: String!) {
+  updateSpaceDetails(
+    spaceId: $spaceId
+    spaceName: $spaceName
+    spaceDescription: $spaceDescription
+  )
+}
+    `;
+export type UpdateSpaceDetailsMutationFn = Apollo.MutationFunction<UpdateSpaceDetailsMutation, UpdateSpaceDetailsMutationVariables>;
+
+/**
+ * __useUpdateSpaceDetailsMutation__
+ *
+ * To run a mutation, you first call `useUpdateSpaceDetailsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSpaceDetailsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSpaceDetailsMutation, { data, loading, error }] = useUpdateSpaceDetailsMutation({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *      spaceName: // value for 'spaceName'
+ *      spaceDescription: // value for 'spaceDescription'
+ *   },
+ * });
+ */
+export function useUpdateSpaceDetailsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSpaceDetailsMutation, UpdateSpaceDetailsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSpaceDetailsMutation, UpdateSpaceDetailsMutationVariables>(UpdateSpaceDetailsDocument, options);
+      }
+export type UpdateSpaceDetailsMutationHookResult = ReturnType<typeof useUpdateSpaceDetailsMutation>;
+export type UpdateSpaceDetailsMutationResult = Apollo.MutationResult<UpdateSpaceDetailsMutation>;
+export type UpdateSpaceDetailsMutationOptions = Apollo.BaseMutationOptions<UpdateSpaceDetailsMutation, UpdateSpaceDetailsMutationVariables>;
 export const UpdateUserDocument = gql`
     mutation UpdateUser($username: String!, $bio: String!, $twitterAcc: String!, $instagramAcc: String!) {
   updateUserDetails(
@@ -1612,7 +1662,7 @@ export type GetPostsByUserIdQueryResult = Apollo.QueryResult<GetPostsByUserIdQue
 export const GetSpaceDetailsDocument = gql`
     query GetSpaceDetails($spaceId: String!) {
   getSpaceDetails(spaceId: $spaceId) {
-    spaceId
+    id
     adminId
     type
     spaceName

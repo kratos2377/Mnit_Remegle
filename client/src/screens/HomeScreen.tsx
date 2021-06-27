@@ -24,6 +24,7 @@ import { GoToProfileScreen } from "./MainScreensStack/GoToProfileScreen";
 import { GoToSpaceScreen } from "./MainScreensStack/GoToSpaceScreen";
 import { EditPostScreen } from "./extra-screens/EditPostScreen";
 import { ForgotPasswordScreen } from "./auth/ForgotPasswordScreen";
+import { EditSpaceScreen } from "./extra-screens/EditSpaceScreen";
 
 export default function HomeScreen() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -118,6 +119,11 @@ export default function HomeScreen() {
         <MainStack.Screen
           name="EditPostScreen"
           component={EditPostScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="EditSpaceScreen"
+          component={EditSpaceScreen}
           options={{ headerShown: false }}
         />
        

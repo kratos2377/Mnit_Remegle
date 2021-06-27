@@ -1,7 +1,7 @@
 import React , {useState} from 'react'
 import { View , Text, TextInput , StyleSheet, ScrollView} from 'react-native';
 import { ActivityIndicator, Appbar, Button, Dialog, Paragraph, Portal , Provider, Snackbar } from 'react-native-paper';
-import { GetFeedPostsDocument, GetFeedPostsQuery, PostSnippetFragmentDoc, useCreatePostsMutation } from '../../generated/graphql';
+import { GetFeedPostsDocument, GetFeedPostsQuery, GetPostsOfSpacesDocument, GetPostsOfSpacesQuery, PostSnippetFragmentDoc, useCreatePostsMutation } from '../../generated/graphql';
 import { MainNavProps } from '../../utils/MainParamList';
 
 interface CreatePostScreenProps {
@@ -36,10 +36,10 @@ export const CreatePostScreen = ({ navigation , route}: MainNavProps<"CreatePost
       update: (cache , {data}) => {
         cache.evict({ fieldName: "posts:{}" });
 
-      //   const postData =  cache.readQuery<GetFeedPostsQuery>({
-      //     query: GetFeedPostsDocument
-      //   })
-      // console.log(postData)
+        const postData =  cache.readQuery<GetPostsOfSpacesQuery>({
+          query: GetPostsOfSpacesDocument,
+        })
+      console.log(postData)
       // //   cache.writeQuery<GetFeedPostsQuery>({
       // //     query: GetFeedPostsDocument,
       // //     data: {

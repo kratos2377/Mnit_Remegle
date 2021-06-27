@@ -17,10 +17,10 @@ export const YourSpaces = ({ navigation } : MainNavProps<"YourSpaces">) => {
   
   const renderSpaceItem = (item) => (
     <TouchableOpacity onPress={() => navigation.navigate("GoToSpace" , {
-      id: item.item.spaceId
+      id: item.item.id
     })}>
       <View>
-        <ListItem key={item.item.spaceId} bottomDivider>
+        <ListItem key={item.item.id} bottomDivider>
           <Avatar source={{ uri: item.item.spaceAvatarUrl }} />
           <ListItem.Content>
             <ListItem.Title style={{ color: "black" }}>
@@ -48,7 +48,7 @@ export const YourSpaces = ({ navigation } : MainNavProps<"YourSpaces">) => {
       ) : (
         <FlatList
           data={data?.getAllSpacesofUser}
-          keyExtractor={(item) => item.spaceId}
+          keyExtractor={(item) => item.id}
           renderItem={renderSpaceItem}
         />
       )}

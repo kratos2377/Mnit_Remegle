@@ -1,0 +1,3 @@
+mutation UpdateSpaceDetails($spaceId: String! , $spaceName: String! , $spaceDescription: String!){
+    updateSpaceDetails(spaceId: $spaceId , spaceName: $spaceName , spaceDescription: $spaceDescription)
+}

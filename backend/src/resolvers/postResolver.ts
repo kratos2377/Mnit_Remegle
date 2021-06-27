@@ -214,7 +214,7 @@ export class PostResolver {
     const post = await Post.create({
       title: title,
       content: content,
-      postSpaceId: space.spaceId,
+      postSpaceId: space.id,
       creatorId: req.session.userId,
       spaceName: spaceName
     }).save();

@@ -91,10 +91,10 @@ export const SearchScreen = ({ navigation } : MainNavProps<"SearchScreen">) => {
 
   const renderSpaceItem = (item) =>  (
       <TouchableOpacity onPress={() =>  navigation.navigate("GoToSpace" , {
-        id: item.item.spaceId
+        id: item.item.id
       })}>
       <View style={{ margin: 10}}>
-        <ListItem key={item.item.spaceId} bottomDivider>
+        <ListItem key={item.item.id} bottomDivider>
           <Avatar source={{ uri: item.item.spaceAvatarUrl }} />
           <ListItem.Content>
             <ListItem.Title style={{ color: "black" }}>

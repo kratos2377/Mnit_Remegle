@@ -1,6 +1,6 @@
 query GetSpaceDetails($spaceId: String!) {
   getSpaceDetails(spaceId: $spaceId) {
-    spaceId
+    id
     adminId
     type
     spaceName
