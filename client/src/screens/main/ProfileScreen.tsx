@@ -12,6 +12,7 @@ import {
 } from "../../generated/graphql";
 import { MainNavProps } from "../../utils/MainParamList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { updateAfterVote } from "../../functions/updateAfterVote";
 
 interface ProfileScreenProps {}
 
@@ -121,7 +122,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
             navigation.navigate("GoToSpace" , {
               id: spaceId
             })
-          }}>{spaceName}</Button>}
+          }}>Go To Space</Button>}
         </Text>
       </View>
     );
@@ -154,6 +155,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
                     postId: item.item.id,
                     value: 1,
                   },
+                  update: (cache) => updateAfterVote(1 , item.item.id , cache)
                 });
                 setLoadingState("not-loading");
               }}
@@ -174,6 +176,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
                     postId: item.item.id,
                     value: -1,
                   },
+                  update: (cache) => updateAfterVote(-1 , item.item.id , cache)
                 });
                 setLoadingState("not-loading");
               }}

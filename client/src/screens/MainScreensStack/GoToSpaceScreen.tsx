@@ -27,6 +27,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "react-native";
 import { MainNavProps } from "../../utils/MainParamList";
 import { Avatar, ListItem } from "react-native-elements";
+import { updateAfterVote } from "../../functions/updateAfterVote";
 
 interface GoToSpaceScreenProps {}
 
@@ -65,6 +66,8 @@ export const GoToSpaceScreen = ({
     },
   });
 
+  console.log(data)
+
 const hideSpaceDialog = () => setDeleteSpaceDialog(false)
 
   const [snackVisible, setSnackVisible] = useState(false);
@@ -76,38 +79,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
       "not-loading"
     );
  const[userId , setUserId] = useState("")
-
-  const deleteSpaceHandler = async () => {
-
-    if(userId !== data?.getSpaceDetails.adminId){
-      setSpaceDeleteLoadingError(true)
-      return;
-    }
-    
-    navigation.pop()
-    setSpaceDeleteLoading(true)
-   const response = await deleteSpace({
-     variables: {
-       spaceId: data?.getSpaceDetails?.id
-     }
-   })
-  
-   setSpaceDeleteLoading(false)
-
-   if(!(response.data?.deleteSpace?.boolResult?.value)){
-
-   }
-
-   setSuccessDelete(true)
-
-   setInterval(() => {
-    setSuccessDelete(false)
-    
-   } ,  1000)
-
-   
-
- }
+ const [followingLength , setFollowingLength] = useState(0)
 
  const deletePostHandler = async () => {
 
@@ -118,6 +90,9 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   const response = await postDelete({
     variables:  {
       postId: postIdDelete
+    },
+    update: (cache) => {
+      cache.evict({id: "Post:" + postIdDelete})
     }
   })
 
@@ -151,6 +126,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
       const userData = await AsyncStorage.getItem("userData");
       const newData = JSON.parse(userData);
       setUserId(newData.id);
+      setFollowingLength(data?.getSpaceDetails.followingIds.length)
       for (var i = 0; i < data?.getSpaceDetails?.followingIds?.length; i++) {
         if (data?.getSpaceDetails.followingIds[i].id == newData.id) {
           setFollowing(true);
@@ -234,6 +210,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
                   postId: item.item.id,
                   value: 1,
                 },
+                update: (cache) => updateAfterVote(1 , item.item.id , cache)
               });
               setLoadingState("not-loading");
             }}
@@ -254,6 +231,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
                   postId: item.item.id,
                   value: -1,
                 },
+                update: (cache) => updateAfterVote(-1 , item.item.id , cache)
               });
               setLoadingState("not-loading");
             }}
@@ -307,6 +285,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   );
 
   const unFollow = async () => {
+    setFollowingLength(followingLength -1);
     const response = await unFollowSpace({
       variables: {
         spaceId: data?.getSpaceDetails.id,
@@ -324,6 +303,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   };
 
   const Follow = async () => {
+    setFollowingLength(followingLength+1)
     const response = await followSpace({
       variables: {
         spaceId: data?.getSpaceDetails.id,
@@ -364,7 +344,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
         {
           userId === data?.getSpaceDetails.adminId ?     <Appbar.Action
           icon="delete"
-          onPress={deleteSpaceHandler}
+          onPress={() => setDeleteSpaceDialog(true)}
         /> : null
         }
         {
@@ -392,7 +372,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
               style={{ margin: 10, padding: 15 }}
               title={data?.getSpaceDetails.spaceName}
               right={() =>
-                RightContent(data?.getSpaceDetails.followingIds.length)
+                RightContent(followingLength)
               }
               left={() => LeftContent(data?.getSpaceDetails.spaceAvatarUrl)}
             />
@@ -440,10 +420,13 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
         <Dialog visible={deleteSpaceDialog} onDismiss={hideSpaceDialog}>
           <Dialog.Title>Delete Space</Dialog.Title>
           <Dialog.Content>
-            <Paragraph>Are You Sure You Want To Delete {spaceDeleteName} Space</Paragraph>
+            <Paragraph>Are You Sure You Want To Delete this Space</Paragraph>
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={deleteSpaceHandler}>Yes</Button>
+            <Button onPress={() => navigation.replace("DeletingSpace" , {
+              spaceId: data?.getSpaceDetails.id,
+              spaceFn: route.params.spaceFn
+            })}>Yes</Button>
             <Button onPress={hideSpaceDialog}>No</Button>
           </Dialog.Actions>
         </Dialog>

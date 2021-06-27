@@ -16,6 +16,7 @@ export type MainParamList = {
   EditPostScreen: undefined;
   ForgotPassword: undefined;
   EditSpaceScreen: undefined;
+  DeletingSpace: undefined;
 };
 
 export type MainNavProps<T extends keyof MainParamList> = {

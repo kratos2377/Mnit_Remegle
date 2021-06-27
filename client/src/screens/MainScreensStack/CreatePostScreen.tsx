@@ -70,6 +70,7 @@ export const CreatePostScreen = ({ navigation , route}: MainNavProps<"CreatePost
                  <Appbar.Header style={{backgroundColor: 'white'}}>
       <Appbar.BackAction onPress={_goBack} />
       <Appbar.Content title="Create Post" />
+      <Appbar.Action icon="file-image" onPress={() => {}} />
       <Appbar.Action icon="check" onPress={_createPost} />
     </Appbar.Header>
        <ScrollView>

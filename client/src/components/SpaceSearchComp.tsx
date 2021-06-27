@@ -9,9 +9,9 @@ interface SpaceSearchCompProps {
 
 export const SpaceSearchComp: React.FC<SpaceSearchCompProps> = ({ space }) => {
         return (
-                <TouchableOpacity onPress={() => console.log(space.spaceId)}>
+                <TouchableOpacity onPress={() => console.log(space.id)}>
                  <View>
-                 <ListItem key={space.spaceId} bottomDivider>
+                 <ListItem key={space.id} bottomDivider>
         <Avatar source={{uri: space.spaceAvatarUrl}} />
         <ListItem.Content>
           <ListItem.Title>{space.spaceName}</ListItem.Title>

@@ -19,8 +19,6 @@ export const updateAfterSpaceDetails = (
         `,
       });
 
-      console.log(data)
-
       cache.writeFragment({
         id: "Spaces:" + spaceId,
         fragment: gql`

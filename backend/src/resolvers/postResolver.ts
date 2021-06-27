@@ -58,6 +58,7 @@ export class PostResolver {
     return updoot ? updoot.value : null;
   }
 
+
   @Query(() => Post)
   @UseMiddleware(isAuth)
   async getPostsById(@Arg('postId') postId: string): Promise<Post> {

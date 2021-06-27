@@ -145,7 +145,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
               });
             }}
           >
-            {spaceName}
+            Go to Space
           </Button>
         }
       </Text>

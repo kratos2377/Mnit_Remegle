@@ -9,10 +9,11 @@ import {
 } from "../../generated/graphql";
 import { MainNavProps } from "../../utils/MainParamList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createIconSetFromFontello } from "react-native-vector-icons";
 
 interface SearchScreenProps {}
 
-export const SearchScreen = ({ navigation } : MainNavProps<"SearchScreen">) => {
+export const SearchScreen = ({ navigation , route} : MainNavProps<"SearchScreen">) => {
   
   const [searchText, setSearchText] = useState("");
   const [userId , setUserId] = useState("")
@@ -23,6 +24,7 @@ export const SearchScreen = ({ navigation } : MainNavProps<"SearchScreen">) => {
   const [display, setDispaly] = useState<"Users" | "Spaces">("Users");
   const [displayItem, setDisplayItem] = useState([]);
   const searchHandler = async () => {
+    console.log(searchText)
     if (searchText == "") {
       setSpaces([]);
       setUsers([]);
@@ -41,12 +43,19 @@ export const SearchScreen = ({ navigation } : MainNavProps<"SearchScreen">) => {
     // console.log(searchFeedUsers)
   };
 
+
+  const changeSpaces = (id: string) => {
+    const newSpaces = searchFeedSpaces.filter((spaceItem) => spaceItem.id !== id)
+ 
+    setSpaces([...newSpaces])
+  }
+
   useEffect(() => {
     if(searchText === ""){
       setSpaces([]);
       setUsers([]);
     }
-
+  
    
   }, [searchText]);
 
@@ -61,6 +70,9 @@ export const SearchScreen = ({ navigation } : MainNavProps<"SearchScreen">) => {
  
     extractUserId()
   } , [])
+
+
+  
 
   
 
@@ -91,7 +103,8 @@ export const SearchScreen = ({ navigation } : MainNavProps<"SearchScreen">) => {
 
   const renderSpaceItem = (item) =>  (
       <TouchableOpacity onPress={() =>  navigation.navigate("GoToSpace" , {
-        id: item.item.id
+        id: item.item.id,
+        spaceFn : changeSpaces
       })}>
       <View style={{ margin: 10}}>
         <ListItem key={item.item.id} bottomDivider>
@@ -148,7 +161,7 @@ export const SearchScreen = ({ navigation } : MainNavProps<"SearchScreen">) => {
           ) : (
              <FlatList
               data={searchFeedSpaces}
-              keyExtractor={(item) => item.spaceId}
+              keyExtractor={(item) => item.id}
               renderItem={renderSpaceItem}
             />
            

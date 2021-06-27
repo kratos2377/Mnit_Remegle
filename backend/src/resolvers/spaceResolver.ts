@@ -271,7 +271,9 @@ export class SpaceResolver {
     }
 
     if(space2){
-      return false;
+      if(space2.id !== space.id){
+        return false;
+      }
     }
 
     await Spaces.update(
@@ -292,7 +294,7 @@ export class SpaceResolver {
     @Arg('spaceId') spaceId: string,
     @Ctx() { req }: MyContext
   ): Promise<SpaceResponse> {
-    const space = await Spaces.findOne({ where: { spaceId: spaceId } });
+    const space = await Spaces.findOne({ where: { id: spaceId } });
 
     if (!space) {
       return {
