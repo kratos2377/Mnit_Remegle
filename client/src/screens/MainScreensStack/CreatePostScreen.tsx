@@ -80,14 +80,14 @@ export const CreatePostScreen = ({ navigation , route}: MainNavProps<"CreatePost
           multiline={true}
           numberOfLines={5}
           placeholder="Set Title"
-          maxLength={200}
+          maxLength={100}
           onChangeText={(value) => setTitle(value)}
           value={title}
         />
         <Text
           style={{ alignItems: "flex-end", textAlign: "right", marginRight: 5 }}
         >
-          {title.length}/200
+          {title.length}/100
         </Text>
            </View>
            <View style={{margin:10 , padding: 10}}>

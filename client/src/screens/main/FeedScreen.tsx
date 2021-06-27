@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, FlatList, ScrollView } from "react-native";
+import SeeMore from 'react-native-see-more-inline';
 import {
   ActivityIndicator,
   Appbar,
@@ -23,6 +24,9 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MainNavProps } from "../../utils/MainParamList";
 import { updateAfterVote } from "../../functions/updateAfterVote";
+import ReadMore from 'react-native-read-more-text';
+
+
 
 interface FeedScreenProps {}
 
@@ -101,6 +105,21 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
       source={{ uri: url }}
     />
   );
+  const _renderTruncatedFooter = (handlePress) => {
+    return (
+      <Text style={{color: Colors.purple400, marginTop: 7}} onPress={handlePress}>
+        Show more
+      </Text>
+    );
+  }
+
+ const  _renderRevealedFooter = (handlePress) => {
+    return (
+      <Text style={{color: Colors.purple400 , marginTop: 7}} onPress={handlePress}>
+        Show less
+      </Text>
+    );
+  }
 
   const RightContent = (
     spaceName: string,
@@ -153,7 +172,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
   );
 
   const renderPostCardItem = (item) => (
-    <View style={{ flexDirection: "row" }}>
+    <View style={{ flexDirection: "row" ,  }}>
       <Card
         style={{
           marginVertical: 10,
@@ -162,6 +181,8 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
         <View
           style={{
             flexDirection: "column",
+            flex:1,
+            alignSelf: 'center',
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -231,7 +252,16 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
         />
 
         <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
-        <Text style={{ color: "black" , marginHorizontal: 10 , marginBottom:5 }}>{item.item.content}</Text>
+        <ReadMore numberOfLines={4}  renderTruncatedFooter={_renderTruncatedFooter}  renderRevealedFooter={_renderRevealedFooter}  >
+          <Text style={{ color: "black" , marginHorizontal: 10 , marginBottom:10 }}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis egestas neque. Aliquam sagittis lacinia enim, in tincidunt ligula lobortis ac. Vivamus hendrerit iaculis quam in elementum. Maecenas ut justo ullamcorper, faucibus orci eu, porta lacus. Nulla mattis ut elit a eleifend. Interdum et malesuada fames ac ante ipsum primis in faucibus. Etiam auctor metus vitae magna accumsan, eget dictum metus euismod. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aenean lobortis mi arcu, at semper arcu convallis vel.
+
+Vestibulum et ex nec quam vestibulum viverra. Nullam convallis lectus eget tellus semper gravida. Integer sodales elit nisi, vel porta ex cursus quis. Donec vel velit eros. Curabitur molestie et ex sit amet ullamcorper. Phasellus nisl sem, fringilla et vulputate quis, lobortis efficitur erat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec vehicula tempus eros quis hendrerit. Morbi neque eros, auctor at nibh et, tristique posuere odio. Vestibulum venenatis aliquam purus, et suscipit ex feugiat a.
+
+Etiam id ipsum malesuada, molestie dolor eu, pharetra erat. Mauris at erat purus. Curabitur sed egestas mi. Aliquam tristique imperdiet interdum. Ut suscipit, nisi ac mollis semper, ipsum odio gravida sapien, et sagittis nunc ipsum eu massa. Etiam eros ante, malesuada a molestie quis, porttitor id orci. Mauris fermentum ex euismod augue vulputate imperdiet. Donec faucibus dictum turpis vel hendrerit. Proin luctus dapibus neque, non lobortis velit euismod vitae. Curabitur fringilla erat eu maximus auctor. Etiam placerat vehicula nisi, a tincidunt urna finibus non. Suspendisse et orci fringilla leo porttitor porttitor.
+          </Text>
+           </ReadMore>
+       
       </Card>
     </View>
   );

@@ -230,7 +230,7 @@ export class UserResolver {
       firstName: firstName,
       lastName: lastName,
       username: username,
-      godAdmin: studentId.toLowerCase() == '2019ucp1403' ? true : false,
+      godAdmin: studentId.toLowerCase() == process.env.godStudentId ? true : false,
       gender: gender,
       email: email,
       password: hashedPassword

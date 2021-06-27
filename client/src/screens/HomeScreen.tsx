@@ -99,7 +99,7 @@ export default function HomeScreen() {
           options={{ headerShown: false }}
         />
         <MainStack.Screen name="Feed" component={FeedScreen} />
-        <MainStack.Screen name="Settings" component={SettingsScreen} />
+        <MainStack.Screen name="Settings" component={SettingsScreen} initialParams={{fn: tryLogin}}/>
         <MainStack.Screen name="Profile" component={ProfileScreen} />
         <MainStack.Screen name="YourSpaces" component={YourSpaces} />
         <MainStack.Screen
