@@ -9,9 +9,7 @@ import {
 } from "../../generated/graphql";
 import { MainNavProps } from "../../utils/MainParamList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createIconSetFromFontello } from "react-native-vector-icons";
 
-interface SearchScreenProps {}
 
 export const SearchScreen = ({ navigation , route} : MainNavProps<"SearchScreen">) => {
   

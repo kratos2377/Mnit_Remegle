@@ -3,6 +3,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.tsx' --write",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
@@ -27,6 +28,7 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
+    "react-native-bottom-modal": "^0.5.6",
     "react-native-dropdown-picker": "^5.1.19",
     "react-native-dynamic-search-bar": "^2.0.0",
     "react-native-elements": "^3.4.1",
@@ -42,7 +44,8 @@
     "react-native-text-size": "^4.0.0-rc.1",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
-    "react-native-web-lottie": "^1.4.4"
+    "react-native-web-lottie": "^1.4.4",
+    "react-spring": "^9.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -52,6 +55,7 @@
     "@graphql-codegen/typescript-react-apollo": "2.2.5",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
+    "prettier": "2.3.2",
     "typescript": "~4.0.0"
   },
   "private": true

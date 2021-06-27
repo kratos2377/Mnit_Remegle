@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, FlatList } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import {
   Appbar,
   Card,
@@ -11,8 +11,8 @@ import {
   Snackbar,
   Portal,
   Dialog,
-  Provider,
-} from "react-native-paper";
+  Provider
+} from 'react-native-paper';
 import {
   useCreateSpaceMutation,
   useDeletePostMutation,
@@ -21,94 +21,89 @@ import {
   useGetPostsOfSpacesQuery,
   useGetSpaceDetailsQuery,
   useUnFollowSpaceMutation,
-  useVoteMutation,
-} from "../../generated/graphql";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Image } from "react-native";
-import { MainNavProps } from "../../utils/MainParamList";
-import { Avatar, ListItem } from "react-native-elements";
-import { updateAfterVote } from "../../functions/updateAfterVote";
+  useVoteMutation
+} from '../../generated/graphql';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Image } from 'react-native';
+import { MainNavProps } from '../../utils/MainParamList';
+import { Avatar, ListItem } from 'react-native-elements';
+import { updateAfterVote } from '../../functions/updateAfterVote';
+import ReadMore from 'react-native-read-more-text';
 
 interface GoToSpaceScreenProps {}
 
 export const GoToSpaceScreen = ({
   navigation,
-  route,
-}: MainNavProps<"GoToSpace">) => {
-  
-  const [spaceDeleteLoading , setSpaceDeleteLoading] = useState(false);
-  
-  const [deleteSpaceDialog , setDeleteSpaceDialog] = useState(false)
-  const [spaceDeleteName , setSpaceDeleteName] = useState("")
-  const [spaceDeleteId , setSpaceDeleteId] = useState("")
-  const [successDelete , setSuccessDelete] = useState(false);
+  route
+}: MainNavProps<'GoToSpace'>) => {
+  const [spaceDeleteLoading, setSpaceDeleteLoading] = useState(false);
+
+  const [deleteSpaceDialog, setDeleteSpaceDialog] = useState(false);
+  const [spaceDeleteName, setSpaceDeleteName] = useState('');
+  const [spaceDeleteId, setSpaceDeleteId] = useState('');
+  const [successDelete, setSuccessDelete] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [following, setFollowing] = useState(false);
   const [followSpace] = useFollowSpaceMutation();
   const [unFollowSpace] = useUnFollowSpaceMutation();
-  const [deleteSpace] = useDeleteSpaceMutation()
-  const [postDeletingLoading ,setPostDeletingLoading]= useState(false)
-  const [postDeleteDialog , setPostDeleteDialog] = useState(false);
-  const [postDeleteSuccess , setPostDeleteSuccess] = useState(false);
-  const [postIdDelete , setpostIdDelete] = useState("")
-  const [postDelete] = useDeletePostMutation()
+  const [deleteSpace] = useDeleteSpaceMutation();
+  const [postDeletingLoading, setPostDeletingLoading] = useState(false);
+  const [postDeleteDialog, setPostDeleteDialog] = useState(false);
+  const [postDeleteSuccess, setPostDeleteSuccess] = useState(false);
+  const [postIdDelete, setpostIdDelete] = useState('');
+  const [postDelete] = useDeletePostMutation();
 
-  const hidePostDeleteDialog = () => setPostDeleteDialog(false)
+  const hidePostDeleteDialog = () => setPostDeleteDialog(false);
   const { data: postData } = useGetPostsOfSpacesQuery({
     variables: {
-      postSpaceId: route?.params.id,
-    },
+      postSpaceId: route?.params.id
+    }
   });
 
   const { data, loading } = useGetSpaceDetailsQuery({
     variables: {
-      spaceId: route?.params.id,
-    },
+      spaceId: route?.params.id
+    }
   });
 
-  console.log(data)
+  console.log(data);
 
-const hideSpaceDialog = () => setDeleteSpaceDialog(false)
+  const hideSpaceDialog = () => setDeleteSpaceDialog(false);
 
   const [snackVisible, setSnackVisible] = useState(false);
-  const [display, setDisplay] = useState<"Post" | "User">("Post");
+  const [display, setDisplay] = useState<'Post' | 'User'>('Post');
   const [voteMut] = useVoteMutation();
-  const[spaceDeleteLoadingError , setSpaceDeleteLoadingError] = useState(false);
-  const [loadingState, setLoadingState] =
-    useState<"updoot-loading" | "downdoot-loading" | "not-loading">(
-      "not-loading"
-    );
- const[userId , setUserId] = useState("")
- const [followingLength , setFollowingLength] = useState(0)
+  const [spaceDeleteLoadingError, setSpaceDeleteLoadingError] = useState(false);
+  const [loadingState, setLoadingState] = useState<
+    'updoot-loading' | 'downdoot-loading' | 'not-loading'
+  >('not-loading');
+  const [userId, setUserId] = useState('');
+  const [followingLength, setFollowingLength] = useState(0);
 
- const deletePostHandler = async () => {
+  const deletePostHandler = async () => {
+    setPostDeletingLoading(true);
+    setPostDeleteDialog(false);
 
-  setPostDeletingLoading(true)
-  setPostDeleteDialog(false)
+    const response = await postDelete({
+      variables: {
+        postId: postIdDelete
+      },
+      update: (cache) => {
+        cache.evict({ id: 'Post:' + postIdDelete });
+      }
+    });
 
-
-  const response = await postDelete({
-    variables:  {
-      postId: postIdDelete
-    },
-    update: (cache) => {
-      cache.evict({id: "Post:" + postIdDelete})
+    if (!response.data?.deletePost) {
     }
-  })
 
-  if(!(response.data?.deletePost)){
+    setPostDeletingLoading(false);
 
-  }
+    setPostDeleteSuccess(true);
 
-  setPostDeletingLoading(false)
-
-  setPostDeleteSuccess(true)
-
-  setInterval(() => {
-    setPostDeleteSuccess(false)
-  } , 1000)
-  
-}
+    setInterval(() => {
+      setPostDeleteSuccess(false);
+    }, 1000);
+  };
 
   const onDismissSnackBar = () => setSnackVisible(false);
 
@@ -123,25 +118,25 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
 
   useEffect(() => {
     const getDetails = async () => {
-      const userData = await AsyncStorage.getItem("userData");
+      const userData = await AsyncStorage.getItem('userData');
       const newData = JSON.parse(userData);
       setUserId(newData.id);
-      setFollowingLength(data?.getSpaceDetails.followingIds.length)
+      setFollowingLength(data?.getSpaceDetails.followingIds.length);
       for (var i = 0; i < data?.getSpaceDetails?.followingIds?.length; i++) {
         if (data?.getSpaceDetails.followingIds[i].id == newData.id) {
           setFollowing(true);
           setPageLoading(false);
           break;
-        } 
+        }
       }
 
-      setPageLoading(false)
+      setPageLoading(false);
     };
 
     getDetails();
   }, [data]);
 
-  const hideSpaceDeleateLoadingError = () => setSpaceDeleteLoadingError(false)
+  const hideSpaceDeleateLoadingError = () => setSpaceDeleteLoadingError(false);
 
   const LeftContentPost = (url: string) => (
     <Image
@@ -150,69 +145,94 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
     />
   );
 
+  const _renderTruncatedFooter = (handlePress) => {
+    return (
+      <Text
+        style={{ color: Colors.purple400, marginTop: 7 }}
+        onPress={handlePress}
+      >
+        Show more
+      </Text>
+    );
+  };
+
+  const _renderRevealedFooter = (handlePress) => {
+    return (
+      <Text
+        style={{ color: Colors.purple400, marginTop: 7 }}
+        onPress={handlePress}
+      >
+        Show less
+      </Text>
+    );
+  };
+
   const RightContentPost = (
     spaceName: string,
     creatorId: string,
     title: string,
     content: string,
     spaceId: string,
-    postId: string,
+    postId: string
   ) => (
     <View>
       {userId === creatorId ? (
-        <View style={{flexDirection:'row'}}>
-        <IconButton
-    style={{alignSelf: 'flex-end'}}
-              icon="circle-edit-outline"
-              onPress={() =>
-                navigation.navigate("EditPostScreen", {
-                  title: title,
-                  content: content,
-                  postId: postId
-                })
-              } 
-              />
-    
-              <IconButton icon="delete" onPress = {() =>  {
-                setpostIdDelete(postId)
-                setPostDeleteDialog(true)
-              }} />
-      </View>
+        <View style={{ flexDirection: 'row' }}>
+          <IconButton
+            style={{ alignSelf: 'flex-end' }}
+            icon="circle-edit-outline"
+            onPress={() =>
+              navigation.navigate('EditPostScreen', {
+                title: title,
+                content: content,
+                postId: postId
+              })
+            }
+          />
+
+          <IconButton
+            icon="delete"
+            onPress={() => {
+              setpostIdDelete(postId);
+              setPostDeleteDialog(true);
+            }}
+          />
+        </View>
       ) : null}
     </View>
   );
 
   const renderPostCardItem = (item) => (
-    <View style={{ flexDirection: "row" }}>
+    <View style={{ flexDirection: 'row' }}>
       <Card
         style={{
-          marginVertical: 10,
+          marginVertical: 10
         }}
       >
         <View
           style={{
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
           <IconButton
             icon="chevron-triple-up"
             size={20}
-            color={item.item.voteStatus === 1 ? "green" : "black"}
+            color={item.item.voteStatus === 1 ? 'green' : 'black'}
             onPress={async () => {
               if (item.item.voteStatus === 1) {
                 return;
               }
-              setLoadingState("updoot-loading");
+              setLoadingState('updoot-loading');
               await voteMut({
                 variables: {
                   postId: item.item.id,
-                  value: 1,
+                  value: 1
                 },
-                update: (cache) => updateAfterVote(1 , item.item.id , cache)
+                update: (cache) => updateAfterVote(1, item.item.id, cache)
               });
-              setLoadingState("not-loading");
+              setLoadingState('not-loading');
             }}
           />
 
@@ -220,20 +240,20 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
           <IconButton
             icon="chevron-triple-down"
             size={20}
-            color={item.item.voteStatus === -1 ? "red" : "black"}
+            color={item.item.voteStatus === -1 ? 'red' : 'black'}
             onPress={async () => {
               if (item.item.voteStatus === -1) {
                 return;
               }
-              setLoadingState("downdoot-loading");
+              setLoadingState('downdoot-loading');
               await voteMut({
                 variables: {
                   postId: item.item.id,
-                  value: -1,
+                  value: -1
                 },
-                update: (cache) => updateAfterVote(-1 , item.item.id , cache)
+                update: (cache) => updateAfterVote(-1, item.item.id, cache)
               });
-              setLoadingState("not-loading");
+              setLoadingState('not-loading');
             }}
           />
         </View>
@@ -251,13 +271,23 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
               item.item.title,
               item.item.content,
               item.item.postSpaceId,
-              item.item.id,
+              item.item.id
             )
           }
         />
 
-        <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
-        <Text style={{ color: "black" , marginHorizontal: 10 , marginBottom:5}}>{item.item.content}</Text>
+        <Text style={{ margin: 10, color: 'black' }}>{item.item.title}</Text>
+        <ReadMore
+          numberOfLines={4}
+          renderTruncatedFooter={_renderTruncatedFooter}
+          renderRevealedFooter={_renderRevealedFooter}
+        >
+          <Text
+            style={{ color: 'black', marginHorizontal: 10, marginBottom: 10 }}
+          >
+            {item.item.content}
+          </Text>
+        </ReadMore>
       </Card>
     </View>
   );
@@ -265,8 +295,8 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   const renderUserItem = (item) => (
     <TouchableOpacity
       onPress={() =>
-        navigation.navigate("GoToProfile", {
-          id: item.item.id,
+        navigation.navigate('GoToProfile', {
+          id: item.item.id
         })
       }
     >
@@ -274,7 +304,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
         <ListItem key={item.item.id} bottomDivider>
           <Avatar source={{ uri: item.item.avatarUrl }} />
           <ListItem.Content>
-            <ListItem.Title style={{ color: "black" }}>
+            <ListItem.Title style={{ color: 'black' }}>
               {item.item.fullName}
             </ListItem.Title>
             <ListItem.Subtitle>{item.item.studentId}</ListItem.Subtitle>
@@ -285,13 +315,13 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   );
 
   const unFollow = async () => {
-    setFollowingLength(followingLength -1);
+    setFollowingLength(followingLength - 1);
     const response = await unFollowSpace({
       variables: {
-        spaceId: data?.getSpaceDetails.id,
+        spaceId: data?.getSpaceDetails.id
       },
       update: (cache) => {
-        console.log(cache)
+        console.log(cache);
       }
     });
     if (response?.data?.unfollowSpace) {
@@ -303,14 +333,14 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   };
 
   const Follow = async () => {
-    setFollowingLength(followingLength+1)
+    setFollowingLength(followingLength + 1);
     const response = await followSpace({
       variables: {
-        spaceId: data?.getSpaceDetails.id,
+        spaceId: data?.getSpaceDetails.id
       },
 
       update: (cache) => {
-        console.log(cache)
+        console.log(cache);
       }
     });
 
@@ -325,38 +355,40 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
   return (
     <View>
       {pageLoading ? (
-        <ActivityIndicator style={{ justifyContent: "center" }} />
+        <ActivityIndicator style={{ justifyContent: 'center' }} />
       ) : (
         <View>
-          <Appbar.Header style={{ backgroundColor: "white" }}>
+          <Appbar.Header style={{ backgroundColor: 'white' }}>
             <Appbar.BackAction onPress={() => navigation.pop()} />
             <Appbar.Content title={data?.getSpaceDetails.spaceName} />
-            {
-              following ? <Appbar.Action
-              icon="postage-stamp"
-              onPress={() =>
-                navigation.navigate("CreatePost", {
-                  spaceName: data?.getSpaceDetails.spaceName,
-                })
-              }
-            /> : null
-            }
-        {
-          userId === data?.getSpaceDetails.adminId ?     <Appbar.Action
-          icon="delete"
-          onPress={() => setDeleteSpaceDialog(true)}
-        /> : null
-        }
-        {
-          userId === data?.getSpaceDetails.adminId ?     <Appbar.Action
-          icon="square-edit-outline"
-          onPress={() => navigation.navigate("EditSpaceScreen" , {
-            spaceId:  data?.getSpaceDetails.id,
-            spaceName: data?.getSpaceDetails.spaceName,
-            spaceDescription: data?.getSpaceDetails.spaceDescription
-          })}
-        /> : null
-        }
+            {following ? (
+              <Appbar.Action
+                icon="postage-stamp"
+                onPress={() =>
+                  navigation.navigate('CreatePost', {
+                    spaceName: data?.getSpaceDetails.spaceName
+                  })
+                }
+              />
+            ) : null}
+            {userId === data?.getSpaceDetails.adminId ? (
+              <Appbar.Action
+                icon="delete"
+                onPress={() => setDeleteSpaceDialog(true)}
+              />
+            ) : null}
+            {userId === data?.getSpaceDetails.adminId ? (
+              <Appbar.Action
+                icon="square-edit-outline"
+                onPress={() =>
+                  navigation.navigate('EditSpaceScreen', {
+                    spaceId: data?.getSpaceDetails.id,
+                    spaceName: data?.getSpaceDetails.spaceName,
+                    spaceDescription: data?.getSpaceDetails.spaceDescription
+                  })
+                }
+              />
+            ) : null}
             {following ? (
               <Button mode="text" color="red" onPress={unFollow}>
                 Unfollow
@@ -371,9 +403,7 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
             <Card.Title
               style={{ margin: 10, padding: 15 }}
               title={data?.getSpaceDetails.spaceName}
-              right={() =>
-                RightContent(followingLength)
-              }
+              right={() => RightContent(followingLength)}
               left={() => LeftContent(data?.getSpaceDetails.spaceAvatarUrl)}
             />
           </Card>
@@ -385,19 +415,19 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
           </Card>
           <View
             style={{
-              flexDirection: "row",
+              flexDirection: 'row',
               flex: 1,
-              justifyContent: "space-around",
+              justifyContent: 'space-around'
             }}
           >
-            <Button icon="postage-stamp" onPress={() => setDisplay("Post")}>
+            <Button icon="postage-stamp" onPress={() => setDisplay('Post')}>
               Spaces
             </Button>
-            <Button icon="account" onPress={() => setDisplay("User")}>
+            <Button icon="account" onPress={() => setDisplay('User')}>
               Users
             </Button>
           </View>
-          {display === "Post" ? (
+          {display === 'Post' ? (
             <FlatList
               numColumns={1}
               data={postData?.getPostsofSpace}
@@ -415,108 +445,131 @@ const hideSpaceDialog = () => setDeleteSpaceDialog(false)
         </View>
       )}
 
-<Provider>
-<Portal>
-        <Dialog visible={deleteSpaceDialog} onDismiss={hideSpaceDialog}>
-          <Dialog.Title>Delete Space</Dialog.Title>
-          <Dialog.Content>
-            <Paragraph>Are You Sure You Want To Delete this Space</Paragraph>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => navigation.replace("DeletingSpace" , {
-              spaceId: data?.getSpaceDetails.id,
-              spaceFn: route.params.spaceFn
-            })}>Yes</Button>
-            <Button onPress={hideSpaceDialog}>No</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-  </Provider>
-
-  <Provider>
-<Portal>
-        <Dialog visible={spaceDeleteLoadingError} onDismiss={() => {}}>
-          <Dialog.Content>
-            <View style={{flexDirection: 'row'}}>
-              <ActivityIndicator/>
-              <Text style={{marginLeft: 5 , fontSize: 20}}>You Are Not Admin Of Space</Text>
-            </View>
-          </Dialog.Content>
-          <Dialog.Actions> 
-          <Button onPress={hideSpaceDeleateLoadingError}>Done</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-  </Provider>
-
-
-
-<Provider>
-<Portal>
-        <Dialog visible={spaceDeleteLoading} onDismiss={() => {}}>
-          <Dialog.Content>
-            <View style={{flexDirection: 'row'}}>
-              <ActivityIndicator/>
-              <Text style={{marginLeft: 5 , fontSize: 20}}>Deleting Space...</Text>
-            </View>
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
-  </Provider>
-
-<Provider>
-<Portal>
-        <Dialog visible={successDelete} onDismiss={() => {}}>
-          <Dialog.Content>
-            <View style={{flexDirection: 'row'}}>
-              <IconButton onPress={() => {}} icon="check" color='green' />
-              <Text style={{marginLeft: 5 , fontSize: 20}}>Space Delete Successfully</Text>
-            </View>
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
-  </Provider>
-
-  <Provider>
-      <Portal>
-        <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
-          <Dialog.Content>
-            <View style={{flexDirection: 'row'}}>
-           <ActivityIndicator />
-           <Text style={{marginLeft:5 , fontSize: 20}}>Deleting Post...</Text>
-            </View>
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
+      <Provider>
+        <Portal>
+          <Dialog visible={deleteSpaceDialog} onDismiss={hideSpaceDialog}>
+            <Dialog.Title>Delete Space</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph>Are You Sure You Want To Delete this Space</Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button
+                onPress={() =>
+                  navigation.replace('DeletingSpace', {
+                    spaceId: data?.getSpaceDetails.id,
+                    spaceFn: route.params.spaceFn
+                  })
+                }
+              >
+                Yes
+              </Button>
+              <Button onPress={hideSpaceDialog}>No</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </Provider>
 
       <Provider>
-      <Portal>
-        <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
-          <Dialog.Title>Delete Post</Dialog.Title>
-          <Dialog.Content>
-            <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={deletePostHandler} color='blue'>Yes</Button>
-            <Button onPress={hidePostDeleteDialog} color='red'>No</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+        <Portal>
+          <Dialog visible={spaceDeleteLoadingError} onDismiss={() => {}}>
+            <Dialog.Content>
+              <View style={{ flexDirection: 'row' }}>
+                <ActivityIndicator />
+                <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                  You Are Not Admin Of Space
+                </Text>
+              </View>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={hideSpaceDeleateLoadingError}>Done</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </Provider>
 
       <Provider>
-      <Portal>
-        <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
-          <Dialog.Title>Success</Dialog.Title>
-          <Dialog.Content>
-            <View style={{flexDirection: 'row' , padding:10}}>
-           <IconButton onPress={() => {}} icon="check" color="green" size={30} />
-           <Text style={{marginLeft:5 , fontSize: 20}}>Deleting Post...</Text>
-            </View>
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
+        <Portal>
+          <Dialog visible={spaceDeleteLoading} onDismiss={() => {}}>
+            <Dialog.Content>
+              <View style={{ flexDirection: 'row' }}>
+                <ActivityIndicator />
+                <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                  Deleting Space...
+                </Text>
+              </View>
+            </Dialog.Content>
+          </Dialog>
+        </Portal>
+      </Provider>
+
+      <Provider>
+        <Portal>
+          <Dialog visible={successDelete} onDismiss={() => {}}>
+            <Dialog.Content>
+              <View style={{ flexDirection: 'row' }}>
+                <IconButton onPress={() => {}} icon="check" color="green" />
+                <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                  Space Delete Successfully
+                </Text>
+              </View>
+            </Dialog.Content>
+          </Dialog>
+        </Portal>
+      </Provider>
+
+      <Provider>
+        <Portal>
+          <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
+            <Dialog.Content>
+              <View style={{ flexDirection: 'row' }}>
+                <ActivityIndicator />
+                <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                  Deleting Post...
+                </Text>
+              </View>
+            </Dialog.Content>
+          </Dialog>
+        </Portal>
+      </Provider>
+
+      <Provider>
+        <Portal>
+          <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
+            <Dialog.Title>Delete Post</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={deletePostHandler} color="blue">
+                Yes
+              </Button>
+              <Button onPress={hidePostDeleteDialog} color="red">
+                No
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </Provider>
+
+      <Provider>
+        <Portal>
+          <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
+            <Dialog.Title>Success</Dialog.Title>
+            <Dialog.Content>
+              <View style={{ flexDirection: 'row', padding: 10 }}>
+                <IconButton
+                  onPress={() => {}}
+                  icon="check"
+                  color="green"
+                  size={30}
+                />
+                <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                  Deleting Post...
+                </Text>
+              </View>
+            </Dialog.Content>
+          </Dialog>
+        </Portal>
       </Provider>
 
       <Provider>

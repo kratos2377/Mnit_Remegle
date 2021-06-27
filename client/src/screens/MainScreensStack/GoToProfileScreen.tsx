@@ -1,7 +1,7 @@
 import React, { useState , useEffect} from "react";
 import { FlatList, ScrollView, View, Text, Image, ActivityIndicator } from "react-native";
 import { SocialIcon } from "react-native-elements";
-import { Appbar, Button, Card, Dialog, IconButton, Paragraph, Portal, Provider } from "react-native-paper";
+import { Appbar, Button, Card, Colors, Dialog, IconButton, Paragraph, Portal, Provider } from "react-native-paper";
 import {
   useDeletePostMutation,
   useGetPostsByUserIdQuery,
@@ -11,6 +11,7 @@ import {
 import * as Linking from "expo-linking";
 import { MainNavProps } from "../../utils/MainParamList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ReadMore from "react-native-read-more-text";
 
 interface GoToProfileScreenProps {}
 
@@ -91,6 +92,22 @@ export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfi
       />
     );
 
+
+    const _renderTruncatedFooter = (handlePress) => {
+      return (
+        <Text style={{color: Colors.purple400, marginTop: 7}} onPress={handlePress}>
+          Show more
+        </Text>
+      );
+    }
+  
+   const  _renderRevealedFooter = (handlePress) => {
+      return (
+        <Text style={{color: Colors.purple400 , marginTop: 7}} onPress={handlePress}>
+          Show less
+        </Text>
+      );
+    }
 
   
     const RightContent = (
@@ -209,7 +226,11 @@ export const GoToProfileScreen = ({navigation , route }: MainNavProps<"GoToProfi
           />
   
           <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
-          <Text style={{ color: "black" }}>{item.item.content}</Text>
+          <ReadMore numberOfLines={4}  renderTruncatedFooter={_renderTruncatedFooter}  renderRevealedFooter={_renderRevealedFooter}  >
+          <Text style={{ color: "black" , marginHorizontal: 10 , marginBottom:10 }}>
+         {item.item.content}
+          </Text>
+           </ReadMore>
         </Card>
       
       

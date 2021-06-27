@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Image, FlatList, ActivityIndicator } from "react-native";
-import { Appbar, Button, Card, Dialog, IconButton, Paragraph, Portal, Provider } from "react-native-paper";
+import { Appbar, Button, Card, Colors, Dialog, IconButton, Paragraph, Portal, Provider } from "react-native-paper";
 import { SocialIcon } from "react-native-elements";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Linking from "expo-linking";
@@ -13,6 +13,7 @@ import {
 import { MainNavProps } from "../../utils/MainParamList";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { updateAfterVote } from "../../functions/updateAfterVote";
+import ReadMore from "react-native-read-more-text";
 
 interface ProfileScreenProps {}
 
@@ -83,6 +84,22 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
         source={{ uri: url }}
       />
     );
+
+    const _renderTruncatedFooter = (handlePress) => {
+      return (
+        <Text style={{color: Colors.purple400, marginTop: 7}} onPress={handlePress}>
+          Show more
+        </Text>
+      );
+    }
+  
+   const  _renderRevealedFooter = (handlePress) => {
+      return (
+        <Text style={{color: Colors.purple400 , marginTop: 7}} onPress={handlePress}>
+          Show less
+        </Text>
+      );
+    }
   
     const RightContent = (
       spaceName: string,
@@ -202,7 +219,11 @@ export const ProfileScreen = ({ navigation }: MainNavProps<"Profile">) => {
           />
   
           <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
-          <Text style={{ color: "black" }}>{item.item.content}</Text>
+          <ReadMore numberOfLines={4}  renderTruncatedFooter={_renderTruncatedFooter}  renderRevealedFooter={_renderRevealedFooter}  >
+          <Text style={{ color: "black" , marginHorizontal: 10 , marginBottom:10 }}>
+         {item.item.content}
+          </Text>
+           </ReadMore>
         </Card>
       
       
