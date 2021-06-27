@@ -62,8 +62,6 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
       const userData = await AsyncStorage.getItem("userData");
 
       const newData = JSON.parse(userData);
-      console.log("User Data");
-      console.log(newData);
       setUserId(newData.id);
     };
 
@@ -237,7 +235,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
 
   return (
     <View style={{ flex: 1, width: "100%" }}>
-      {data == null ? (
+      {data?.getFeedPosts == null ? (
         <View style={{ alignSelf: 'center' }}>
           <Card style={{ margin: 10 , flexDirection: 'column' , padding: 10}}>
           <IconButton

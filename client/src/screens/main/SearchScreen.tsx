@@ -1,4 +1,3 @@
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList, ScrollView, SafeAreaView } from "react-native";
 import { Avatar, ListItem } from "react-native-elements";
@@ -9,13 +8,14 @@ import {
   useSearchQueryMutation,
 } from "../../generated/graphql";
 import { MainNavProps } from "../../utils/MainParamList";
-import { UserSearchScreen } from "../extra-screens/UserSearchScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface SearchScreenProps {}
 
-export const SearchScreen = ({navigation} : MainNavProps<"SearchScreen">) => {
-  const TopTab = createMaterialTopTabNavigator();
+export const SearchScreen = ({ navigation } : MainNavProps<"SearchScreen">) => {
+  
   const [searchText, setSearchText] = useState("");
+  const [userId , setUserId] = useState("")
   const [search] = useSearchQueryMutation();
   var [searchFeedSpaces, setSpaces] = useState<RegularSpaceFragment[]>([]);
   var [searchFeedUsers, setUsers] = useState<RegularUserFragment[]>([]);
@@ -46,12 +46,27 @@ export const SearchScreen = ({navigation} : MainNavProps<"SearchScreen">) => {
       setSpaces([]);
       setUsers([]);
     }
+
+   
   }, [searchText]);
+
+  useEffect(() => {
+    const extractUserId = async () => {
+      const userData = await AsyncStorage.getItem("userData");
+
+      const newData = JSON.parse(userData);
+      setUserId(newData.id);
+    }
+
+ 
+    extractUserId()
+  } , [])
 
   
 
-  const renderUserItem = (item) => (
-    <TouchableOpacity onPress={() => navigation.navigate("GoToProfile" , {
+  const renderUserItem = (item) => {
+  return (
+    userId !== item.item.id ?  <TouchableOpacity onPress={() => navigation.navigate("GoToProfile" , {
       id: item.item.id
     })}>
       <View style={{margin: 10}}>
@@ -65,8 +80,14 @@ export const SearchScreen = ({navigation} : MainNavProps<"SearchScreen">) => {
           </ListItem.Content>
         </ListItem>
       </View>
-    </TouchableOpacity>
-  );
+    </TouchableOpacity> : null
+  )
+
+     
+    
+    } 
+
+ 
 
   const renderSpaceItem = (item) =>  (
       <TouchableOpacity onPress={() =>  navigation.navigate("GoToSpace" , {

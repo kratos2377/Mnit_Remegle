@@ -34,18 +34,18 @@ export const CreatePostScreen = ({ navigation , route}: MainNavProps<"CreatePost
          spaceName: route?.params.spaceName
       },
       update: (cache , {data}) => {
-        // cache.evict({fieldName: "posts:{}}"})
+        cache.evict({ fieldName: "posts:{}" });
 
-        const postData =  cache.readQuery<GetFeedPostsQuery>({
-          query: GetFeedPostsDocument
-        })
-      console.log(postData)
-      //   cache.writeQuery<GetFeedPostsQuery>({
-      //     query: GetFeedPostsDocument,
-      //     data: {
-      //         posts: [...postData!.getFeedPosts , data!.createPosts]
-      //     }
+      //   const postData =  cache.readQuery<GetFeedPostsQuery>({
+      //     query: GetFeedPostsDocument
       //   })
+      // console.log(postData)
+      // //   cache.writeQuery<GetFeedPostsQuery>({
+      // //     query: GetFeedPostsDocument,
+      // //     data: {
+      // //         posts: [...postData!.getFeedPosts , data!.createPosts]
+      // //     }
+      // //   })
       }
   })
   if(response.data?.createPosts == null){

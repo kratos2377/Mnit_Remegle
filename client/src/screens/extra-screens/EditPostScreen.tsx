@@ -46,7 +46,6 @@ export const EditPostScreen = ({
           },
           update: (cache) => updateAfterPost(postId , title , content , cache)
       })
-      console.log(response)
       setUpdateDialog(false)
       if(!(response.data?.updatePost)){
         setErrorDialog(true)
