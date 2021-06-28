@@ -37,6 +37,10 @@ export class Post extends BaseEntity {
   content: string;
 
   @Field()
+  @Column({ type: 'text', nullable: true, default: null })
+  imageUrl: string;
+
+  @Field()
   @Column('text')
   postSpaceId: string;
 
@@ -46,10 +50,6 @@ export class Post extends BaseEntity {
   @Field()
   @Column('text')
   spaceName: string;
-
-  @Field()
-  @Column('text', { nullable: true })
-  imageUrl: string;
 
   @Field()
   @ManyToOne(() => User, (user) => user.posts)

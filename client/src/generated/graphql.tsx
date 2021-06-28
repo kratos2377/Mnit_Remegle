@@ -82,6 +82,7 @@ export type MutationVoteArgs = {
 
 export type MutationCreatePostsArgs = {
   spaceName: Scalars['String'];
+  imageUrl: Scalars['String'];
   content: Scalars['String'];
   title: Scalars['String'];
 };
@@ -240,10 +241,10 @@ export type Post = {
   points: Scalars['Float'];
   title: Scalars['String'];
   content: Scalars['String'];
+  imageUrl: Scalars['String'];
   postSpaceId: Scalars['String'];
   voteStatus?: Maybe<Scalars['Int']>;
   spaceName: Scalars['String'];
-  imageUrl: Scalars['String'];
   creator: User;
   space: Spaces;
   createdAt: Scalars['DateTime'];
@@ -377,7 +378,7 @@ export type UserandSpaces = {
 
 export type PostSnippetFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'id' | 'creatorId' | 'points' | 'voteStatus' | 'postSpaceId' | 'title' | 'content' | 'createdAt' | 'spaceName'>
+  & Pick<Post, 'id' | 'creatorId' | 'points' | 'voteStatus' | 'postSpaceId' | 'title' | 'content' | 'createdAt' | 'imageUrl' | 'spaceName'>
   & { creator: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'avatarUrl' | 'studentId' | 'fullName' | 'username'>
@@ -469,6 +470,7 @@ export type ConfirmUserCheckMutation = (
 export type CreatePostsMutationVariables = Exact<{
   title: Scalars['String'];
   content: Scalars['String'];
+  imageUrl: Scalars['String'];
   spaceName: Scalars['String'];
 }>;
 
@@ -787,6 +789,7 @@ export const PostSnippetFragmentDoc = gql`
   title
   content
   createdAt
+  imageUrl
   spaceName
   creator {
     id
@@ -922,8 +925,13 @@ export type ConfirmUserCheckMutationHookResult = ReturnType<typeof useConfirmUse
 export type ConfirmUserCheckMutationResult = Apollo.MutationResult<ConfirmUserCheckMutation>;
 export type ConfirmUserCheckMutationOptions = Apollo.BaseMutationOptions<ConfirmUserCheckMutation, ConfirmUserCheckMutationVariables>;
 export const CreatePostsDocument = gql`
-    mutation CreatePosts($title: String!, $content: String!, $spaceName: String!) {
-  createPosts(title: $title, content: $content, spaceName: $spaceName) {
+    mutation CreatePosts($title: String!, $content: String!, $imageUrl: String!, $spaceName: String!) {
+  createPosts(
+    title: $title
+    content: $content
+    imageUrl: $imageUrl
+    spaceName: $spaceName
+  ) {
     ...PostSnippet
   }
 }
@@ -945,6 +953,7 @@ export type CreatePostsMutationFn = Apollo.MutationFunction<CreatePostsMutation,
  *   variables: {
  *      title: // value for 'title'
  *      content: // value for 'content'
+ *      imageUrl: // value for 'imageUrl'
  *      spaceName: // value for 'spaceName'
  *   },
  * });

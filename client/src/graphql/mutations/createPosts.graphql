@@ -1,6 +1,15 @@
-mutation CreatePosts($title: String! , $content: String! , $spaceName: String!) {
-    createPosts(title: $title , content: $content , spaceName: $spaceName){
-        ...PostSnippet
-    }
-
+mutation CreatePosts(
+  $title: String!
+  $content: String!
+  $imageUrl: String! | null
+  $spaceName: String!
+) {
+  createPosts(
+    title: $title
+    content: $content
+    imageUrl: $imageUrl
+    spaceName: $spaceName
+  ) {
+    ...PostSnippet
+  }
 }

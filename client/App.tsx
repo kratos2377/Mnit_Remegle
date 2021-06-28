@@ -1,21 +1,41 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink
+} from '@apollo/client';
 import HomeScreen from './src/screens/HomeScreen';
 import { PaginatedPosts } from './src/generated/graphql';
+import firebase from 'firebase/app';
 
+const host =
+  Platform.OS === 'web' ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
 
-const host = Platform.OS === "web" ? 'http://localhost:5000' : "http://10.0.2.2:5000";
+const firebaseConfig = {
+  apiKey: 'AIzaSyDVZfJaN3JGRaxyttYKMY0VHVN1f_1GMMI',
+  authDomain: 'test003-8e00a.firebaseapp.com',
+  projectId: 'test003-8e00a',
+  storageBucket: 'test003-8e00a.appspot.com',
+  messagingSenderId: '811655092200',
+  appId: '1:811655092200:web:7445d4b54f6c37a105765d',
+  measurementId: 'G-DZQDMLK7NY'
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 const client = new ApolloClient({
   uri: 'http://localhost:5000/graphql',
-  credentials: "include",
+  credentials: 'include',
   cache: new InMemoryCache({
     typePolicies: {
       Query: {
         fields: {
-          posts: {     
+          posts: {
             keyArgs: [],
             merge(
               existing: PaginatedPosts | undefined,
@@ -23,21 +43,21 @@ const client = new ApolloClient({
             ): PaginatedPosts {
               return {
                 ...incoming,
-                posts: [...(existing?.posts || []), ...incoming.posts],
+                posts: [...(existing?.posts || []), ...incoming.posts]
               };
-            },
-          },
-        },
-      },
-    },
+            }
+          }
+        }
+      }
+    }
   })
 });
 
 export default function App() {
   return (
-   <ApolloProvider client={client}>
-      <HomeScreen/>
-   </ApolloProvider>
+    <ApolloProvider client={client}>
+      <HomeScreen />
+    </ApolloProvider>
   );
 }
 
@@ -46,6 +66,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
+    justifyContent: 'center'
+  }
 });

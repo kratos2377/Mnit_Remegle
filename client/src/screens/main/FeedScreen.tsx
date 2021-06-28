@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, FlatList, ScrollView } from "react-native";
-import SeeMore from "react-native-see-more-inline";
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, FlatList, ScrollView } from 'react-native';
+import SeeMore from 'react-native-see-more-inline';
 import {
   ActivityIndicator,
   Appbar,
@@ -12,35 +12,35 @@ import {
   IconButton,
   Paragraph,
   Portal,
-  Provider,
-} from "react-native-paper";
-import { FeedPostsCard } from "../../components/FeedPostsCard";
+  Provider
+} from 'react-native-paper';
+import { FeedPostsCard } from '../../components/FeedPostsCard';
 import {
   useDeletePostMutation,
   useGetFeedPostsQuery,
   useMeQuery,
-  useVoteMutation,
-} from "../../generated/graphql";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { MainNavProps } from "../../utils/MainParamList";
-import { updateAfterVote } from "../../functions/updateAfterVote";
-import ReadMore from "react-native-read-more-text";
+  useVoteMutation
+} from '../../generated/graphql';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MainNavProps } from '../../utils/MainParamList';
+import { updateAfterVote } from '../../functions/updateAfterVote';
+import ReadMore from 'react-native-read-more-text';
 
 interface FeedScreenProps {}
 
-export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
+export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
   const [voteMut] = useVoteMutation();
   const [loadingState, setLoadingState] = useState<
-    "updoot-loading" | "downdoot-loading" | "not-loading"
-  >("not-loading");
+    'updoot-loading' | 'downdoot-loading' | 'not-loading'
+  >('not-loading');
 
   const [state, setState] = useState({ open: false });
   const [postDeletingLoading, setPostDeletingLoading] = useState(false);
   const [postDeleteDialog, setPostDeleteDialog] = useState(false);
   const [postDeleteSuccess, setPostDeleteSuccess] = useState(false);
-  const [postIdDelete, setpostIdDelete] = useState("");
+  const [postIdDelete, setpostIdDelete] = useState('');
   const [postDelete] = useDeletePostMutation();
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState('');
   const [limitPost, setLimitPost] = useState<number>(15);
 
   const hidePostDeleteDialog = () => setPostDeleteDialog(false);
@@ -52,16 +52,16 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
   const { data, error, loading, fetchMore, variables } = useGetFeedPostsQuery({
     variables: {
       limit: limitPost,
-      cursor: null,
+      cursor: null
     },
-    notifyOnNetworkStatusChange: true,
+    notifyOnNetworkStatusChange: true
   });
 
   const { data: userData } = useMeQuery();
 
   useEffect(() => {
     const getDetails = async () => {
-      const userData = await AsyncStorage.getItem("userData");
+      const userData = await AsyncStorage.getItem('userData');
 
       const newData = JSON.parse(userData);
       setUserId(newData.id);
@@ -76,11 +76,11 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
 
     const response = await postDelete({
       variables: {
-        postId: postIdDelete,
+        postId: postIdDelete
       },
       update: (cache) => {
-        cache.evict({ id: "Post:" + postIdDelete });
-      },
+        cache.evict({ id: 'Post:' + postIdDelete });
+      }
     });
 
     if (!response.data?.deletePost) {
@@ -133,17 +133,17 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
     spaceId: string,
     postId: string
   ) => (
-    <View style={{ flexDirection: "column" }}>
+    <View style={{ flexDirection: 'column' }}>
       {userId === creatorId ? (
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: 'row' }}>
           <IconButton
-            style={{ alignSelf: "flex-end" }}
+            style={{ alignSelf: 'flex-end' }}
             icon="circle-edit-outline"
             onPress={() =>
-              navigation.navigate("EditPostScreen", {
+              navigation.navigate('EditPostScreen', {
                 title: title,
                 content: content,
-                postId: postId,
+                postId: postId
               })
             }
           />
@@ -163,8 +163,8 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
         {
           <Button
             onPress={() => {
-              navigation.navigate("GoToSpace", {
-                id: spaceId,
+              navigation.navigate('GoToSpace', {
+                id: spaceId
               });
             }}
           >
@@ -176,19 +176,19 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
   );
 
   const renderPostCardItem = (item) => (
-    <View style={{ flexDirection: "row" }}>
+    <View style={{ flexDirection: 'row' }}>
       <Card
         style={{
-          marginVertical: 10,
+          marginVertical: 10
         }}
       >
         <View
           style={{
-            flexDirection: "column",
+            flexDirection: 'column',
             flex: 1,
-            alignSelf: "center",
-            alignItems: "center",
-            justifyContent: "center",
+            alignSelf: 'center',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
           <IconButton
@@ -198,17 +198,17 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
               if (item.item.voteStatus === 1) {
                 return;
               }
-              setLoadingState("updoot-loading");
+              setLoadingState('updoot-loading');
               await voteMut({
                 variables: {
                   postId: item.item.id,
-                  value: 1,
+                  value: 1
                 },
-                update: (cache) => updateAfterVote(1, item.item.id, cache),
+                update: (cache) => updateAfterVote(1, item.item.id, cache)
               });
-              setLoadingState("not-loading");
+              setLoadingState('not-loading');
             }}
-            color={item.item.voteStatus === 1 ? "green" : "black"}
+            color={item.item.voteStatus === 1 ? 'green' : 'black'}
             aria-label="updoot post"
           />
 
@@ -220,17 +220,17 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
               if (item.item.voteStatus === -1) {
                 return;
               }
-              setLoadingState("downdoot-loading");
+              setLoadingState('downdoot-loading');
               await voteMut({
                 variables: {
                   postId: item.item.id,
-                  value: -1,
+                  value: -1
                 },
-                update: (cache) => updateAfterVote(-1, item.item.id, cache),
+                update: (cache) => updateAfterVote(-1, item.item.id, cache)
               });
-              setLoadingState("not-loading");
+              setLoadingState('not-loading');
             }}
-            color={item.item.voteStatus === -1 ? "red" : "black"}
+            color={item.item.voteStatus === -1 ? 'red' : 'black'}
             aria-label="downdoot post"
           />
         </View>
@@ -253,14 +253,14 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           }
         />
 
-        <Text style={{ margin: 10, color: "black" }}>{item.item.title}</Text>
+        <Text style={{ margin: 10, color: 'black' }}>{item.item.title}</Text>
         <ReadMore
           numberOfLines={4}
           renderTruncatedFooter={_renderTruncatedFooter}
           renderRevealedFooter={_renderRevealedFooter}
         >
           <Text
-            style={{ color: "black", marginHorizontal: 10, marginBottom: 10 }}
+            style={{ color: 'black', marginHorizontal: 10, marginBottom: 10 }}
           >
             {item.item.content}
           </Text>
@@ -270,10 +270,10 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
   );
 
   return (
-    <View style={{ flex: 1, width: "100%" }}>
-      {data?.getFeedPosts == null ? (
-        <View style={{ alignSelf: "center" }}>
-          <Card style={{ margin: 10, flexDirection: "column", padding: 10 }}>
+    <View style={{ flex: 1, width: '100%' }}>
+      {data?.getFeedPosts.posts.length === 0 ? (
+        <View style={{ alignSelf: 'center' }}>
+          <Card style={{ margin: 10, flexDirection: 'column', padding: 10 }}>
             <IconButton
               icon="block-helper"
               color={Colors.red500}
@@ -285,13 +285,13 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           </Card>
         </View>
       ) : (
-        <ScrollView style={{ width: "100%" }}>
+        <ScrollView style={{ width: '100%' }}>
           <Appbar.Header
             style={{
-              backgroundColor: "white",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: 30,
+              backgroundColor: 'white',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 30
             }}
           >
             <Image
@@ -299,7 +299,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
                 width: 50,
                 height: 50,
                 borderRadius: 25,
-                margin: 20,
+                margin: 20
               }}
               source={{ uri: userData?.me?.avatarUrl }}
             />
@@ -319,7 +319,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
                   setLimitPost(limitPost + 10);
                   fetchMore({
                     limit: limitPost,
-                    cursor: null,
+                    cursor: null
                   });
                 }}
               >
@@ -334,7 +334,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
         <Portal>
           <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
             <Dialog.Content>
-              <View style={{ flexDirection: "row" }}>
+              <View style={{ flexDirection: 'row' }}>
                 <ActivityIndicator />
                 <Text style={{ marginLeft: 5, fontSize: 20 }}>
                   Deleting Post...
@@ -369,7 +369,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
             <Dialog.Title>Success</Dialog.Title>
             <Dialog.Content>
-              <View style={{ flexDirection: "row", padding: 10 }}>
+              <View style={{ flexDirection: 'row', padding: 10 }}>
                 <IconButton
                   onPress={() => {}}
                   icon="check"
@@ -390,18 +390,18 @@ export const FeedScreen = ({ navigation }: MainNavProps<"Feed">) => {
           <FAB.Group
             visible={true}
             open={open}
-            icon={open ? "feather" : "fountain-pen-tip"}
+            icon={open ? 'feather' : 'fountain-pen-tip'}
             actions={[
               {
-                icon: "postage-stamp",
-                label: "Edit Profile",
-                onPress: () => navigation.navigate("UpdateScreen"),
+                icon: 'postage-stamp',
+                label: 'Edit Profile',
+                onPress: () => navigation.navigate('UpdateScreen')
               },
               {
-                icon: "account-group",
-                label: "Create Space",
-                onPress: () => navigation.navigate("CreateSpace"),
-              },
+                icon: 'account-group',
+                label: 'Create Space',
+                onPress: () => navigation.navigate('CreateSpace')
+              }
             ]}
             onStateChange={onStateChange}
             onPress={() => {

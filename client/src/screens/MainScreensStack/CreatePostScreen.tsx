@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
-} from "react-native";
-import { BottomModalProvider, useBottomModal } from "react-native-bottom-modal";
+  Image
+} from 'react-native';
 import {
   ActivityIndicator,
   Appbar,
@@ -18,64 +17,73 @@ import {
   Paragraph,
   Portal,
   Provider,
-  Snackbar,
-} from "react-native-paper";
-import {
-  GetFeedPostsDocument,
-  GetFeedPostsQuery,
-  GetPostsOfSpacesDocument,
-  GetPostsOfSpacesQuery,
-  PostSnippetFragmentDoc,
-  useCreatePostsMutation,
-} from "../../generated/graphql";
-import { MainNavProps } from "../../utils/MainParamList";
+  Snackbar
+} from 'react-native-paper';
+import { Dimensions } from 'react-native';
+import { useCreatePostsMutation } from '../../generated/graphql';
+import { MainNavProps } from '../../utils/MainParamList';
+import * as ImagePicker from 'expo-image-picker';
+import { v4 as uuidv4 } from 'uuid';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import firebase from 'firebase/app';
 
 interface CreatePostScreenProps {}
 
 export const CreatePostScreen = ({
   navigation,
-  route,
-}: MainNavProps<"CreatePost">) => {
+  route
+}: MainNavProps<'CreatePost'>) => {
   const [visible, setVisible] = useState(false);
   const [snackVisible, setSnackVisible] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [createPost] = useCreatePostsMutation();
   const [modal, setModalVisible] = useState(false);
+  const [image, setImage] = useState(null);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [userId, setuserId] = useState('');
 
   const _goBack = () => {
     setVisible(true);
   };
 
   const _createPost = async () => {
+    if (title.trim().length === 0) {
+      setError('Title Cannot Be Empty');
+      setShowError(true);
+      return;
+    }
     setCreating(true);
 
     const response = await createPost({
       variables: {
         title: title,
         content: content,
-        spaceName: route?.params.spaceName,
+        imageUrl: image === null ? '' : '',
+        spaceName: route?.params.spaceName
       },
       update: (cache, { data }) => {
-        cache.evict({ fieldName: "posts:{}" });
+        cache.evict({ fieldName: 'posts:{}' });
 
-        const postData = cache.readQuery<GetPostsOfSpacesQuery>({
-          query: GetPostsOfSpacesDocument,
-        });
-        console.log(postData);
+        // const postData = cache.readQuery<GetPostsOfSpacesQuery>({
+        //   query: GetPostsOfSpacesDocument
+        // });
+        // console.log(postData);
         // //   cache.writeQuery<GetFeedPostsQuery>({
         // //     query: GetFeedPostsDocument,
         // //     data: {
         // //         posts: [...postData!.getFeedPosts , data!.createPosts]
         // //     }
         // //   })
-      },
+      }
     });
     if (response.data?.createPosts == null) {
-      console.log("Error");
+      console.log('Error');
     }
     setCreating(false);
     setSnackVisible(true);
@@ -93,11 +101,71 @@ export const CreatePostScreen = ({
   const showOptionsModal = () => setModalVisible(true);
   const hideOptionsModal = () => setModalVisible(false);
 
-  const containerStyle = { backgroundColor: "white", padding: 20, margin: 20 };
+  const containerStyle = { backgroundColor: 'white', padding: 20, margin: 20 };
 
+  useEffect(() => {
+    setWidth(Dimensions.get('window').width);
+    setHeight(Dimensions.get('window').height);
+
+    const getUserId = async () => {
+      const userData = await AsyncStorage.getItem('userData');
+
+      const newData = JSON.parse(userData);
+
+      setuserId(newData.id);
+    };
+
+    getUserId();
+  }, []);
+
+  const uploadImage = async () => {
+    let photoId = uuidv4();
+    const childPath = `post/${userId}/${photoId}`;
+
+    const response = await fetch(image);
+    const blob = await response.blob();
+
+    const task = await firebase.storage().ref().child(childPath).put(blob);
+
+    let url = await task.ref.getDownloadURL();
+    setImageUrl(url);
+  };
+
+  const pickImageGallery = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+    setModalVisible(false);
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      // Start Loading
+      await uploadImage();
+      // stop loading
+    }
+  };
+
+  const pickImageCamera = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+    setModalVisible(false);
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
   return (
     <View>
-      <Appbar.Header style={{ backgroundColor: "white" }}>
+      <Appbar.Header style={{ backgroundColor: 'white' }}>
         <Appbar.BackAction onPress={_goBack} />
         <Appbar.Content title="Create Post" />
         <Appbar.Action icon="file-image" onPress={showOptionsModal} />
@@ -116,9 +184,9 @@ export const CreatePostScreen = ({
           />
           <Text
             style={{
-              alignItems: "flex-end",
-              textAlign: "right",
-              marginRight: 5,
+              alignItems: 'flex-end',
+              textAlign: 'right',
+              marginRight: 5
             }}
           >
             {title.length}/100
@@ -136,13 +204,29 @@ export const CreatePostScreen = ({
           />
           <Text
             style={{
-              alignItems: "flex-end",
-              textAlign: "right",
-              marginRight: 5,
+              alignItems: 'flex-end',
+              textAlign: 'right',
+              marginRight: 5
             }}
           >
             {content.length}/600
           </Text>
+        </View>
+
+        <View style={{ flexDirection: 'column', alignSelf: 'center' }}>
+          {image && (
+            <Image
+              source={{ uri: image }}
+              style={{
+                width: width * 0.8,
+                height: height * 0.5,
+                marginBottom: 10
+              }}
+            />
+          )}
+          {image && (
+            <Button onPress={() => setImage(null)}>Remove Image</Button>
+          )}
         </View>
       </ScrollView>
 
@@ -154,14 +238,14 @@ export const CreatePostScreen = ({
             contentContainerStyle={containerStyle}
           >
             <List.Item
-              onPress={() => console.log("Gallery me se")}
+              onPress={pickImageGallery}
               title="Gallery"
               description="Take Media Form Gallery"
               left={(props) => <List.Icon {...props} icon="folder-image" />}
             />
 
             <List.Item
-              onPress={() => console.log("Camera me se")}
+              onPress={pickImageCamera}
               title="Camera"
               description="Take Media From Camera"
               left={(props) => <List.Icon {...props} icon="camera" />}
@@ -182,8 +266,8 @@ export const CreatePostScreen = ({
             <Dialog.Actions>
               <Button
                 onPress={() => {
-                  setTitle("");
-                  setContent("");
+                  setTitle('');
+                  setContent('');
                   navigation.pop();
                 }}
               >
@@ -212,12 +296,12 @@ export const CreatePostScreen = ({
       <Provider>
         <Portal>
           <Dialog
-            style={{ justifyContent: "center" }}
+            style={{ justifyContent: 'center' }}
             visible={creating}
             onDismiss={() => {}}
           >
             <Dialog.Content>
-              <View style={{ flexDirection: "row", padding: 10 }}>
+              <View style={{ flexDirection: 'row', padding: 10 }}>
                 <ActivityIndicator />
                 <Text style={{ marginLeft: 10 }}>Creating Post...</Text>
               </View>
@@ -231,10 +315,10 @@ export const CreatePostScreen = ({
           visible={snackVisible}
           onDismiss={onDismissSnackBar}
           action={{
-            label: "OK",
+            label: 'OK',
             onPress: () => {
               // Do something
-            },
+            }
           }}
         >
           Post Created...!!
@@ -248,10 +332,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     margin: 10,
     padding: 15,
-    fontSize: 20,
+    fontSize: 20
   },
   container: {
     flex: 1,
-    justifyContent: "space-between",
-  },
+    justifyContent: 'space-between'
+  }
 });

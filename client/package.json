@@ -20,9 +20,12 @@
     "@react-navigation/native": "^5.9.4",
     "@react-navigation/stack": "^5.14.5",
     "@types/react-native-read-more-text": "^1.0.0",
+    "@types/uuid": "^8.3.0",
     "expo": "~41.0.1",
+    "expo-image-picker": "~10.1.4",
     "expo-linking": "~2.2.3",
     "expo-status-bar": "~1.0.4",
+    "firebase": "8.2.3",
     "graphql": "^15.5.0",
     "lottie-react-native": "3.5.0",
     "react": "16.13.1",
@@ -45,7 +48,8 @@
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
     "react-native-web-lottie": "^1.4.4",
-    "react-spring": "^9.2.3"
+    "react-spring": "^9.2.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

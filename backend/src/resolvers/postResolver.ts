@@ -58,7 +58,6 @@ export class PostResolver {
     return updoot ? updoot.value : null;
   }
 
-
   @Query(() => Post)
   @UseMiddleware(isAuth)
   async getPostsById(@Arg('postId') postId: string): Promise<Post> {
@@ -66,7 +65,6 @@ export class PostResolver {
 
     return post;
   }
-
 
   @Query(() => [Post], { nullable: true })
   async getAllPosts(): Promise<Post[] | null> {
@@ -88,20 +86,19 @@ export class PostResolver {
 
     if (cursor) {
       replacements.push(new Date(parseInt(cursor)));
-    }   
+    }
 
     const postsGot = await getRepository(Post)
-      .createQueryBuilder('post')         
+      .createQueryBuilder('post')
       .innerJoin(User, 'user', 'post.postSpaceId = ANY(user.spacesFollowed)')
       .orderBy('post."createdAt"', 'DESC')
       .where('user.id = :id  ', { id: req.session.userId })
-      .getMany()      
+      .getMany();
 
-   
-      return {
-        posts: postsGot.slice(0, realLimit),
-        hasMore: !(postsGot.length === realLimit),
-      };
+    return {
+      posts: postsGot.slice(0, realLimit),
+      hasMore: !(postsGot.length === realLimit)
+    };
   }
 
   @Mutation(() => Boolean)
@@ -197,13 +194,13 @@ export class PostResolver {
   async createPosts(
     @Arg('title') title: string,
     @Arg('content') content: string,
+    @Arg('imageUrl') imageUrl: string,
     @Arg('spaceName') spaceName: string,
     @Ctx() { req }: MyContext
   ): Promise<Post | null> {
     let space = (await Spaces.findOne({
       where: { spaceName: spaceName }
     })) as Spaces;
-
     if (!space) {
       return null;
     }
@@ -212,10 +209,13 @@ export class PostResolver {
       return null;
     }
 
+    console.log(imageUrl);
+
     const post = await Post.create({
       title: title,
       content: content,
       postSpaceId: space.id,
+      imageUrl: imageUrl,
       creatorId: req.session.userId,
       spaceName: spaceName
     }).save();
