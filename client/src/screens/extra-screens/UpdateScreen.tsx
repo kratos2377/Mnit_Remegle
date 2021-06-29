@@ -59,12 +59,26 @@ export const UpdateScreen = ({ navigation }: MainNavProps<'UpdateScreen'>) => {
   }, []);
 
   const _updateProfile = async () => {
+    if (username.trim().length < 5) {
+      setError(
+        'Username Length Must Be Greater than or equal to 5 and less than 40'
+      );
+      setErrorVisible(true);
+      return;
+    }
+
+    if (username.includes('@')) {
+      setError('Username Cannot Contain @');
+      setErrorVisible(true);
+      return;
+    }
+
     setVisible(true);
 
     const userName = username.trim() === '' ? data.me.username : username;
-    const Bio = bio.trim() === '' ? data.me.bio : bio;
-    const Twitter = twitterAcc.trim() === '' ? data.me.twitterAcc : twitterAcc;
-    const Insta = instaAcc.trim() === '' ? data.me.instagramAcc : instaAcc;
+    const Bio = bio;
+    const Twitter = twitterAcc;
+    const Insta = instaAcc;
 
     const response = await usernameExist({
       variables: {

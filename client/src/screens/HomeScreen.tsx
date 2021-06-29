@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { LoginScreen } from "./auth/Login";
-import { RegisterScreen } from "./auth/Register";
-import { AuthParamList } from "../utils/AuthParamList";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FeedScreen } from "./main/FeedScreen";
-import { SearchScreen } from "./main/SearchScreen";
-import { VideoChatScreen } from "./main/VideoChatScreen";
-import { ProfileScreen } from "./main/ProfileScreen";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { UserRegister } from "./auth/UserRegister";
-import { MainScreen } from "./MainScree";
-import { CreatePostScreen } from "./MainScreensStack/CreatePostScreen";
-import { CreateSpaceScreen } from "./MainScreensStack/CreateSpaceScreen";
-import { MainParamList } from "../utils/MainParamList";
-import { SettingsScreen } from "./extra-screens/settingsScreen";
-import { YourSpaces } from "./extra-screens/YourSpaces";
-import { UpdateScreen } from "./extra-screens/UpdateScreen";
-import { GoToProfileScreen } from "./MainScreensStack/GoToProfileScreen";
-import { GoToSpaceScreen } from "./MainScreensStack/GoToSpaceScreen";
-import { EditPostScreen } from "./extra-screens/EditPostScreen";
-import { ForgotPasswordScreen } from "./auth/ForgotPasswordScreen";
-import { EditSpaceScreen } from "./extra-screens/EditSpaceScreen";
-import { DeletingSpace } from "./extra-screens/DeletingSpace";
+import React, { useState, useEffect } from 'react';
+import { View, Text } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { LoginScreen } from './auth/Login';
+import { RegisterScreen } from './auth/Register';
+import { AuthParamList } from '../utils/AuthParamList';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { FeedScreen } from './main/FeedScreen';
+import { SearchScreen } from './main/SearchScreen';
+import { VideoChatScreen } from './main/VideoChatScreen';
+import { ProfileScreen } from './main/ProfileScreen';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { UserRegister } from './auth/UserRegister';
+import { MainScreen } from './MainScree';
+import { CreatePostScreen } from './MainScreensStack/CreatePostScreen';
+import { CreateSpaceScreen } from './MainScreensStack/CreateSpaceScreen';
+import { MainParamList } from '../utils/MainParamList';
+import { SettingsScreen } from './extra-screens/settingsScreen';
+import { YourSpaces } from './extra-screens/YourSpaces';
+import { UpdateScreen } from './extra-screens/UpdateScreen';
+import { GoToProfileScreen } from './MainScreensStack/GoToProfileScreen';
+import { GoToSpaceScreen } from './MainScreensStack/GoToSpaceScreen';
+import { EditPostScreen } from './extra-screens/EditPostScreen';
+import { ForgotPasswordScreen } from './auth/ForgotPasswordScreen';
+import { EditSpaceScreen } from './extra-screens/EditSpaceScreen';
+import { DeletingSpace } from './extra-screens/DeletingSpace';
 
 export default function HomeScreen() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -33,17 +33,19 @@ export default function HomeScreen() {
   const MainStack = createStackNavigator<MainParamList>();
 
   const tryLogin = async () => {
-    const userData = await AsyncStorage.getItem("userData");
+    const userData = await AsyncStorage.getItem('userData');
     console.log(userData);
 
     if (userData) {
       setLoggedIn(true);
+    } else {
+      setLoggedIn(false);
     }
   };
 
   useEffect(() => {
     tryLogin();
-   // AsyncStorage.removeItem('userData')
+    // AsyncStorage.removeItem('userData')
   }, []);
 
   if (!loggedIn) {
@@ -52,7 +54,7 @@ export default function HomeScreen() {
         <Stack.Navigator
           initialRouteName="Login"
           screenOptions={{
-            header: () => null,
+            header: () => null
           }}
         >
           <Stack.Screen
@@ -99,7 +101,11 @@ export default function HomeScreen() {
           options={{ headerShown: false }}
         />
         <MainStack.Screen name="Feed" component={FeedScreen} />
-        <MainStack.Screen name="Settings" component={SettingsScreen} initialParams={{fn: tryLogin}}/>
+        <MainStack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          initialParams={{ fn: tryLogin }}
+        />
         <MainStack.Screen name="Profile" component={ProfileScreen} />
         <MainStack.Screen name="YourSpaces" component={YourSpaces} />
         <MainStack.Screen
@@ -132,7 +138,6 @@ export default function HomeScreen() {
           component={DeletingSpace}
           options={{ headerShown: false }}
         />
-       
       </MainStack.Navigator>
     </NavigationContainer>
   );

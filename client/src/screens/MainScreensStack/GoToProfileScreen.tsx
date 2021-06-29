@@ -323,14 +323,22 @@ export const GoToProfileScreen = ({
               {userData?.studentDetails?.bio}
             </Text>
             <View style={{ flexDirection: 'row' }}>
-              <SocialIcon
-                type="instagram"
-                onPress={() => Linking.openURL('https://instagram.com')}
-              />
-              <SocialIcon
-                type="twitter"
-                onPress={() => Linking.openURL('https://twitter.com')}
-              />
+              {userData?.studentDetails?.instagramAcc.length === 0 ? null : (
+                <SocialIcon
+                  type="instagram"
+                  onPress={() =>
+                    Linking.openURL(userData?.studentDetails?.instagramAcc)
+                  }
+                />
+              )}
+              {userData?.studentDetails?.twitterAcc.length === 0 ? null : (
+                <SocialIcon
+                  type="twitter"
+                  onPress={() =>
+                    Linking.openURL(userData?.studentDetails?.twitterAcc)
+                  }
+                />
+              )}
             </View>
           </Card>
         </View>

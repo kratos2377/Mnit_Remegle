@@ -77,10 +77,10 @@ export const CreatePostScreen = ({
       update: (cache, { data }) => {
         cache.evict({ fieldName: 'posts:{}' });
 
-        const postData = cache.readQuery<GetPostsOfSpacesQuery>({
-          query: GetPostsOfSpacesDocument
-        });
-        console.log(postData);
+        // const postData = cache.readQuery<GetPostsOfSpacesQuery>({
+        //   query: GetPostsOfSpacesDocument
+        // });
+        // console.log(postData);
         // //   cache.writeQuery<GetFeedPostsQuery>({
         // //     query: GetFeedPostsDocument,
         // //     data: {
