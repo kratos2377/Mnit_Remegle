@@ -5,7 +5,8 @@ import {
   View,
   Text,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  Dimensions
 } from 'react-native';
 import { SocialIcon } from 'react-native-elements';
 import {
@@ -29,6 +30,7 @@ import * as Linking from 'expo-linking';
 import { MainNavProps } from '../../utils/MainParamList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReadMore from 'react-native-read-more-text';
+import { updateAfterVote } from '../../functions/updateAfterVote';
 
 interface GoToProfileScreenProps {}
 
@@ -60,6 +62,8 @@ export const GoToProfileScreen = ({
   const [postIdDelete, setpostIdDelete] = useState('');
   const [postDelete] = useDeletePostMutation();
   const [userId, setUserId] = useState('');
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
 
   const hidePostDeleteDialog = () => setPostDeleteDialog(false);
 
@@ -72,6 +76,8 @@ export const GoToProfileScreen = ({
       setUserId(newData.id);
     };
 
+    setWidth(Dimensions.get('window').width);
+    setHeight(Dimensions.get('window').height);
     getDetails();
   }, []);
 
@@ -186,6 +192,8 @@ export const GoToProfileScreen = ({
         <View
           style={{
             flexDirection: 'column',
+            flex: 1,
+            alignSelf: 'center',
             alignItems: 'center',
             justifyContent: 'center'
           }}
@@ -203,7 +211,8 @@ export const GoToProfileScreen = ({
                 variables: {
                   postId: item.item.id,
                   value: 1
-                }
+                },
+                update: (cache) => updateAfterVote(1, item.item.id, cache)
               });
               setLoadingState('not-loading');
             }}
@@ -223,7 +232,8 @@ export const GoToProfileScreen = ({
                 variables: {
                   postId: item.item.id,
                   value: -1
-                }
+                },
+                update: (cache) => updateAfterVote(-1, item.item.id, cache)
               });
               setLoadingState('not-loading');
             }}
@@ -260,6 +270,25 @@ export const GoToProfileScreen = ({
             {item.item.content}
           </Text>
         </ReadMore>
+
+        <View
+          style={{
+            flexDirection: 'column',
+            alignSelf: 'center',
+            marginTop: 20
+          }}
+        >
+          {item.item.imageUrl && (
+            <Image
+              source={{ uri: item.item.imageUrl }}
+              style={{
+                height: height * 0.5,
+                width: width * 0.8,
+                marginBottom: 10
+              }}
+            />
+          )}
+        </View>
       </Card>
     </View>
   );

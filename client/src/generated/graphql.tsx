@@ -54,6 +54,7 @@ export type Mutation = {
   changeSpaceType: SpaceResponse;
   updateSpaceDetails: Scalars['Boolean'];
   deleteSpace: SpaceResponse;
+  updateSpaceavatarUrl: Scalars['Boolean'];
   removeUserFromSpace: Scalars['Boolean'];
   banUser: Scalars['Boolean'];
   unBanUser: Scalars['Boolean'];
@@ -62,6 +63,7 @@ export type Mutation = {
   sendConfirmationMail: Scalars['Boolean'];
   registerUser: UserResponse;
   login: UserResponse;
+  updateAvatarUrl: Scalars['Boolean'];
   usernameUsers: User;
   updateUserDetails: UserResponse;
   generateforgotPasswordUrl: Scalars['Boolean'];
@@ -140,6 +142,12 @@ export type MutationDeleteSpaceArgs = {
 };
 
 
+export type MutationUpdateSpaceavatarUrlArgs = {
+  spaceAvatarUrl: Scalars['String'];
+  spaceId: Scalars['String'];
+};
+
+
 export type MutationRemoveUserFromSpaceArgs = {
   idTobeRemoved: Scalars['String'];
   spaceName: Scalars['String'];
@@ -180,6 +188,12 @@ export type MutationRegisterUserArgs = {
 export type MutationLoginArgs = {
   password: Scalars['String'];
   usernameOrEmail: Scalars['String'];
+};
+
+
+export type MutationUpdateAvatarUrlArgs = {
+  avatarUrl: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 
@@ -615,6 +629,17 @@ export type UnFollowSpaceMutation = (
   & Pick<Mutation, 'unfollowSpace'>
 );
 
+export type UpdateAvatarUrlMutationVariables = Exact<{
+  userId: Scalars['String'];
+  avatarUrl: Scalars['String'];
+}>;
+
+
+export type UpdateAvatarUrlMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'updateAvatarUrl'>
+);
+
 export type UpdatePostMutationVariables = Exact<{
   postId: Scalars['String'];
   title: Scalars['String'];
@@ -628,6 +653,17 @@ export type UpdatePostMutation = (
     { __typename?: 'Post' }
     & PostSnippetFragment
   )> }
+);
+
+export type UpdateSpaceAvatarUrlMutationVariables = Exact<{
+  spaceId: Scalars['String'];
+  spaceAvatarUrl: Scalars['String'];
+}>;
+
+
+export type UpdateSpaceAvatarUrlMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'updateSpaceavatarUrl'>
 );
 
 export type UpdateSpaceDetailsMutationVariables = Exact<{
@@ -1346,6 +1382,38 @@ export function useUnFollowSpaceMutation(baseOptions?: Apollo.MutationHookOption
 export type UnFollowSpaceMutationHookResult = ReturnType<typeof useUnFollowSpaceMutation>;
 export type UnFollowSpaceMutationResult = Apollo.MutationResult<UnFollowSpaceMutation>;
 export type UnFollowSpaceMutationOptions = Apollo.BaseMutationOptions<UnFollowSpaceMutation, UnFollowSpaceMutationVariables>;
+export const UpdateAvatarUrlDocument = gql`
+    mutation UpdateAvatarUrl($userId: String!, $avatarUrl: String!) {
+  updateAvatarUrl(userId: $userId, avatarUrl: $avatarUrl)
+}
+    `;
+export type UpdateAvatarUrlMutationFn = Apollo.MutationFunction<UpdateAvatarUrlMutation, UpdateAvatarUrlMutationVariables>;
+
+/**
+ * __useUpdateAvatarUrlMutation__
+ *
+ * To run a mutation, you first call `useUpdateAvatarUrlMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateAvatarUrlMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateAvatarUrlMutation, { data, loading, error }] = useUpdateAvatarUrlMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      avatarUrl: // value for 'avatarUrl'
+ *   },
+ * });
+ */
+export function useUpdateAvatarUrlMutation(baseOptions?: Apollo.MutationHookOptions<UpdateAvatarUrlMutation, UpdateAvatarUrlMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateAvatarUrlMutation, UpdateAvatarUrlMutationVariables>(UpdateAvatarUrlDocument, options);
+      }
+export type UpdateAvatarUrlMutationHookResult = ReturnType<typeof useUpdateAvatarUrlMutation>;
+export type UpdateAvatarUrlMutationResult = Apollo.MutationResult<UpdateAvatarUrlMutation>;
+export type UpdateAvatarUrlMutationOptions = Apollo.BaseMutationOptions<UpdateAvatarUrlMutation, UpdateAvatarUrlMutationVariables>;
 export const UpdatePostDocument = gql`
     mutation UpdatePost($postId: String!, $title: String!, $content: String!) {
   updatePost(postId: $postId, title: $title, content: $content) {
@@ -1381,6 +1449,38 @@ export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
 export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
+export const UpdateSpaceAvatarUrlDocument = gql`
+    mutation UpdateSpaceAvatarUrl($spaceId: String!, $spaceAvatarUrl: String!) {
+  updateSpaceavatarUrl(spaceId: $spaceId, spaceAvatarUrl: $spaceAvatarUrl)
+}
+    `;
+export type UpdateSpaceAvatarUrlMutationFn = Apollo.MutationFunction<UpdateSpaceAvatarUrlMutation, UpdateSpaceAvatarUrlMutationVariables>;
+
+/**
+ * __useUpdateSpaceAvatarUrlMutation__
+ *
+ * To run a mutation, you first call `useUpdateSpaceAvatarUrlMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSpaceAvatarUrlMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSpaceAvatarUrlMutation, { data, loading, error }] = useUpdateSpaceAvatarUrlMutation({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *      spaceAvatarUrl: // value for 'spaceAvatarUrl'
+ *   },
+ * });
+ */
+export function useUpdateSpaceAvatarUrlMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSpaceAvatarUrlMutation, UpdateSpaceAvatarUrlMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSpaceAvatarUrlMutation, UpdateSpaceAvatarUrlMutationVariables>(UpdateSpaceAvatarUrlDocument, options);
+      }
+export type UpdateSpaceAvatarUrlMutationHookResult = ReturnType<typeof useUpdateSpaceAvatarUrlMutation>;
+export type UpdateSpaceAvatarUrlMutationResult = Apollo.MutationResult<UpdateSpaceAvatarUrlMutation>;
+export type UpdateSpaceAvatarUrlMutationOptions = Apollo.BaseMutationOptions<UpdateSpaceAvatarUrlMutation, UpdateSpaceAvatarUrlMutationVariables>;
 export const UpdateSpaceDetailsDocument = gql`
     mutation UpdateSpaceDetails($spaceId: String!, $spaceName: String!, $spaceDescription: String!) {
   updateSpaceDetails(

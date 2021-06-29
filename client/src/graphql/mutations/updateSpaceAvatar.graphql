@@ -1,0 +1,3 @@
+mutation UpdateSpaceAvatarUrl($spaceId: String!, $spaceAvatarUrl: String!) {
+  updateSpaceavatarUrl(spaceId: $spaceId, spaceAvatarUrl: $spaceAvatarUrl)
+}

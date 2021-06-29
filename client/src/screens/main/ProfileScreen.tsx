@@ -5,7 +5,8 @@ import {
   ScrollView,
   Image,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Dimensions
 } from 'react-native';
 import {
   Appbar,
@@ -31,6 +32,11 @@ import { MainNavProps } from '../../utils/MainParamList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateAfterVote } from '../../functions/updateAfterVote';
 import ReadMore from 'react-native-read-more-text';
+import * as ImagePicker from 'expo-image-picker';
+import { v4 as uuidv4 } from 'uuid';
+import firebase from 'firebase/app';
+require('firebase/firestore');
+require('firebase/firebase-storage');
 
 interface ProfileScreenProps {}
 
@@ -49,8 +55,13 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
   const [postDeleteSuccess, setPostDeleteSuccess] = useState(false);
   const [postIdDelete, setpostIdDelete] = useState('');
   const [postDelete] = useDeletePostMutation();
-
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [modal, setModalVisible] = useState(false);
+  const [image, setImage] = useState(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
   const hidePostDeleteDialog = () => setPostDeleteDialog(false);
+  const [imageUrl, setImageUrl] = useState('');
 
   useEffect(() => {
     const getDetails = async () => {
@@ -60,6 +71,9 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
 
       userId = newData.id;
     };
+
+    setWidth(Dimensions.get('window').width);
+    setHeight(Dimensions.get('window').height);
 
     getDetails();
   }, []);
@@ -178,6 +192,8 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
         <View
           style={{
             flexDirection: 'column',
+            flex: 1,
+            alignSelf: 'center',
             alignItems: 'center',
             justifyContent: 'center'
           }}
@@ -254,9 +270,81 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
             {item.item.content}
           </Text>
         </ReadMore>
+
+        <View
+          style={{
+            flexDirection: 'column',
+            alignSelf: 'center',
+            marginTop: 20
+          }}
+        >
+          {item.item.imageUrl && (
+            <Image
+              source={{ uri: item.item.imageUrl }}
+              style={{
+                height: height * 0.5,
+                width: width * 0.8,
+                marginBottom: 10
+              }}
+            />
+          )}
+        </View>
       </Card>
     </View>
   );
+
+  const updateImageUrl = async () => {};
+
+  const uploadImage = async (image) => {
+    let photoId = uuidv4();
+    const childPath = `dp/${userId}/${photoId}`;
+    const response = await fetch(image);
+    const blob = await response.blob();
+
+    const task = await firebase.storage().ref().child(childPath).put(blob);
+
+    let url = await task.ref.getDownloadURL();
+
+    setImageUrl(url);
+  };
+
+  const pickImageGallery = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+    setModalVisible(false);
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      setPhotoUploading(true);
+      await uploadImage(result.uri);
+      // stop loading
+      setPhotoUploading(false);
+    }
+  };
+
+  const pickImageCamera = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+    setModalVisible(false);
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      setPhotoUploading(true);
+      await uploadImage(image);
+      // stop loading
+      setPhotoUploading(false);
+    }
+  };
 
   return (
     <View style={{ flex: 1, width: '100%' }}>
@@ -281,13 +369,25 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
               justifyContent: 'center'
             }}
           >
-            <Image
-              style={{ width: 200, height: 200, borderRadius: 100 }}
-              source={{ uri: userData?.me?.avatarUrl }}
-            />
-            <Text style={{ marginBottom: 10 }}>{userData?.me?.fullName}</Text>
-            <Text style={{ marginBottom: 10 }}>{userData?.me?.bio}</Text>
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{ alignSelf: 'center' }}>
+              <Image
+                style={{ width: 200, height: 200, borderRadius: 100 }}
+                source={{ uri: userData?.me?.avatarUrl }}
+              />
+            </View>
+            <View style={{ alignSelf: 'center' }}>
+              <Text style={{ marginBottom: 10, marginTop: 10 }}>
+                {userData?.me?.fullName}
+              </Text>
+              <Text style={{ marginBottom: 10 }}>{userData?.me?.bio}</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignSelf: 'center',
+                marginBottom: 10
+              }}
+            >
               <SocialIcon
                 type="instagram"
                 onPress={() => Linking.openURL('https://instagram.com')}
@@ -296,6 +396,12 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
                 type="twitter"
                 onPress={() => Linking.openURL('https://twitter.com')}
               />
+            </View>
+
+            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+              <Button onPress={() => console.log('Change DP')}>
+                Change DP
+              </Button>
             </View>
           </Card>
         </View>
@@ -352,6 +458,23 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
                 No
               </Button>
             </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </Provider>
+
+      <Provider>
+        <Portal>
+          <Dialog
+            style={{ justifyContent: 'center' }}
+            visible={photoUploading}
+            onDismiss={() => {}}
+          >
+            <Dialog.Content>
+              <View style={{ flexDirection: 'row', padding: 10 }}>
+                <ActivityIndicator />
+                <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
+              </View>
+            </Dialog.Content>
           </Dialog>
         </Portal>
       </Provider>

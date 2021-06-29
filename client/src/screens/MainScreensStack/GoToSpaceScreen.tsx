@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  Dimensions
+} from 'react-native';
 import {
   Appbar,
   Card,
@@ -11,8 +17,10 @@ import {
   Snackbar,
   Portal,
   Dialog,
-  Provider
+  Provider,
+  Colors
 } from 'react-native-paper';
+import { Feather } from '@expo/vector-icons';
 import {
   useCreateSpaceMutation,
   useDeletePostMutation,
@@ -79,6 +87,8 @@ export const GoToSpaceScreen = ({
   >('not-loading');
   const [userId, setUserId] = useState('');
   const [followingLength, setFollowingLength] = useState(0);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
 
   const deletePostHandler = async () => {
     setPostDeletingLoading(true);
@@ -132,7 +142,8 @@ export const GoToSpaceScreen = ({
 
       setPageLoading(false);
     };
-
+    setWidth(Dimensions.get('window').width);
+    setHeight(Dimensions.get('window').height);
     getDetails();
   }, [data]);
 
@@ -212,6 +223,8 @@ export const GoToSpaceScreen = ({
         <View
           style={{
             flexDirection: 'column',
+            flex: 1,
+            alignSelf: 'center',
             alignItems: 'center',
             justifyContent: 'center'
           }}
@@ -288,6 +301,25 @@ export const GoToSpaceScreen = ({
             {item.item.content}
           </Text>
         </ReadMore>
+
+        <View
+          style={{
+            flexDirection: 'column',
+            alignSelf: 'center',
+            marginTop: 20
+          }}
+        >
+          {item.item.imageUrl && (
+            <Image
+              source={{ uri: item.item.imageUrl }}
+              style={{
+                height: height * 0.5,
+                width: width * 0.8,
+                marginBottom: 10
+              }}
+            />
+          )}
+        </View>
       </Card>
     </View>
   );
@@ -315,7 +347,6 @@ export const GoToSpaceScreen = ({
   );
 
   const unFollow = async () => {
-    setFollowingLength(followingLength - 1);
     const response = await unFollowSpace({
       variables: {
         spaceId: data?.getSpaceDetails.id
@@ -326,14 +357,13 @@ export const GoToSpaceScreen = ({
     });
     if (response?.data?.unfollowSpace) {
       setFollowing(false);
+      setFollowingLength(followingLength - 1);
     } else {
       setSnackVisible(true);
     }
-    console.log(response);
   };
 
   const Follow = async () => {
-    setFollowingLength(followingLength + 1);
     const response = await followSpace({
       variables: {
         spaceId: data?.getSpaceDetails.id
@@ -346,10 +376,10 @@ export const GoToSpaceScreen = ({
 
     if (response?.data?.followSpace) {
       setFollowing(true);
+      setFollowingLength(followingLength + 1);
     } else {
       setSnackVisible(true);
     }
-    console.log(response);
   };
 
   return (
@@ -361,6 +391,14 @@ export const GoToSpaceScreen = ({
           <Appbar.Header style={{ backgroundColor: 'white' }}>
             <Appbar.BackAction onPress={() => navigation.pop()} />
             <Appbar.Content title={data?.getSpaceDetails.spaceName} />
+            {userId === data?.getSpaceDetails.adminId ? (
+              <IconButton
+                icon={(props) => (
+                  <Feather name="aperture" size={24} color="black" />
+                )}
+                onPress={() => {}}
+              />
+            ) : null}
             {following ? (
               <Appbar.Action
                 icon="postage-stamp"

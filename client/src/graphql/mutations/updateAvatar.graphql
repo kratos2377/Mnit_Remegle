@@ -1,0 +1,3 @@
+mutation UpdateAvatarUrl($userId: String!, $avatarUrl: String!) {
+  updateAvatarUrl(userId: $userId, avatarUrl: $avatarUrl)
+}

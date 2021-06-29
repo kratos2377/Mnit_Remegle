@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  ScrollView,
+  Dimensions
+} from 'react-native';
 import SeeMore from 'react-native-see-more-inline';
 import {
   ActivityIndicator,
@@ -42,6 +49,8 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
   const [postDelete] = useDeletePostMutation();
   const [userId, setUserId] = useState('');
   const [limitPost, setLimitPost] = useState<number>(15);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
 
   const hidePostDeleteDialog = () => setPostDeleteDialog(false);
 
@@ -59,6 +68,8 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
 
   const { data: userData } = useMeQuery();
 
+  console.log(data?.getFeedPosts.posts);
+
   useEffect(() => {
     const getDetails = async () => {
       const userData = await AsyncStorage.getItem('userData');
@@ -66,6 +77,9 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
       const newData = JSON.parse(userData);
       setUserId(newData.id);
     };
+
+    setWidth(Dimensions.get('window').width);
+    setHeight(Dimensions.get('window').height);
 
     getDetails();
   }, []);
@@ -265,6 +279,25 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
             {item.item.content}
           </Text>
         </ReadMore>
+
+        <View
+          style={{
+            flexDirection: 'column',
+            alignSelf: 'center',
+            marginTop: 20
+          }}
+        >
+          {item.item.imageUrl && (
+            <Image
+              source={{ uri: item.item.imageUrl }}
+              style={{
+                height: height * 0.5,
+                width: width * 0.8,
+                marginBottom: 10
+              }}
+            />
+          )}
+        </View>
       </Card>
     </View>
   );

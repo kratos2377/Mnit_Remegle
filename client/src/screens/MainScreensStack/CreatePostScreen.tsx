@@ -26,6 +26,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { v4 as uuidv4 } from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebase from 'firebase/app';
+require('firebase/firestore');
+require('firebase/firebase-storage');
 
 interface CreatePostScreenProps {}
 
@@ -47,6 +49,7 @@ export const CreatePostScreen = ({
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const [userId, setuserId] = useState('');
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   const _goBack = () => {
     setVisible(true);
@@ -59,12 +62,11 @@ export const CreatePostScreen = ({
       return;
     }
     setCreating(true);
-
     const response = await createPost({
       variables: {
         title: title,
         content: content,
-        imageUrl: image === null ? '' : '',
+        imageUrl: imageUrl.length === 0 ? '' : imageUrl,
         spaceName: route?.params.spaceName
       },
       update: (cache, { data }) => {
@@ -118,16 +120,16 @@ export const CreatePostScreen = ({
     getUserId();
   }, []);
 
-  const uploadImage = async () => {
+  const uploadImage = async (image) => {
     let photoId = uuidv4();
     const childPath = `post/${userId}/${photoId}`;
-
     const response = await fetch(image);
     const blob = await response.blob();
 
     const task = await firebase.storage().ref().child(childPath).put(blob);
 
     let url = await task.ref.getDownloadURL();
+
     setImageUrl(url);
   };
 
@@ -143,9 +145,10 @@ export const CreatePostScreen = ({
 
     if (!result.cancelled) {
       setImage(result.uri);
-      // Start Loading
-      await uploadImage();
+      setPhotoUploading(true);
+      await uploadImage(result.uri);
       // stop loading
+      setPhotoUploading(false);
     }
   };
 
@@ -161,6 +164,10 @@ export const CreatePostScreen = ({
 
     if (!result.cancelled) {
       setImage(result.uri);
+      setPhotoUploading(true);
+      await uploadImage(image);
+      // stop loading
+      setPhotoUploading(false);
     }
   };
   return (
@@ -198,7 +205,7 @@ export const CreatePostScreen = ({
             multiline={true}
             numberOfLines={12}
             placeholder="Set Content"
-            maxLength={600}
+            maxLength={1000}
             onChangeText={(value) => setContent(value)}
             value={content}
           />
@@ -209,7 +216,7 @@ export const CreatePostScreen = ({
               marginRight: 5
             }}
           >
-            {content.length}/600
+            {content.length}/1000
           </Text>
         </View>
 
@@ -304,6 +311,23 @@ export const CreatePostScreen = ({
               <View style={{ flexDirection: 'row', padding: 10 }}>
                 <ActivityIndicator />
                 <Text style={{ marginLeft: 10 }}>Creating Post...</Text>
+              </View>
+            </Dialog.Content>
+          </Dialog>
+        </Portal>
+      </Provider>
+
+      <Provider>
+        <Portal>
+          <Dialog
+            style={{ justifyContent: 'center' }}
+            visible={photoUploading}
+            onDismiss={() => {}}
+          >
+            <Dialog.Content>
+              <View style={{ flexDirection: 'row', padding: 10 }}>
+                <ActivityIndicator />
+                <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
               </View>
             </Dialog.Content>
           </Dialog>

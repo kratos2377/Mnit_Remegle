@@ -99,7 +99,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async confirmTheUser(@Arg('token') token: string): Promise<boolean> {
     const userId = await redis.get(confirmUserPrefix + token);
-   console.log(userId)
+    console.log(userId);
     if (!userId) {
       return false;
     }
@@ -230,7 +230,8 @@ export class UserResolver {
       firstName: firstName,
       lastName: lastName,
       username: username,
-      godAdmin: studentId.toLowerCase() == process.env.godStudentId ? true : false,
+      godAdmin:
+        studentId.toLowerCase() == process.env.godStudentId ? true : false,
       gender: gender,
       email: email,
       password: hashedPassword
@@ -285,6 +286,22 @@ export class UserResolver {
       await redis.lpush(`${user.id}`, req.sessionID);
     }
     return { user, sessionId: req.sessionID };
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async updateAvatarUrl(
+    @Arg('userId') userId: string,
+    @Arg('avatarUrl') avatarUrl: string
+  ): Promise<boolean> {
+    const user = (await User.findOne({ where: { id: userId } })) as User;
+
+    if (!user) {
+      return false;
+    }
+
+    await User.update({ id: userId }, { avatarUrl: avatarUrl });
+    return true;
   }
 
   @Mutation(() => User)

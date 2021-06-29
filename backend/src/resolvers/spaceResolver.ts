@@ -151,7 +151,6 @@ export class SpaceResolver {
     @Arg('spaceId') spaceId: string,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
-
     const user = (await User.findOne({
       where: { id: req.session.userId }
     })) as User;
@@ -253,7 +252,7 @@ export class SpaceResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async updateSpaceDetails(
-    @Arg("spaceId") spaceId: string,
+    @Arg('spaceId') spaceId: string,
     @Arg('spaceName') spaceName: string,
     @Arg('spaceDescription') description: string,
     @Ctx() { req }: MyContext
@@ -263,15 +262,15 @@ export class SpaceResolver {
     })) as Spaces;
 
     const space2 = (await Spaces.findOne({
-      where: {spaceName: spaceName}
+      where: { spaceName: spaceName }
     })) as Spaces;
 
     if (space.adminId !== req.session.userId) {
       return false;
     }
 
-    if(space2){
-      if(space2.id !== space.id){
+    if (space2) {
+      if (space2.id !== space.id) {
         return false;
       }
     }
@@ -279,7 +278,7 @@ export class SpaceResolver {
     await Spaces.update(
       { id: spaceId },
       {
-        spaceName : spaceName,
+        spaceName: spaceName,
         spaceDescription: description
       }
     );
@@ -327,6 +326,22 @@ export class SpaceResolver {
         message: 'space deleted'
       }
     };
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async updateSpaceavatarUrl(
+    @Arg('spaceId') spaceId: string,
+    @Arg('spaceAvatarUrl') spaceAvatarUrl: string
+  ): Promise<boolean> {
+    const space = (await Spaces.findOne({ where: { id: spaceId } })) as Spaces;
+
+    if (!space) {
+      return false;
+    }
+
+    await Spaces.update({ id: spaceId }, { spaceAvatarUrl: spaceAvatarUrl });
+    return true;
   }
 
   @Mutation(() => Boolean)

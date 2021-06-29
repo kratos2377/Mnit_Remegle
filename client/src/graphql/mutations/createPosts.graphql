@@ -1,7 +1,7 @@
 mutation CreatePosts(
   $title: String!
   $content: String!
-  $imageUrl: String! | null
+  $imageUrl: String!
   $spaceName: String!
 ) {
   createPosts(
