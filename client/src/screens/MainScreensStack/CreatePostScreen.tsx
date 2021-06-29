@@ -20,7 +20,10 @@ import {
   Snackbar
 } from 'react-native-paper';
 import { Dimensions } from 'react-native';
-import { useCreatePostsMutation } from '../../generated/graphql';
+import {
+  useCreatePostsMutation,
+  useUpdateSpaceAvatarUrlMutation
+} from '../../generated/graphql';
 import { MainNavProps } from '../../utils/MainParamList';
 import * as ImagePicker from 'expo-image-picker';
 import { v4 as uuidv4 } from 'uuid';

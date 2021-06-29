@@ -15,6 +15,8 @@ import {
   Colors,
   Dialog,
   IconButton,
+  List,
+  Modal,
   Paragraph,
   Portal,
   Provider
@@ -26,6 +28,7 @@ import {
   useDeletePostMutation,
   useGetAllUserPostsQuery,
   useMeQuery,
+  useUpdateAvatarUrlMutation,
   useVoteMutation
 } from '../../generated/graphql';
 import { MainNavProps } from '../../utils/MainParamList';
@@ -49,7 +52,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
     'updoot-loading' | 'downdoot-loading' | 'not-loading'
   >('not-loading');
 
-  var userId = '';
+  const [userId, setUserId] = useState('');
   const [postDeletingLoading, setPostDeletingLoading] = useState(false);
   const [postDeleteDialog, setPostDeleteDialog] = useState(false);
   const [postDeleteSuccess, setPostDeleteSuccess] = useState(false);
@@ -60,8 +63,9 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
   const [modal, setModalVisible] = useState(false);
   const [image, setImage] = useState(null);
   const [photoUploading, setPhotoUploading] = useState(false);
-  const hidePostDeleteDialog = () => setPostDeleteDialog(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [modalOptions, setModalOptions] = useState(false);
+  const [updateUserAvatarUrl] = useUpdateAvatarUrlMutation();
 
   useEffect(() => {
     const getDetails = async () => {
@@ -69,7 +73,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
 
       const newData = JSON.parse(userData);
 
-      userId = newData.id;
+      setUserId(newData.id);
     };
 
     setWidth(Dimensions.get('window').width);
@@ -77,6 +81,9 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
 
     getDetails();
   }, []);
+
+  const hideOptionsModal = () => setModalOptions(false);
+  const hidePostDeleteDialog = () => setPostDeleteDialog(false);
 
   const deletePostHandler = async () => {
     setPostDeletingLoading(true);
@@ -181,7 +188,8 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
       </Text>
     </View>
   );
-
+  console.log('User Data');
+  console.log(userData);
   const renderPostCardItem = (item) => (
     <View style={{ flexDirection: 'row' }}>
       <Card
@@ -293,7 +301,18 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
     </View>
   );
 
-  const updateImageUrl = async () => {};
+  const updateImageUrl = async (url: string) => {
+    const response = await updateUserAvatarUrl({
+      variables: {
+        userId: userId,
+        avatarUrl: url
+      }
+    });
+
+    if (response.data?.updateAvatarUrl) {
+      return;
+    }
+  };
 
   const uploadImage = async (image) => {
     let photoId = uuidv4();
@@ -304,9 +323,11 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
     const task = await firebase.storage().ref().child(childPath).put(blob);
 
     let url = await task.ref.getDownloadURL();
-
+    await updateImageUrl(url);
     setImageUrl(url);
   };
+
+  const containerStyle = { backgroundColor: 'white', padding: 20, margin: 20 };
 
   const pickImageGallery = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -315,7 +336,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
       aspect: [4, 3],
       quality: 1
     });
-    setModalVisible(false);
+    setModalOptions(false);
     console.log(result);
 
     if (!result.cancelled) {
@@ -323,6 +344,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
       setPhotoUploading(true);
       await uploadImage(result.uri);
       // stop loading
+
       setPhotoUploading(false);
     }
   };
@@ -334,7 +356,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
       aspect: [4, 3],
       quality: 1
     });
-    setModalVisible(false);
+    setModalOptions(false);
     console.log(result);
 
     if (!result.cancelled) {
@@ -399,9 +421,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
             </View>
 
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <Button onPress={() => console.log('Change DP')}>
-                Change DP
-              </Button>
+              <Button onPress={() => setModalOptions(true)}>Change DP</Button>
             </View>
           </Card>
         </View>
@@ -459,6 +479,30 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
               </Button>
             </Dialog.Actions>
           </Dialog>
+        </Portal>
+      </Provider>
+
+      <Provider>
+        <Portal>
+          <Modal
+            visible={modalOptions}
+            onDismiss={hideOptionsModal}
+            contentContainerStyle={containerStyle}
+          >
+            <List.Item
+              onPress={pickImageGallery}
+              title="Gallery"
+              description="Take Media Form Gallery"
+              left={(props) => <List.Icon {...props} icon="folder-image" />}
+            />
+
+            <List.Item
+              onPress={pickImageCamera}
+              title="Camera"
+              description="Take Media From Camera"
+              left={(props) => <List.Icon {...props} icon="camera" />}
+            />
+          </Modal>
         </Portal>
       </Provider>
 

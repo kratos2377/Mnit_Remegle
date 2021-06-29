@@ -18,7 +18,9 @@ import {
   Portal,
   Dialog,
   Provider,
-  Colors
+  Colors,
+  Modal,
+  List
 } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
 import {
@@ -29,6 +31,7 @@ import {
   useGetPostsOfSpacesQuery,
   useGetSpaceDetailsQuery,
   useUnFollowSpaceMutation,
+  useUpdateSpaceAvatarUrlMutation,
   useVoteMutation
 } from '../../generated/graphql';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -37,6 +40,11 @@ import { MainNavProps } from '../../utils/MainParamList';
 import { Avatar, ListItem } from 'react-native-elements';
 import { updateAfterVote } from '../../functions/updateAfterVote';
 import ReadMore from 'react-native-read-more-text';
+import firebase from 'firebase/app';
+require('firebase/firestore');
+require('firebase/firebase-storage');
+import * as ImagePicker from 'expo-image-picker';
+import { v4 as uuidv4 } from 'uuid';
 
 interface GoToSpaceScreenProps {}
 
@@ -89,6 +97,11 @@ export const GoToSpaceScreen = ({
   const [followingLength, setFollowingLength] = useState(0);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
+  const [modal, setModalVisible] = useState(false);
+  const [image, setImage] = useState(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [updateSpaceAvatar] = useUpdateSpaceAvatarUrlMutation();
 
   const deletePostHandler = async () => {
     setPostDeletingLoading(true);
@@ -116,6 +129,8 @@ export const GoToSpaceScreen = ({
   };
 
   const onDismissSnackBar = () => setSnackVisible(false);
+  const showOptionsModal = () => setModalVisible(true);
+  const hideOptionsModal = () => setModalVisible(false);
 
   const RightContent = (followers: number) => <Text>Users: {followers}</Text>;
 
@@ -346,6 +361,8 @@ export const GoToSpaceScreen = ({
     </TouchableOpacity>
   );
 
+  const containerStyle = { backgroundColor: 'white', padding: 20, margin: 20 };
+
   const unFollow = async () => {
     const response = await unFollowSpace({
       variables: {
@@ -382,6 +399,67 @@ export const GoToSpaceScreen = ({
     }
   };
 
+  const updateSpace = async (url: string) => {
+    await updateSpaceAvatar({
+      variables: {
+        spaceId: route?.params?.id,
+        spaceAvatarUrl: url
+      }
+    });
+  };
+
+  const uploadImage = async (image) => {
+    let photoId = uuidv4();
+    const childPath = `spaceDP/${userId}/${photoId}`;
+    const response = await fetch(image);
+    const blob = await response.blob();
+
+    const task = await firebase.storage().ref().child(childPath).put(blob);
+
+    let url = await task.ref.getDownloadURL();
+    await updateSpace(url);
+    setImageUrl(url);
+  };
+
+  const pickImageGallery = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+    setModalVisible(false);
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      setPhotoUploading(true);
+      await uploadImage(result.uri);
+      // stop loading
+
+      setPhotoUploading(false);
+    }
+  };
+
+  const pickImageCamera = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1
+    });
+    setModalVisible(false);
+    console.log(result);
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+      setPhotoUploading(true);
+      await uploadImage(image);
+      // stop loading
+      setPhotoUploading(false);
+    }
+  };
+
   return (
     <View>
       {pageLoading ? (
@@ -396,7 +474,7 @@ export const GoToSpaceScreen = ({
                 icon={(props) => (
                   <Feather name="aperture" size={24} color="black" />
                 )}
-                onPress={() => {}}
+                onPress={showOptionsModal}
               />
             ) : null}
             {following ? (
@@ -503,6 +581,47 @@ export const GoToSpaceScreen = ({
               </Button>
               <Button onPress={hideSpaceDialog}>No</Button>
             </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </Provider>
+
+      <Provider>
+        <Portal>
+          <Modal
+            visible={modal}
+            onDismiss={hideOptionsModal}
+            contentContainerStyle={containerStyle}
+          >
+            <List.Item
+              onPress={pickImageGallery}
+              title="Gallery"
+              description="Take Media Form Gallery"
+              left={(props) => <List.Icon {...props} icon="folder-image" />}
+            />
+
+            <List.Item
+              onPress={pickImageCamera}
+              title="Camera"
+              description="Take Media From Camera"
+              left={(props) => <List.Icon {...props} icon="camera" />}
+            />
+          </Modal>
+        </Portal>
+      </Provider>
+
+      <Provider>
+        <Portal>
+          <Dialog
+            style={{ justifyContent: 'center' }}
+            visible={photoUploading}
+            onDismiss={() => {}}
+          >
+            <Dialog.Content>
+              <View style={{ flexDirection: 'row', padding: 10 }}>
+                <ActivityIndicator />
+                <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
+              </View>
+            </Dialog.Content>
           </Dialog>
         </Portal>
       </Provider>
