@@ -45,6 +45,7 @@ require('firebase/firestore');
 require('firebase/firebase-storage');
 import * as ImagePicker from 'expo-image-picker';
 import { v4 as uuidv4 } from 'uuid';
+import { updateAfterSpaceAvatar } from '../../functions/updateSpaceAvatar';
 
 interface GoToSpaceScreenProps {}
 
@@ -404,7 +405,8 @@ export const GoToSpaceScreen = ({
       variables: {
         spaceId: route?.params?.id,
         spaceAvatarUrl: url
-      }
+      },
+      update: (cache) => updateAfterSpaceAvatar(route.params?.id, url, cache)
     });
   };
 

@@ -68,8 +68,6 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
 
   const { data: userData } = useMeQuery();
 
-  console.log(data?.getFeedPosts.posts);
-
   useEffect(() => {
     const getDetails = async () => {
       const userData = await AsyncStorage.getItem('userData');
@@ -108,8 +106,6 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
       setPostDeleteSuccess(false);
     }, 1000);
   };
-
-  console.log(userId);
 
   const LeftContent = (url: string) => (
     <Image

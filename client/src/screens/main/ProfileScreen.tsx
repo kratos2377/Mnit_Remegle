@@ -38,6 +38,7 @@ import ReadMore from 'react-native-read-more-text';
 import * as ImagePicker from 'expo-image-picker';
 import { v4 as uuidv4 } from 'uuid';
 import firebase from 'firebase/app';
+import { updateAfterUserAvatar } from '../../functions/updateAfterUserAvatar';
 require('firebase/firestore');
 require('firebase/firebase-storage');
 
@@ -306,7 +307,8 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
       variables: {
         userId: userId,
         avatarUrl: url
-      }
+      },
+      update: (cache) => updateAfterUserAvatar(userId, url, cache)
     });
 
     if (response.data?.updateAvatarUrl) {
@@ -410,14 +412,18 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
                 marginBottom: 10
               }}
             >
-              <SocialIcon
-                type="instagram"
-                onPress={() => Linking.openURL('https://instagram.com')}
-              />
-              <SocialIcon
-                type="twitter"
-                onPress={() => Linking.openURL('https://twitter.com')}
-              />
+              {userData?.me?.instagramAcc.length === 0 ? null : (
+                <SocialIcon
+                  type="instagram"
+                  onPress={() => Linking.openURL(userData?.me?.instagramAcc)}
+                />
+              )}
+              {userData?.me?.twitterAcc.length === 0 ? null : (
+                <SocialIcon
+                  type="twitter"
+                  onPress={() => Linking.openURL(userData?.me?.twitterAcc)}
+                />
+              )}
             </View>
 
             <View style={{ flexDirection: 'row', alignSelf: 'center' }}>

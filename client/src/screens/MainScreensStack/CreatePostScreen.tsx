@@ -21,6 +21,8 @@ import {
 } from 'react-native-paper';
 import { Dimensions } from 'react-native';
 import {
+  GetPostsOfSpacesDocument,
+  GetPostsOfSpacesQuery,
   useCreatePostsMutation,
   useUpdateSpaceAvatarUrlMutation
 } from '../../generated/graphql';
@@ -75,10 +77,10 @@ export const CreatePostScreen = ({
       update: (cache, { data }) => {
         cache.evict({ fieldName: 'posts:{}' });
 
-        // const postData = cache.readQuery<GetPostsOfSpacesQuery>({
-        //   query: GetPostsOfSpacesDocument
-        // });
-        // console.log(postData);
+        const postData = cache.readQuery<GetPostsOfSpacesQuery>({
+          query: GetPostsOfSpacesDocument
+        });
+        console.log(postData);
         // //   cache.writeQuery<GetFeedPostsQuery>({
         // //     query: GetFeedPostsDocument,
         // //     data: {

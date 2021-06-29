@@ -1,4 +1,4 @@
-import React, { useState , useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   ScrollView,
   TextInput,
@@ -6,8 +6,8 @@ import {
   Text,
   StyleSheet,
   Image,
-  Modal,
-} from "react-native";
+  Modal
+} from 'react-native';
 import {
   ActivityIndicator,
   Appbar,
@@ -16,29 +16,29 @@ import {
   Dialog,
   Paragraph,
   Portal,
-  Provider,
-} from "react-native-paper";
-import { updateUserDetails } from "../../functions/updateUserDetails";
+  Provider
+} from 'react-native-paper';
+import { updateUserDetails } from '../../functions/updateUserDetails';
 import {
   useDoesUsernameExistMutation,
   useMeLazyQuery,
   useMeQuery,
-  useUpdateUserMutation,
-} from "../../generated/graphql";
-import { MainNavProps } from "../../utils/MainParamList";
+  useUpdateUserMutation
+} from '../../generated/graphql';
+import { MainNavProps } from '../../utils/MainParamList';
 
 interface UpdateScreenProps {}
 
-export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
+export const UpdateScreen = ({ navigation }: MainNavProps<'UpdateScreen'>) => {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [errorVisible, setErrorVisible] = useState(false);
-  const [error, setError] = useState("");
-  const [username, setUsername] = useState("");
-  const [bio, setBio] = useState("");
-  const [instaAcc, setInstaAcc] = useState("");
-  const [twitterAcc, setTwitterAcc] = useState("");
+  const [error, setError] = useState('');
+  const [username, setUsername] = useState('');
+  const [bio, setBio] = useState('');
+  const [instaAcc, setInstaAcc] = useState('');
+  const [twitterAcc, setTwitterAcc] = useState('');
   const [updateUser] = useUpdateUserMutation();
-  const [usernameExist] = useDoesUsernameExistMutation()
+  const [usernameExist] = useDoesUsernameExistMutation();
   const [visible, setVisible] = useState(false);
   const { data, loading } = useMeQuery();
 
@@ -52,44 +52,51 @@ export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
   };
 
   useEffect(() => {
-   setUsername(data?.me?.username);
-  setBio(data?.me?.bio);
-  setInstaAcc(data?.me?.instagramAcc);
-  setTwitterAcc(data?.me?.twitterAcc);
-  } , [])
+    setUsername(data?.me?.username);
+    setBio(data?.me?.bio);
+    setInstaAcc(data?.me?.instagramAcc);
+    setTwitterAcc(data?.me?.twitterAcc);
+  }, []);
 
   const _updateProfile = async () => {
     setVisible(true);
 
-    const userName = username === "" ? data.me.username : username;
-    const Bio = bio === "" ? data.me.bio : bio;
-    const Twitter = twitterAcc === "" ? data.me.twitterAcc : twitterAcc;
-    const Insta = instaAcc === "" ? data.me.instagramAcc : instaAcc;
+    const userName = username.trim() === '' ? data.me.username : username;
+    const Bio = bio.trim() === '' ? data.me.bio : bio;
+    const Twitter = twitterAcc.trim() === '' ? data.me.twitterAcc : twitterAcc;
+    const Insta = instaAcc.trim() === '' ? data.me.instagramAcc : instaAcc;
 
     const response = await usernameExist({
       variables: {
-        username : userName
+        username: userName
       }
-    })
+    });
 
     setVisible(false);
 
     if (!response.data) {
-      setError("Username Already In Use. Try A Different One");
-      setErrorVisible(true);    
+      setError('Username Already In Use. Try A Different One');
+      setErrorVisible(true);
       return;
     }
-    
-    await updateUser({
 
+    await updateUser({
       variables: {
         username: userName,
         bio: Bio,
         twitterAcc: Twitter,
-        instagramAcc: Insta,
+        instagramAcc: Insta
       },
 
-      update: (cache) => updateUserDetails( data?.me?.id , userName , bio , twitterAcc , instaAcc , cache)
+      update: (cache) =>
+        updateUserDetails(
+          data?.me?.id,
+          userName,
+          bio,
+          twitterAcc,
+          instaAcc,
+          cache
+        )
     });
 
     navigation.pop();
@@ -109,10 +116,10 @@ export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
           <ScrollView>
             <Card
               style={{
-                width: "100%",
+                width: '100%',
                 padding: 10,
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               <Image
@@ -120,14 +127,10 @@ export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
                   width: 200,
                   height: 200,
                   borderRadius: 100,
-                  margin: 20,
+                  margin: 20
                 }}
-                source={require("../../../assets/doomSlayer.png")}
+                source={{ uri: data?.me?.avatarUrl }}
               />
-
-              <Button onPress={() => console.log("Changing Picture")}>
-                Change DP{" "}
-              </Button>
             </Card>
             <View style={{ margin: 10 }}>
               <TextInput
@@ -139,9 +142,9 @@ export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
               />
               <Text
                 style={{
-                  alignItems: "flex-end",
-                  textAlign: "right",
-                  marginRight: 5,
+                  alignItems: 'flex-end',
+                  textAlign: 'right',
+                  marginRight: 5
                 }}
               >
                 {username.length}/40
@@ -159,9 +162,9 @@ export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
               />
               <Text
                 style={{
-                  alignItems: "flex-end",
-                  textAlign: "right",
-                  marginRight: 5,
+                  alignItems: 'flex-end',
+                  textAlign: 'right',
+                  marginRight: 5
                 }}
               >
                 {bio.length}/100
@@ -191,12 +194,21 @@ export const UpdateScreen = ({ navigation }: MainNavProps<"UpdateScreen">) => {
           </ScrollView>
           <Provider>
             <Portal>
-            <Dialog visible={visible} onDismiss={() => {}}>
+              <Dialog visible={visible} onDismiss={() => {}}>
                 <Dialog.Content>
-                <View style={{flexDirection: 'row' , padding: 10 , alignSelf:'center' , alignItems:'center'}}>
-                <ActivityIndicator size="small" color="#7d827f" />
-                <Text style={{ marginLeft: 10 , fontSize:30  }}>Updating...</Text>
-                </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      padding: 10,
+                      alignSelf: 'center',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <ActivityIndicator size="small" color="#7d827f" />
+                    <Text style={{ marginLeft: 10, fontSize: 30 }}>
+                      Updating...
+                    </Text>
+                  </View>
                 </Dialog.Content>
               </Dialog>
             </Portal>
@@ -249,6 +261,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     margin: 10,
     padding: 15,
-    fontSize: 20,
-  },
+    fontSize: 20
+  }
 });
