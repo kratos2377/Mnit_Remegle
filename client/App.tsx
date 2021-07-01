@@ -10,6 +10,7 @@ import {
 import HomeScreen from './src/screens/HomeScreen';
 import { PaginatedPosts } from './src/generated/graphql';
 import firebase from 'firebase/app';
+import { REACT_APP_BACKEND_HOST } from './values';
 
 const host =
   Platform.OS === 'web' ? 'http://localhost:5000' : 'http://10.0.2.2:5000';
@@ -29,7 +30,7 @@ if (!firebase.apps.length) {
 }
 
 const client = new ApolloClient({
-  uri: 'http://localhost:5000/graphql',
+  uri: REACT_APP_BACKEND_HOST as string,
   credentials: 'include',
   cache: new InMemoryCache({
     typePolicies: {
