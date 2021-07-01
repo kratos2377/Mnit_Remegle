@@ -24,6 +24,7 @@ import { isAuth } from '../middleware/isAuth';
 import { isGodAdmin } from '../middleware/isGodAdmin';
 import { COOKIE_NAME } from '../constants';
 import { Spaces } from '../entity/Spaces';
+import dotenv from 'dotenv';
 
 @ObjectType()
 class FieldError {
@@ -87,7 +88,6 @@ export class UserResolver {
   @UseMiddleware(isAuth)
   async studentDetails(@Arg('id') id: string): Promise<User | null> {
     const user = await User.findOne({ where: { id: id } });
-  
 
     if (!user) {
       return null;
@@ -199,6 +199,7 @@ export class UserResolver {
 
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
+    dotenv.config();
     studentId = studentId.toLowerCase();
     const valid = await MnitStudent.findOne({
       where: { studentId: studentId }

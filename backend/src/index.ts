@@ -73,7 +73,7 @@ const main = async () => {
       origin: [
         'http://localhost:19006',
         'http://10.0.2.2:19000',
-        'http://localhost:3000'
+        'https://remegle-web.netlify.app'
       ],
       credentials: true
     })

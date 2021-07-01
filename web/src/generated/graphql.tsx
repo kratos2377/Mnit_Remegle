@@ -52,8 +52,9 @@ export type Mutation = {
   followSpace: Scalars['Boolean'];
   unfollowSpace: Scalars['Boolean'];
   changeSpaceType: SpaceResponse;
-  changeDescription: Scalars['Boolean'];
+  updateSpaceDetails: Scalars['Boolean'];
   deleteSpace: SpaceResponse;
+  updateSpaceavatarUrl: Scalars['Boolean'];
   removeUserFromSpace: Scalars['Boolean'];
   banUser: Scalars['Boolean'];
   unBanUser: Scalars['Boolean'];
@@ -62,10 +63,12 @@ export type Mutation = {
   sendConfirmationMail: Scalars['Boolean'];
   registerUser: UserResponse;
   login: UserResponse;
+  updateAvatarUrl: Scalars['Boolean'];
   usernameUsers: User;
   updateUserDetails: UserResponse;
   generateforgotPasswordUrl: Scalars['Boolean'];
   changeForgotPassword: Scalars['Boolean'];
+  doesUsernameExist: Scalars['Boolean'];
   forgotPassword: UserResponse;
   deleteUser: Scalars['Boolean'];
   logout: Scalars['Boolean'];
@@ -81,6 +84,7 @@ export type MutationVoteArgs = {
 
 export type MutationCreatePostsArgs = {
   spaceName: Scalars['String'];
+  imageUrl: Scalars['String'];
   content: Scalars['String'];
   title: Scalars['String'];
 };
@@ -126,13 +130,20 @@ export type MutationChangeSpaceTypeArgs = {
 };
 
 
-export type MutationChangeDescriptionArgs = {
-  description: Scalars['String'];
+export type MutationUpdateSpaceDetailsArgs = {
+  spaceDescription: Scalars['String'];
   spaceName: Scalars['String'];
+  spaceId: Scalars['String'];
 };
 
 
 export type MutationDeleteSpaceArgs = {
+  spaceId: Scalars['String'];
+};
+
+
+export type MutationUpdateSpaceavatarUrlArgs = {
+  spaceAvatarUrl: Scalars['String'];
   spaceId: Scalars['String'];
 };
 
@@ -180,6 +191,12 @@ export type MutationLoginArgs = {
 };
 
 
+export type MutationUpdateAvatarUrlArgs = {
+  avatarUrl: Scalars['String'];
+  userId: Scalars['String'];
+};
+
+
 export type MutationUsernameUsersArgs = {
   username: Scalars['String'];
 };
@@ -194,7 +211,7 @@ export type MutationUpdateUserDetailsArgs = {
 
 
 export type MutationGenerateforgotPasswordUrlArgs = {
-  id: Scalars['String'];
+  studentId: Scalars['String'];
 };
 
 
@@ -202,6 +219,11 @@ export type MutationChangeForgotPasswordArgs = {
   confirmnewPassword: Scalars['String'];
   newPassword: Scalars['String'];
   token: Scalars['String'];
+};
+
+
+export type MutationDoesUsernameExistArgs = {
+  username: Scalars['String'];
 };
 
 
@@ -233,10 +255,10 @@ export type Post = {
   points: Scalars['Float'];
   title: Scalars['String'];
   content: Scalars['String'];
+  imageUrl: Scalars['String'];
   postSpaceId: Scalars['String'];
   voteStatus?: Maybe<Scalars['Int']>;
   spaceName: Scalars['String'];
-  imageUrl: Scalars['String'];
   creator: User;
   space: Spaces;
   createdAt: Scalars['DateTime'];
@@ -322,7 +344,7 @@ export type SpaceResponse = {
 
 export type Spaces = {
   __typename?: 'Spaces';
-  spaceId: Scalars['String'];
+  id: Scalars['String'];
   adminId: Scalars['String'];
   type: Scalars['String'];
   spaceName: Scalars['String'];
@@ -388,6 +410,14 @@ export type ConfirmUserMutationVariables = Exact<{
 export type ConfirmUserMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'confirmTheUser'>
+);
+
+export type HelloQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HelloQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'hello'>
 );
 
 
@@ -459,3 +489,35 @@ export function useConfirmUserMutation(baseOptions?: Apollo.MutationHookOptions<
 export type ConfirmUserMutationHookResult = ReturnType<typeof useConfirmUserMutation>;
 export type ConfirmUserMutationResult = Apollo.MutationResult<ConfirmUserMutation>;
 export type ConfirmUserMutationOptions = Apollo.BaseMutationOptions<ConfirmUserMutation, ConfirmUserMutationVariables>;
+export const HelloDocument = gql`
+    query Hello {
+  hello
+}
+    `;
+
+/**
+ * __useHelloQuery__
+ *
+ * To run a query within a React component, call `useHelloQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHelloQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHelloQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useHelloQuery(baseOptions?: Apollo.QueryHookOptions<HelloQuery, HelloQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HelloQuery, HelloQueryVariables>(HelloDocument, options);
+      }
+export function useHelloLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HelloQuery, HelloQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HelloQuery, HelloQueryVariables>(HelloDocument, options);
+        }
+export type HelloQueryHookResult = ReturnType<typeof useHelloQuery>;
+export type HelloLazyQueryHookResult = ReturnType<typeof useHelloLazyQuery>;
+export type HelloQueryResult = Apollo.QueryResult<HelloQuery, HelloQueryVariables>;

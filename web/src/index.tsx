@@ -1,20 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import './bootstrap.min.css'
-import App from './App';
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import "./bootstrap.min.css";
+import App from "./App";
+import dotenv from "dotenv";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+
+dotenv.config();
 
 const client = new ApolloClient({
-  uri: 'http://localhost:5000/graphql',
-  cache: new InMemoryCache()
+  uri: process.env.REACT_APP_BACKEND_HOST as string,
+  credentials: "include",
+  cache: new InMemoryCache(),
 });
 
 ReactDOM.render(
-  <React.StrictMode>
-    <ApolloProvider client ={client}>
+  <ApolloProvider client={client}>
     <App />
-    </ApolloProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </ApolloProvider>,
+  document.getElementById("root")
 );
