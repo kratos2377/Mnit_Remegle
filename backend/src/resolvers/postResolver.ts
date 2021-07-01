@@ -209,7 +209,6 @@ export class PostResolver {
       return null;
     }
 
-    console.log(imageUrl);
 
     const post = await Post.create({
       title: title,

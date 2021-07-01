@@ -87,7 +87,7 @@ export class UserResolver {
   @UseMiddleware(isAuth)
   async studentDetails(@Arg('id') id: string): Promise<User | null> {
     const user = await User.findOne({ where: { id: id } });
-    console.log(user);
+  
 
     if (!user) {
       return null;
@@ -99,7 +99,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async confirmTheUser(@Arg('token') token: string): Promise<boolean> {
     const userId = await redis.get(confirmUserPrefix + token);
-    console.log(userId);
+
     if (!userId) {
       return false;
     }
@@ -248,8 +248,6 @@ export class UserResolver {
     @Arg('password') password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    console.log(usernameOrEmail);
-    console.log(password);
     const user = await User.findOne(
       usernameOrEmail.includes('@')
         ? { where: { email: usernameOrEmail } }

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { createConnection, getConnectionOptions } from 'typeorm';
+import { createConnection } from 'typeorm';
 import Express from 'express';
 import { createBuildSchema } from './utils/createSchema';
 import { ApolloServer } from 'apollo-server-express';
@@ -10,9 +10,29 @@ import cors from 'cors';
 import { createUpdootLoader } from './dataloader/createUpdootLoader';
 import { postUserLoader } from './dataloader/postUserLoader';
 import { spaceUserLoader } from './dataloader/spaceUserLoader';
+// import path from 'path';
+import { Post } from './entity/Post';
+import { User } from './entity/User';
+import { Updoot } from './entity/Updoot';
+import { Spaces } from './entity/Spaces';
+import { MnitStudent } from './entity/MnitStudent';
+import dotenv from 'dotenv';
 
 const main = async () => {
-  await getConnectionOptions();
+  dotenv.config();
+
+  await createConnection({
+    type: 'postgres',
+    url: process.env.DATABASE_URL,
+    logging: true,
+    synchronize: true,
+    entities: [Post, User, Updoot, Spaces, MnitStudent],
+    extra: {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    }
+  });
   const app = Express();
   const schema = await createBuildSchema();
 
@@ -62,7 +82,6 @@ const main = async () => {
   apolloServer.applyMiddleware({ app, cors: false });
   const port = process.env.PORT || 5000;
   app.listen(port, () => console.log('SERVER STARTED AT PORT 5000'));
-  await createConnection();
 };
 
 main().catch((err) => {
