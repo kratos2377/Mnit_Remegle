@@ -26,6 +26,7 @@ import { EditPostScreen } from './extra-screens/EditPostScreen';
 import { ForgotPasswordScreen } from './auth/ForgotPasswordScreen';
 import { EditSpaceScreen } from './extra-screens/EditSpaceScreen';
 import { DeletingSpace } from './extra-screens/DeletingSpace';
+import * as SplashScreen from 'expo-splash-screen';
 
 export default function HomeScreen() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -33,8 +34,9 @@ export default function HomeScreen() {
   const MainStack = createStackNavigator<MainParamList>();
 
   const tryLogin = async () => {
+    await SplashScreen.preventAutoHideAsync();
     const userData = await AsyncStorage.getItem('userData');
-    console.log(userData);
+    await SplashScreen.hideAsync();
 
     if (userData) {
       setLoggedIn(true);
@@ -45,7 +47,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     tryLogin();
-    // AsyncStorage.removeItem('userData')
+    //AsyncStorage.removeItem('userData');
   }, []);
 
   if (!loggedIn) {

@@ -10,7 +10,7 @@ import cors from 'cors';
 import { createUpdootLoader } from './dataloader/createUpdootLoader';
 import { postUserLoader } from './dataloader/postUserLoader';
 import { spaceUserLoader } from './dataloader/spaceUserLoader';
-// import path from 'path';
+//import path from 'path';
 import { Post } from './entity/Post';
 import { User } from './entity/User';
 import { Updoot } from './entity/Updoot';

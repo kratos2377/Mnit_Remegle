@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, View } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import {
   ActivityIndicator,
@@ -27,6 +27,7 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<'Register'>) => {
   const [mailError, setMailError] = useState(false);
   const [success, setSuccess] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [mobileWidth, setMobileWidth] = useState(0);
 
   const checkUserHandler = async () => {
     if (mnitID.length !== 11) {
@@ -91,6 +92,11 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<'Register'>) => {
 
   const hideDialog = () => setVisible(false);
 
+  useEffect(() => {
+    const width1 = Dimensions.get('window').width;
+    setMobileWidth(width1);
+  }, []);
+
   return (
     <SafeAreaView
       style={{
@@ -108,6 +114,11 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<'Register'>) => {
           />
         </View>
         <Button
+          buttonStyle={{
+            width: mobileWidth * 0.5,
+            margin: 10,
+            alignSelf: 'center'
+          }}
           style={{ margin: 10, width: '50%', alignSelf: 'center' }}
           title="Check ID"
           onPress={checkUserHandler}

@@ -32,6 +32,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MainNavProps } from '../../utils/MainParamList';
 import { updateAfterVote } from '../../functions/updateAfterVote';
 import ReadMore from 'react-native-read-more-text';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface FeedScreenProps {}
 
@@ -297,150 +298,164 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
       </Card>
     </View>
   );
-
+  console.log(loading);
+  console.log(data?.getFeedPosts.posts);
   return (
-    <View style={{ flex: 1, width: '100%' }}>
-      {data?.getFeedPosts.posts.length === 0 ? (
-        <View style={{ alignSelf: 'center' }}>
-          <Card style={{ margin: 10, flexDirection: 'column', padding: 10 }}>
-            <IconButton
-              icon="block-helper"
-              color={Colors.red500}
-              size={100}
-              onPress={() => {}}
-            />
-            <Text>No Posts Available</Text>
-            <Text>Follow Some Spaces To get Posts on Your Feed</Text>
-          </Card>
-        </View>
-      ) : (
-        <ScrollView style={{ width: '100%' }}>
-          <Appbar.Header
+    <SafeAreaView>
+      <View style={{ flex: 1, width: '100%' }}>
+        {loading ? (
+          <View style={{ alignSelf: 'center' }}>
+            <ActivityIndicator />
+          </View>
+        ) : data?.getFeedPosts.posts === undefined ? (
+          <View
             style={{
-              backgroundColor: 'white',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 30
+              alignSelf: 'center',
+              height: 300,
+              width: 400,
+              flexDirection: 'column'
             }}
           >
-            <Image
+            <Card style={{ margin: 10, flexDirection: 'column', padding: 10 }}>
+              <IconButton
+                icon="block-helper"
+                color={Colors.red500}
+                size={100}
+                onPress={() => {}}
+              />
+              <Text>No Posts Available</Text>
+              <Text>Follow Some Spaces To get Posts on Your Feed</Text>
+            </Card>
+          </View>
+        ) : (
+          <ScrollView style={{ width: '100%' }}>
+            <Appbar.Header
               style={{
-                width: 50,
-                height: 50,
-                borderRadius: 25,
-                margin: 20
+                backgroundColor: 'white',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 30
               }}
-              source={{ uri: userData?.me?.avatarUrl }}
-            />
-            <Text style={{ fontSize: 20 }}>{userData?.me?.studentId}</Text>
-          </Appbar.Header>
-          <FlatList
-            data={data?.getFeedPosts.posts}
-            keyExtractor={(item) => item.id}
-            renderItem={renderPostCardItem}
-          />
-
-          {data && data.getFeedPosts.hasMore === true ? (
-            <View>
-              <Button
-                icon="arrow-down-drop-circle"
-                onPress={() => {
-                  setLimitPost(limitPost + 10);
-                  fetchMore({
-                    limit: limitPost,
-                    cursor: null
-                  });
+            >
+              <Image
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 25,
+                  margin: 20
                 }}
-              >
-                Load More
-              </Button>
-            </View>
-          ) : null}
-        </ScrollView>
-      )}
+                source={{ uri: userData?.me?.avatarUrl }}
+              />
+              <Text style={{ fontSize: 20 }}>{userData?.me?.studentId}</Text>
+            </Appbar.Header>
+            <FlatList
+              data={data?.getFeedPosts.posts}
+              keyExtractor={(item) => item.id}
+              renderItem={renderPostCardItem}
+            />
 
-      <Provider>
-        <Portal>
-          <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row' }}>
-                <ActivityIndicator />
-                <Text style={{ marginLeft: 5, fontSize: 20 }}>
-                  Deleting Post...
-                </Text>
+            {data && data.getFeedPosts.hasMore === true ? (
+              <View>
+                <Button
+                  icon="arrow-down-drop-circle"
+                  onPress={() => {
+                    setLimitPost(limitPost + 10);
+                    fetchMore({
+                      limit: limitPost,
+                      cursor: null
+                    });
+                  }}
+                >
+                  Load More
+                </Button>
               </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
+            ) : null}
+          </ScrollView>
+        )}
 
-      <Provider>
-        <Portal>
-          <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
-            <Dialog.Title>Delete Post</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={deletePostHandler} color="blue">
-                Yes
-              </Button>
-              <Button onPress={hidePostDeleteDialog} color="red">
-                No
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
+        <Provider>
+          <Portal>
+            <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row' }}>
+                  <ActivityIndicator />
+                  <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                    Deleting Post...
+                  </Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
 
-      <Provider>
-        <Portal>
-          <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
-            <Dialog.Title>Success</Dialog.Title>
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row', padding: 10 }}>
-                <IconButton
-                  onPress={() => {}}
-                  icon="check"
-                  color="green"
-                  size={30}
-                />
-                <Text style={{ marginLeft: 5, fontSize: 20 }}>
-                  Deleting Post...
-                </Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
+        <Provider>
+          <Portal>
+            <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
+              <Dialog.Title>Delete Post</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={deletePostHandler} color="blue">
+                  Yes
+                </Button>
+                <Button onPress={hidePostDeleteDialog} color="red">
+                  No
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
 
-      <Provider>
-        <Portal>
-          <FAB.Group
-            visible={true}
-            open={open}
-            icon={open ? 'feather' : 'fountain-pen-tip'}
-            actions={[
-              {
-                icon: 'postage-stamp',
-                label: 'Edit Profile',
-                onPress: () => navigation.navigate('UpdateScreen')
-              },
-              {
-                icon: 'account-group',
-                label: 'Create Space',
-                onPress: () => navigation.navigate('CreateSpace')
-              }
-            ]}
-            onStateChange={onStateChange}
-            onPress={() => {
-              if (open) {
-                // do something if the speed dial is open
-              }
-            }}
-          />
-        </Portal>
-      </Provider>
-    </View>
+        <Provider>
+          <Portal>
+            <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
+              <Dialog.Title>Success</Dialog.Title>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row', padding: 10 }}>
+                  <IconButton
+                    onPress={() => {}}
+                    icon="check"
+                    color="green"
+                    size={30}
+                  />
+                  <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                    Deleting Post...
+                  </Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <FAB.Group
+              visible={true}
+              open={open}
+              icon={open ? 'feather' : 'fountain-pen-tip'}
+              actions={[
+                {
+                  icon: 'postage-stamp',
+                  label: 'Edit Profile',
+                  onPress: () => navigation.navigate('UpdateScreen')
+                },
+                {
+                  icon: 'account-group',
+                  label: 'Create Space',
+                  onPress: () => navigation.navigate('CreateSpace')
+                }
+              ]}
+              onStateChange={onStateChange}
+              onPress={() => {
+                if (open) {
+                  // do something if the speed dial is open
+                }
+              }}
+            />
+          </Portal>
+        </Provider>
+      </View>
+    </SafeAreaView>
   );
 };

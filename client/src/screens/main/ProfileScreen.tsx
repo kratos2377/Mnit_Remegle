@@ -371,184 +371,188 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
   };
 
   return (
-    <View style={{ flex: 1, width: '100%' }}>
-      <ScrollView>
-        <Appbar.Header style={{ backgroundColor: 'white' }}>
-          <Appbar.Content
-            title={userData?.me?.username}
-            subtitle={userData?.me.studentId}
-          />
-          <Appbar.Action
-            icon="dots-vertical-circle"
-            onPress={() => navigation.navigate('Settings')}
-          />
-        </Appbar.Header>
+    <ScrollView>
+      <View style={{ flex: 1, width: '100%' }}>
+        <ScrollView>
+          <Appbar.Header style={{ backgroundColor: 'white' }}>
+            <Appbar.Content
+              title={userData?.me?.username}
+              subtitle={userData?.me.studentId}
+            />
+            <Appbar.Action
+              icon="dots-vertical-circle"
+              onPress={() => navigation.navigate('Settings')}
+            />
+          </Appbar.Header>
 
-        <View style={{ marginBottom: 10, marginTop: 10 }}>
-          <Card
-            style={{
-              width: '100%',
-              padding: 10,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <View style={{ alignSelf: 'center' }}>
-              <Image
-                style={{ width: 200, height: 200, borderRadius: 100 }}
-                source={{ uri: userData?.me?.avatarUrl }}
-              />
-            </View>
-            <View style={{ alignSelf: 'center' }}>
-              <Text style={{ marginBottom: 10, marginTop: 10 }}>
-                {userData?.me?.fullName}
-              </Text>
-              <Text style={{ marginBottom: 10 }}>{userData?.me?.bio}</Text>
-            </View>
-            <View
+          <View style={{ marginBottom: 10, marginTop: 10 }}>
+            <Card
               style={{
-                flexDirection: 'row',
-                alignSelf: 'center',
-                marginBottom: 10
+                width: '100%',
+                padding: 10,
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
-              {userData?.me?.instagramAcc.length === 0 ? null : (
-                <SocialIcon
-                  type="instagram"
-                  onPress={() => Linking.openURL(userData?.me?.instagramAcc)}
+              <View style={{ alignSelf: 'center' }}>
+                <Image
+                  style={{ width: 200, height: 200, borderRadius: 100 }}
+                  source={{ uri: userData?.me?.avatarUrl }}
                 />
-              )}
-              {userData?.me?.twitterAcc.length === 0 ? null : (
-                <SocialIcon
-                  type="twitter"
-                  onPress={() => Linking.openURL(userData?.me?.twitterAcc)}
-                />
-              )}
-            </View>
+              </View>
+              <View style={{ alignSelf: 'center' }}>
+                <Text style={{ marginBottom: 10, marginTop: 10 }}>
+                  {userData?.me?.fullName}
+                </Text>
+                <Text style={{ marginBottom: 10 }}>{userData?.me?.bio}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignSelf: 'center',
+                  marginBottom: 10
+                }}
+              >
+                {userData?.me?.instagramAcc.length === 0 ? null : (
+                  <SocialIcon
+                    type="instagram"
+                    onPress={() => Linking.openURL(userData?.me?.instagramAcc)}
+                  />
+                )}
+                {userData?.me?.twitterAcc.length === 0 ? null : (
+                  <SocialIcon
+                    type="twitter"
+                    onPress={() => Linking.openURL(userData?.me?.twitterAcc)}
+                  />
+                )}
+              </View>
 
-            <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-              <Button onPress={() => setModalOptions(true)}>Change DP</Button>
-            </View>
-          </Card>
-        </View>
-        {data?.getAllUserPosts?.length === 0 ? (
-          <View style={{ alignSelf: 'center' }}>
-            <Card style={{ margin: 10, flexDirection: 'column', padding: 10 }}>
-              <IconButton
-                icon="block-helper"
-                color={Colors.red500}
-                size={100}
-                onPress={() => {}}
-              />
-              <Text>You Have No Posts</Text>
+              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                <Button onPress={() => setModalOptions(true)}>Change DP</Button>
+              </View>
             </Card>
           </View>
-        ) : (
-          <View style={{ flex: 1 }}>
-            <FlatList
-              data={data?.getAllUserPosts}
-              keyExtractor={(item) => item.id}
-              renderItem={renderPostCardItem}
-            />
-          </View>
-        )}
-      </ScrollView>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row' }}>
-                <ActivityIndicator />
-                <Text style={{ marginLeft: 5, fontSize: 20 }}>
-                  Deleting Post...
-                </Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
-            <Dialog.Title>Delete Post</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={deletePostHandler} color="blue">
-                Yes
-              </Button>
-              <Button onPress={hidePostDeleteDialog} color="red">
-                No
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Modal
-            visible={modalOptions}
-            onDismiss={hideOptionsModal}
-            contentContainerStyle={containerStyle}
-          >
-            <List.Item
-              onPress={pickImageGallery}
-              title="Gallery"
-              description="Take Media Form Gallery"
-              left={(props) => <List.Icon {...props} icon="folder-image" />}
-            />
-
-            <List.Item
-              onPress={pickImageCamera}
-              title="Camera"
-              description="Take Media From Camera"
-              left={(props) => <List.Icon {...props} icon="camera" />}
-            />
-          </Modal>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog
-            style={{ justifyContent: 'center' }}
-            visible={photoUploading}
-            onDismiss={() => {}}
-          >
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row', padding: 10 }}>
-                <ActivityIndicator />
-                <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
-            <Dialog.Title>Success</Dialog.Title>
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row', padding: 10 }}>
+          {data?.getAllUserPosts?.length === 0 ? (
+            <View style={{ alignSelf: 'center' }}>
+              <Card
+                style={{ margin: 10, flexDirection: 'column', padding: 10 }}
+              >
                 <IconButton
+                  icon="block-helper"
+                  color={Colors.red500}
+                  size={100}
                   onPress={() => {}}
-                  icon="check"
-                  color="green"
-                  size={30}
                 />
-                <Text style={{ marginLeft: 5, fontSize: 20 }}>
-                  Deleting Post...
-                </Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
-    </View>
+                <Text>You Have No Posts</Text>
+              </Card>
+            </View>
+          ) : (
+            <View style={{ flex: 1 }}>
+              <FlatList
+                data={data?.getAllUserPosts}
+                keyExtractor={(item) => item.id}
+                renderItem={renderPostCardItem}
+              />
+            </View>
+          )}
+        </ScrollView>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row' }}>
+                  <ActivityIndicator />
+                  <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                    Deleting Post...
+                  </Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
+              <Dialog.Title>Delete Post</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={deletePostHandler} color="blue">
+                  Yes
+                </Button>
+                <Button onPress={hidePostDeleteDialog} color="red">
+                  No
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Modal
+              visible={modalOptions}
+              onDismiss={hideOptionsModal}
+              contentContainerStyle={containerStyle}
+            >
+              <List.Item
+                onPress={pickImageGallery}
+                title="Gallery"
+                description="Take Media Form Gallery"
+                left={(props) => <List.Icon {...props} icon="folder-image" />}
+              />
+
+              <List.Item
+                onPress={pickImageCamera}
+                title="Camera"
+                description="Take Media From Camera"
+                left={(props) => <List.Icon {...props} icon="camera" />}
+              />
+            </Modal>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog
+              style={{ justifyContent: 'center' }}
+              visible={photoUploading}
+              onDismiss={() => {}}
+            >
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row', padding: 10 }}>
+                  <ActivityIndicator />
+                  <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
+              <Dialog.Title>Success</Dialog.Title>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row', padding: 10 }}>
+                  <IconButton
+                    onPress={() => {}}
+                    icon="check"
+                    color="green"
+                    size={30}
+                  />
+                  <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                    Deleting Post...
+                  </Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+      </View>
+    </ScrollView>
   );
 };

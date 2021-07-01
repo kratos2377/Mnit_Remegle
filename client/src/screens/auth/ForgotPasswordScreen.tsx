@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Dimensions, SafeAreaView, View } from 'react-native';
 import { Button, Input, Text } from 'react-native-elements';
 import { AuthNavProps } from '../../utils/AuthParamList';
 import {
@@ -33,6 +33,7 @@ export const ForgotPasswordScreen = ({
   const [visible, setVisible] = useState(false);
   const [sendForgotPasswordMail] = useGenerateForgotPasswordUrlMutation();
   const [confirm] = useConfirmUserCheckMutation();
+  const [mobileWidth, setMobileWidth] = useState(0);
 
   const checkUserHandler = async () => {
     if (mnitID.length !== 11) {
@@ -110,6 +111,12 @@ export const ForgotPasswordScreen = ({
   };
 
   const hideDialog = () => setVisible(false);
+  const hideDialog2 = () => setError2(false);
+
+  useEffect(() => {
+    const width1 = Dimensions.get('window').width;
+    setMobileWidth(width1);
+  }, []);
 
   return (
     <SafeAreaView
@@ -128,7 +135,11 @@ export const ForgotPasswordScreen = ({
           />
         </View>
         <Button
-          style={{ margin: 10, width: '50%', alignSelf: 'center' }}
+          buttonStyle={{
+            width: mobileWidth * 0.5,
+            margin: 10,
+            alignSelf: 'center'
+          }}
           title="Check ID"
           onPress={checkUserHandler}
         />
@@ -195,16 +206,16 @@ export const ForgotPasswordScreen = ({
 
         <Provider>
           <Portal>
-            <Dialog visible={error2} onDismiss={() => setError2(false)}>
+            <Dialog visible={error2} onDismiss={hideDialog2}>
               <Dialog.Title>Error</Dialog.Title>
               <Dialog.Content>
                 <Paragraph>
-                  You Have Not Registred Yet. Your id is verified You Should
+                  You Have Not Registered Yet. Your id is verified You Should
                   Register Yourself.
                 </Paragraph>
               </Dialog.Content>
               <Dialog.Actions>
-                <RPButton onPress={() => setError2(false)}>OK</RPButton>
+                <RPButton onPress={hideDialog2}>OK</RPButton>
               </Dialog.Actions>
             </Dialog>
           </Portal>

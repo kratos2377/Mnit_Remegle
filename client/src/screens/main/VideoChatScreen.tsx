@@ -1,14 +1,15 @@
-import React from 'react'
-import { View , Text } from 'react-native';
+import React from 'react';
+import { View, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-interface VideoChatScreenProps {
-
-}
+interface VideoChatScreenProps {}
 
 export const VideoChatScreen: React.FC<VideoChatScreenProps> = ({}) => {
-        return (
-            <View>
-                <Text>Video Screen</Text>
-            </View>
-        );
-}
+  return (
+    <SafeAreaView>
+      <View>
+        <Text>Video Screen</Text>
+      </View>
+    </SafeAreaView>
+  );
+};

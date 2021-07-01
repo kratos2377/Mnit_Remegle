@@ -76,7 +76,8 @@ export class UserResolver {
     if (!req.session.userId) {
       return null;
     }
-
+    console.log('User Context');
+    console.log(req);
     const user = (await User.findOne({
       where: { id: req.session.userId }
     })) as User;
