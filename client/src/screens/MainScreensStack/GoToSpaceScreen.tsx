@@ -4,7 +4,8 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
-  Dimensions
+  Dimensions,
+  ScrollView
 } from 'react-native';
 import {
   Appbar,
@@ -46,6 +47,7 @@ require('firebase/firebase-storage');
 import * as ImagePicker from 'expo-image-picker';
 import { v4 as uuidv4 } from 'uuid';
 import { updateAfterSpaceAvatar } from '../../functions/updateSpaceAvatar';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface GoToSpaceScreenProps {}
 
@@ -82,8 +84,6 @@ export const GoToSpaceScreen = ({
       spaceId: route?.params.id
     }
   });
-
-  console.log(data);
 
   const hideSpaceDialog = () => setDeleteSpaceDialog(false);
 
@@ -325,7 +325,7 @@ export const GoToSpaceScreen = ({
             marginTop: 20
           }}
         >
-          {item.item.imageUrl && (
+          {item.item.imageUrl.length != 0 ? (
             <Image
               source={{ uri: item.item.imageUrl }}
               style={{
@@ -334,6 +334,8 @@ export const GoToSpaceScreen = ({
                 marginBottom: 10
               }}
             />
+          ) : (
+            <View></View>
           )}
         </View>
       </Card>
@@ -368,9 +370,6 @@ export const GoToSpaceScreen = ({
     const response = await unFollowSpace({
       variables: {
         spaceId: data?.getSpaceDetails.id
-      },
-      update: (cache) => {
-        console.log(cache);
       }
     });
     if (response?.data?.unfollowSpace) {
@@ -385,10 +384,6 @@ export const GoToSpaceScreen = ({
     const response = await followSpace({
       variables: {
         spaceId: data?.getSpaceDetails.id
-      },
-
-      update: (cache) => {
-        console.log(cache);
       }
     });
 
@@ -431,7 +426,6 @@ export const GoToSpaceScreen = ({
       quality: 1
     });
     setModalVisible(false);
-    console.log(result);
 
     if (!result.cancelled) {
       setImage(result.uri);
@@ -451,7 +445,7 @@ export const GoToSpaceScreen = ({
       quality: 1
     });
     setModalVisible(false);
-    console.log(result);
+    result;
 
     if (!result.cancelled) {
       setImage(result.uri);
@@ -463,289 +457,293 @@ export const GoToSpaceScreen = ({
   };
 
   return (
-    <View>
-      {pageLoading ? (
-        <ActivityIndicator style={{ justifyContent: 'center' }} />
-      ) : (
-        <View>
-          <Appbar.Header style={{ backgroundColor: 'white' }}>
-            <Appbar.BackAction onPress={() => navigation.pop()} />
-            <Appbar.Content title={data?.getSpaceDetails.spaceName} />
-            {userId === data?.getSpaceDetails.adminId ? (
-              <IconButton
-                icon={(props) => (
-                  <Feather name="aperture" size={24} color="black" />
-                )}
-                onPress={showOptionsModal}
-              />
-            ) : null}
-            {following ? (
-              <Appbar.Action
-                icon="postage-stamp"
-                onPress={() =>
-                  navigation.navigate('CreatePost', {
-                    spaceName: data?.getSpaceDetails.spaceName
-                  })
-                }
-              />
-            ) : null}
-            {userId === data?.getSpaceDetails.adminId ? (
-              <Appbar.Action
-                icon="delete"
-                onPress={() => setDeleteSpaceDialog(true)}
-              />
-            ) : null}
-            {userId === data?.getSpaceDetails.adminId ? (
-              <Appbar.Action
-                icon="square-edit-outline"
-                onPress={() =>
-                  navigation.navigate('EditSpaceScreen', {
-                    spaceId: data?.getSpaceDetails.id,
-                    spaceName: data?.getSpaceDetails.spaceName,
-                    spaceDescription: data?.getSpaceDetails.spaceDescription
-                  })
-                }
-              />
-            ) : null}
-            {following ? (
-              <Button mode="text" color="red" onPress={unFollow}>
-                Unfollow
-              </Button>
-            ) : (
-              <Button mode="text" color="blue" onPress={Follow}>
-                Follow
-              </Button>
-            )}
-          </Appbar.Header>
-          <Card style={{ margin: 10 }}>
-            <Card.Title
-              style={{ margin: 10, padding: 15 }}
-              title={data?.getSpaceDetails.spaceName}
-              right={() => RightContent(followingLength)}
-              left={() => LeftContent(data?.getSpaceDetails.spaceAvatarUrl)}
-            />
-          </Card>
-          <Card style={{ marginBottom: 10, marginHorizontal: 10 }}>
-            <Card.Title title="Space Description" />
-            <Card.Content>
-              <Paragraph>{data?.getSpaceDetails.spaceDescription}</Paragraph>
-            </Card.Content>
-          </Card>
-          <View
-            style={{
-              flexDirection: 'row',
-              flex: 1,
-              justifyContent: 'space-around'
-            }}
-          >
-            <Button icon="postage-stamp" onPress={() => setDisplay('Post')}>
-              Spaces
-            </Button>
-            <Button icon="account" onPress={() => setDisplay('User')}>
-              Users
-            </Button>
-          </View>
-          {display === 'Post' ? (
-            <FlatList
-              numColumns={1}
-              data={postData?.getPostsofSpace}
-              keyExtractor={(item) => item.id}
-              renderItem={renderPostCardItem}
-            />
-          ) : (
-            <FlatList
-              numColumns={1}
-              data={data?.getSpaceDetails.followingIds}
-              keyExtractor={(item) => item.id}
-              renderItem={renderUserItem}
-            />
-          )}
-        </View>
-      )}
-
-      <Provider>
-        <Portal>
-          <Dialog visible={deleteSpaceDialog} onDismiss={hideSpaceDialog}>
-            <Dialog.Title>Delete Space</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>Are You Sure You Want To Delete this Space</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button
-                onPress={() =>
-                  navigation.replace('DeletingSpace', {
-                    spaceId: data?.getSpaceDetails.id,
-                    spaceFn: route.params.spaceFn
-                  })
-                }
-              >
-                Yes
-              </Button>
-              <Button onPress={hideSpaceDialog}>No</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Modal
-            visible={modal}
-            onDismiss={hideOptionsModal}
-            contentContainerStyle={containerStyle}
-          >
-            <List.Item
-              onPress={pickImageGallery}
-              title="Gallery"
-              description="Take Media Form Gallery"
-              left={(props) => <List.Icon {...props} icon="folder-image" />}
-            />
-
-            <List.Item
-              onPress={pickImageCamera}
-              title="Camera"
-              description="Take Media From Camera"
-              left={(props) => <List.Icon {...props} icon="camera" />}
-            />
-          </Modal>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog
-            style={{ justifyContent: 'center' }}
-            visible={photoUploading}
-            onDismiss={() => {}}
-          >
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row', padding: 10 }}>
-                <ActivityIndicator />
-                <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={spaceDeleteLoadingError} onDismiss={() => {}}>
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row' }}>
-                <ActivityIndicator />
-                <Text style={{ marginLeft: 5, fontSize: 20 }}>
-                  You Are Not Admin Of Space
-                </Text>
-              </View>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={hideSpaceDeleateLoadingError}>Done</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={spaceDeleteLoading} onDismiss={() => {}}>
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row' }}>
-                <ActivityIndicator />
-                <Text style={{ marginLeft: 5, fontSize: 20 }}>
-                  Deleting Space...
-                </Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={successDelete} onDismiss={() => {}}>
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row' }}>
-                <IconButton onPress={() => {}} icon="check" color="green" />
-                <Text style={{ marginLeft: 5, fontSize: 20 }}>
-                  Space Delete Successfully
-                </Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row' }}>
-                <ActivityIndicator />
-                <Text style={{ marginLeft: 5, fontSize: 20 }}>
-                  Deleting Post...
-                </Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
-            <Dialog.Title>Delete Post</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={deletePostHandler} color="blue">
-                Yes
-              </Button>
-              <Button onPress={hidePostDeleteDialog} color="red">
-                No
-              </Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
-            <Dialog.Title>Success</Dialog.Title>
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row', padding: 10 }}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1, width: '100%' }}>
+        {pageLoading ? (
+          <ActivityIndicator style={{ justifyContent: 'center' }} />
+        ) : (
+          <ScrollView style={{ width: '100%' }}>
+            <Appbar.Header style={{ backgroundColor: 'white' }}>
+              <Appbar.BackAction onPress={() => navigation.pop()} />
+              <Appbar.Content title={data?.getSpaceDetails.spaceName} />
+              {userId === data?.getSpaceDetails.adminId ? (
                 <IconButton
-                  onPress={() => {}}
-                  icon="check"
-                  color="green"
-                  size={30}
+                  icon={(props) => (
+                    <Feather name="aperture" size={24} color="black" />
+                  )}
+                  onPress={showOptionsModal}
                 />
-                <Text style={{ marginLeft: 5, fontSize: 20 }}>
-                  Deleting Post...
-                </Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
+              ) : null}
+              {following ? (
+                <Appbar.Action
+                  icon="postage-stamp"
+                  onPress={() =>
+                    navigation.navigate('CreatePost', {
+                      spaceName: data?.getSpaceDetails.spaceName
+                    })
+                  }
+                />
+              ) : null}
+              {userId === data?.getSpaceDetails.adminId ? (
+                <Appbar.Action
+                  icon="delete"
+                  onPress={() => setDeleteSpaceDialog(true)}
+                />
+              ) : null}
+              {userId === data?.getSpaceDetails.adminId ? (
+                <Appbar.Action
+                  icon="square-edit-outline"
+                  onPress={() =>
+                    navigation.navigate('EditSpaceScreen', {
+                      spaceId: data?.getSpaceDetails.id,
+                      spaceName: data?.getSpaceDetails.spaceName,
+                      spaceDescription: data?.getSpaceDetails.spaceDescription
+                    })
+                  }
+                />
+              ) : null}
+              {following ? (
+                <Button mode="text" color="red" onPress={unFollow}>
+                  Unfollow
+                </Button>
+              ) : (
+                <Button mode="text" color="blue" onPress={Follow}>
+                  Follow
+                </Button>
+              )}
+            </Appbar.Header>
+            <Card style={{ margin: 10 }}>
+              <Card.Title
+                style={{ margin: 10, padding: 15 }}
+                title={data?.getSpaceDetails.spaceName}
+                right={() => RightContent(followingLength)}
+                left={() => LeftContent(data?.getSpaceDetails.spaceAvatarUrl)}
+              />
+            </Card>
+            <Card style={{ marginBottom: 10, marginHorizontal: 10 }}>
+              <Card.Title title="Space Description" />
+              <Card.Content>
+                <Paragraph>{data?.getSpaceDetails.spaceDescription}</Paragraph>
+              </Card.Content>
+            </Card>
+            <View
+              style={{
+                flexDirection: 'row',
+                flex: 1,
+                justifyContent: 'space-around'
+              }}
+            >
+              <Button icon="postage-stamp" onPress={() => setDisplay('Post')}>
+                Spaces
+              </Button>
+              <Button icon="account" onPress={() => setDisplay('User')}>
+                Users
+              </Button>
+            </View>
+            {display === 'Post' ? (
+              <FlatList
+                numColumns={1}
+                data={postData?.getPostsofSpace}
+                keyExtractor={(item) => item.id}
+                renderItem={renderPostCardItem}
+              />
+            ) : (
+              <FlatList
+                numColumns={1}
+                data={data?.getSpaceDetails.followingIds}
+                keyExtractor={(item) => item.id}
+                renderItem={renderUserItem}
+              />
+            )}
+          </ScrollView>
+        )}
 
-      <Provider>
-        <Portal>
-          <Dialog visible={snackVisible} onDismiss={onDismissSnackBar}>
-            <Dialog.Title>Error..!</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>
-                You Are The Admin of the Space. You Cannot Leave This Space
-              </Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={onDismissSnackBar}>Ok</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
-    </View>
+        <Provider>
+          <Portal>
+            <Dialog visible={deleteSpaceDialog} onDismiss={hideSpaceDialog}>
+              <Dialog.Title>Delete Space</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>
+                  Are You Sure You Want To Delete this Space
+                </Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button
+                  onPress={() =>
+                    navigation.replace('DeletingSpace', {
+                      spaceId: data?.getSpaceDetails.id,
+                      spaceFn: route.params.spaceFn
+                    })
+                  }
+                >
+                  Yes
+                </Button>
+                <Button onPress={hideSpaceDialog}>No</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Modal
+              visible={modal}
+              onDismiss={hideOptionsModal}
+              contentContainerStyle={containerStyle}
+            >
+              <List.Item
+                onPress={pickImageGallery}
+                title="Gallery"
+                description="Take Media Form Gallery"
+                left={(props) => <List.Icon {...props} icon="folder-image" />}
+              />
+
+              <List.Item
+                onPress={pickImageCamera}
+                title="Camera"
+                description="Take Media From Camera"
+                left={(props) => <List.Icon {...props} icon="camera" />}
+              />
+            </Modal>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog
+              style={{ justifyContent: 'center' }}
+              visible={photoUploading}
+              onDismiss={() => {}}
+            >
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row', padding: 10 }}>
+                  <ActivityIndicator />
+                  <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={spaceDeleteLoadingError} onDismiss={() => {}}>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row' }}>
+                  <ActivityIndicator />
+                  <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                    You Are Not Admin Of Space
+                  </Text>
+                </View>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={hideSpaceDeleateLoadingError}>Done</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={spaceDeleteLoading} onDismiss={() => {}}>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row' }}>
+                  <ActivityIndicator />
+                  <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                    Deleting Space...
+                  </Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={successDelete} onDismiss={() => {}}>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row' }}>
+                  <IconButton onPress={() => {}} icon="check" color="green" />
+                  <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                    Space Delete Successfully
+                  </Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={postDeletingLoading} onDismiss={() => {}}>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row' }}>
+                  <ActivityIndicator />
+                  <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                    Deleting Post...
+                  </Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={postDeleteDialog} onDismiss={() => {}}>
+              <Dialog.Title>Delete Post</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>Are You Sure You Wanna Delete This Post?</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={deletePostHandler} color="blue">
+                  Yes
+                </Button>
+                <Button onPress={hidePostDeleteDialog} color="red">
+                  No
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={postDeleteSuccess} onDismiss={() => {}}>
+              <Dialog.Title>Success</Dialog.Title>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row', padding: 10 }}>
+                  <IconButton
+                    onPress={() => {}}
+                    icon="check"
+                    color="green"
+                    size={30}
+                  />
+                  <Text style={{ marginLeft: 5, fontSize: 20 }}>
+                    Deleting Post...
+                  </Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={snackVisible} onDismiss={onDismissSnackBar}>
+              <Dialog.Title>Error..!</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>
+                  You Are The Admin of the Space. You Cannot Leave This Space
+                </Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={onDismissSnackBar}>Ok</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
+      </View>
+    </SafeAreaView>
   );
 };

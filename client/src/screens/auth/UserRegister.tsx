@@ -11,6 +11,7 @@ import {
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input } from 'react-native-elements/dist/input/Input';
 import {
+  ActivityIndicator,
   Colors,
   Dialog,
   IconButton,
@@ -19,7 +20,11 @@ import {
   Provider
 } from 'react-native-paper';
 import MenuItem from 'react-native-paper/lib/typescript/components/Menu/MenuItem';
-import { useRegisterMutation } from '../../generated/graphql';
+import {
+  MeDocument,
+  MeQuery,
+  useRegisterMutation
+} from '../../generated/graphql';
 import { AuthNavProps } from '../../utils/AuthParamList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -39,6 +44,7 @@ export const UserRegister = ({
   const [visible, setVisible] = useState(false);
   const [error, setError] = useState('');
   const [selectedValue, setSelectedValue] = useState<'Male' | 'Female'>('Male');
+  const [loading, setLoading] = useState(false);
 
   const [register] = useRegisterMutation();
   const hideDialog = () => setVisible(false);
@@ -49,8 +55,7 @@ export const UserRegister = ({
       firstName == '' ||
       password == '' ||
       username == '' ||
-      confirmpassword == '' ||
-      selectedValue == 'Choose Gender'
+      confirmpassword == ''
     ) {
       setVisible(true);
       setError('All Fields Are Necesarry');
@@ -74,6 +79,7 @@ export const UserRegister = ({
       setError('Username Cannot Contain @. Try a Different Username');
       return;
     }
+
     var email: string =
       `${route?.params?.mnitId.toLowerCase()}` + '@mnit.ac.in';
     const values = {
@@ -86,13 +92,26 @@ export const UserRegister = ({
       username: username
     };
 
+    setLoading(true);
+
     const response = await register({
-      variables: { data: values }
+      variables: { data: values },
+      update: (cache, { data }) => {
+        cache.writeQuery<MeQuery>({
+          query: MeDocument,
+          data: {
+            __typename: 'Query',
+            me: data?.registerUser.user
+          }
+        });
+        cache.evict({ fieldName: 'posts:{}' });
+      }
     });
+
+    setLoading(false);
 
     if (response.data?.registerUser.boolResult) {
       if (!response.data?.registerUser.boolResult?.value) {
-        console.log(response);
         return;
       }
     }
@@ -216,9 +235,13 @@ export const UserRegister = ({
             </View>
           </View>
 
-          <View style={{ margin: 20 }}>
-            <Button title="Register" onPress={handleRegister} />
-          </View>
+          {loading ? (
+            <ActivityIndicator />
+          ) : (
+            <View style={{ margin: 20 }}>
+              <Button title="Register" onPress={handleRegister} />
+            </View>
+          )}
           <Provider>
             <Portal>
               <Dialog visible={visible} onDismiss={hideDialog}>

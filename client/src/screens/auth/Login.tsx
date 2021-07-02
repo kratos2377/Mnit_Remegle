@@ -5,7 +5,7 @@ import { IconButton, Colors } from 'react-native-paper';
 import { Button, Input } from 'react-native-elements';
 import { Button as RPButton } from 'react-native-paper';
 import { AuthNavProps } from '../../utils/AuthParamList';
-import { useLoginMutation } from '../../generated/graphql';
+import { MeDocument, MeQuery, useLoginMutation } from '../../generated/graphql';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const LoginScreen = ({ navigation, route }: AuthNavProps<'Login'>) => {
@@ -30,10 +30,19 @@ export const LoginScreen = ({ navigation, route }: AuthNavProps<'Login'>) => {
       password: password
     };
     const response = await login({
-      variables: values
+      variables: values,
+      update: (cache, { data }) => {
+        cache.writeQuery<MeQuery>({
+          query: MeDocument,
+          data: {
+            __typename: 'Query',
+            me: data?.login.user
+          }
+        });
+        cache.evict({ fieldName: 'posts:{}' });
+      }
     });
 
-    console.log(response);
     if (response.data?.login.errors) {
       if (response.data?.login.errors[0].field === 'user') {
         setError(true);

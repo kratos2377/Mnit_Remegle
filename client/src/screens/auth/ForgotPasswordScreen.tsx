@@ -49,7 +49,6 @@ export const ForgotPasswordScreen = ({
         studentId: mnitID
       }
     });
-    console.log(response);
     setLoading(false);
 
     if (!response.data?.confirmUserCheck.boolResult?.value) {

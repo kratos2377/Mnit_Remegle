@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "811655092200",
+    "project_id": "test003-8e00a",
+    "storage_bucket": "test003-8e00a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:811655092200:android:2ecfaa6156565a7b05765d",
+        "android_client_info": {
+          "package_name": "Remegle.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "811655092200-dgsm4cacphdh8uf8j3fhdm76phaubnsv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnaureHM3yyKJ1F_nR5mOM5NVIq-_kdNg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "811655092200-dgsm4cacphdh8uf8j3fhdm76phaubnsv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

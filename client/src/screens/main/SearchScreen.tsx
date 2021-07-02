@@ -16,6 +16,7 @@ import {
 } from '../../generated/graphql';
 import { MainNavProps } from '../../utils/MainParamList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
 export const SearchScreen = ({
   navigation,
@@ -119,10 +120,10 @@ export const SearchScreen = ({
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, width: '100%' }}>
+    <SafeAreaView style={{ flex: 1, marginTop: Constants.statusBarHeight }}>
       <ScrollView>
         <Searchbar
-          style={{ marginBottom: 10 }}
+          style={{ marginBottom: 10, flex: 1 }}
           placeholder="Search Here..."
           onChangeText={(value) => {
             setSearchText(value);

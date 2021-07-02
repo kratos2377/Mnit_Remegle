@@ -146,7 +146,6 @@ export const CreatePostScreen = ({
       quality: 1
     });
     setModalVisible(false);
-    console.log(result);
 
     if (!result.cancelled) {
       setImage(result.uri);
@@ -165,7 +164,6 @@ export const CreatePostScreen = ({
       quality: 1
     });
     setModalVisible(false);
-    console.log(result);
 
     if (!result.cancelled) {
       setImage(result.uri);

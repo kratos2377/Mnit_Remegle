@@ -189,8 +189,6 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
       </Text>
     </View>
   );
-  console.log('User Data');
-  console.log(userData);
   const renderPostCardItem = (item) => (
     <View style={{ flexDirection: 'row' }}>
       <Card
@@ -287,7 +285,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
             marginTop: 20
           }}
         >
-          {item.item.imageUrl && (
+          {item.item.imageUrl.length != 0 ? (
             <Image
               source={{ uri: item.item.imageUrl }}
               style={{
@@ -296,6 +294,8 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
                 marginBottom: 10
               }}
             />
+          ) : (
+            <View></View>
           )}
         </View>
       </Card>
@@ -339,7 +339,6 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
       quality: 1
     });
     setModalOptions(false);
-    console.log(result);
 
     if (!result.cancelled) {
       setImage(result.uri);
@@ -359,7 +358,6 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
       quality: 1
     });
     setModalOptions(false);
-    console.log(result);
 
     if (!result.cancelled) {
       setImage(result.uri);

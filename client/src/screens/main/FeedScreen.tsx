@@ -300,8 +300,6 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
       </Card>
     </View>
   );
-  console.log(loading);
-  console.log(userData);
 
   const rendernewItem = (item) => (
     <View>

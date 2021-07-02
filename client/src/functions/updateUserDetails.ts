@@ -21,9 +21,6 @@ export const updateUserDetails = (
     `
   });
 
-  console.log('User here');
-  console.log(data);
-
   if (data) {
     cache.writeFragment({
       id: 'User:' + id,

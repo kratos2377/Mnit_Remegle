@@ -19,7 +19,6 @@ export const updateAfterUserAvatar = (
       }
     `
   });
-  console.log(data);
   cache.writeFragment({
     id: 'User:' + userId,
     fragment: gql`

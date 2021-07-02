@@ -278,7 +278,7 @@ export const GoToProfileScreen = ({
             marginTop: 20
           }}
         >
-          {item.item.imageUrl && (
+          {item.item.imageUrl.length != 0 ? (
             <Image
               source={{ uri: item.item.imageUrl }}
               style={{
@@ -287,6 +287,8 @@ export const GoToProfileScreen = ({
                 marginBottom: 10
               }}
             />
+          ) : (
+            <View></View>
           )}
         </View>
       </Card>
