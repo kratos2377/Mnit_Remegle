@@ -8,12 +8,6 @@
   "database": "mnit_reddit",
   "synchronize": true,
   "logging": false,
-  "entities": ["src/entity/**/*.ts"],
-  "migrations": ["src/migration/**/*.ts"],
-  "subscribers": ["src/subscriber/**/*.ts"],
-  "cli": {
-    "entitiesDir": "src/entity",
-    "migrationsDir": "src/migration",
-    "subscribersDir": "src/subscriber"
-  }
+  "entities": ["dist/entity/*.js"],
+  "migrations": ["dist/migration/*.js"]
 }

@@ -33,6 +33,7 @@ export const LoginScreen = ({ navigation, route }: AuthNavProps<'Login'>) => {
       variables: values
     });
 
+    console.log(response);
     if (response.data?.login.errors) {
       if (response.data?.login.errors[0].field === 'user') {
         setError(true);

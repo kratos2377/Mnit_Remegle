@@ -73,7 +73,10 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   async me(@Ctx() { req }: MyContext): Promise<User | null> {
+    console.log('Me Query Resquest is this');
+    console.log(req.session);
     if (!req.session.userId) {
+      console.log('Not Working');
       return null;
     }
     console.log('User Context');
@@ -250,6 +253,9 @@ export class UserResolver {
     @Arg('password') password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
+    console.log('Login Details');
+    console.log(usernameOrEmail);
+    console.log(password);
     const user = await User.findOne(
       usernameOrEmail.includes('@')
         ? { where: { email: usernameOrEmail } }
@@ -285,6 +291,9 @@ export class UserResolver {
     if (req.sessionID) {
       await redis.lpush(`${user.id}`, req.sessionID);
     }
+
+    console.log('REQUEST IS THIS New');
+    console.log(req.session);
     return { user, sessionId: req.sessionID };
   }
 

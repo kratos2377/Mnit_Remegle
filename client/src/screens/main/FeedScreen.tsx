@@ -284,7 +284,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
             marginTop: 20
           }}
         >
-          {item.item.imageUrl && (
+          {item.item.imageUrl.length != 0 ? (
             <Image
               source={{ uri: item.item.imageUrl }}
               style={{
@@ -293,15 +293,25 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
                 marginBottom: 10
               }}
             />
+          ) : (
+            <View></View>
           )}
         </View>
       </Card>
     </View>
   );
   console.log(loading);
-  console.log(data?.getFeedPosts.posts);
+  console.log(userData);
+
+  const rendernewItem = (item) => (
+    <View>
+      <Text>{item.item.title}</Text>
+      <Text>{item.item.content}</Text>
+      <Text>{item.item.points}</Text>
+    </View>
+  );
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, width: '100%' }}>
         {loading ? (
           <View style={{ alignSelf: 'center' }}>
@@ -369,7 +379,9 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
                   Load More
                 </Button>
               </View>
-            ) : null}
+            ) : (
+              <View></View>
+            )}
           </ScrollView>
         )}
 

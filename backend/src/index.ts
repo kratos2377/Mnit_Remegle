@@ -34,14 +34,26 @@ const main = async () => {
     }
   });
   const app = Express();
-  const schema = await createBuildSchema();
 
   const RedisStore = connectRedis(session);
+  app.set('trust proxy', 1);
+  const schema = await createBuildSchema();
+
+  app.use(
+    cors({
+      origin: [
+        'http://localhost:19006',
+        'http://10.0.2.2:19000',
+        'https://remegle-web.netlify.app'
+      ],
+      credentials: true
+    })
+  );
 
   app.use(
     session({
       store: new RedisStore({
-        client: redis,
+        client: redis as any,
         disableTouch: true
       }),
       name: 'qid',
@@ -49,6 +61,7 @@ const main = async () => {
       resave: false,
       saveUninitialized: false,
       cookie: {
+        path: '/',
         httpOnly: true,
         secure: false,
         maxAge: 1000 * 60 * 60 * 24 * 90 // 90 Days
@@ -68,20 +81,9 @@ const main = async () => {
     })
   });
 
-  app.use(
-    cors({
-      origin: [
-        'http://localhost:19006',
-        'http://10.0.2.2:19000',
-        'https://remegle-web.netlify.app'
-      ],
-      credentials: true
-    })
-  );
-
   apolloServer.applyMiddleware({ app, cors: false });
   const port = process.env.PORT || 5000;
-  app.listen(port, () => console.log('SERVER STARTED AT PORT 5000'));
+  app.listen(port, () => console.log('SERVER STARTED AT PORT ' + port));
 };
 
 main().catch((err) => {
