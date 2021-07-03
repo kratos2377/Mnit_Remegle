@@ -405,7 +405,7 @@ export const GoToSpaceScreen = ({
     });
   };
 
-  const uploadImage = async (image) => {
+  const uploadImage = async (image: string) => {
     let photoId = uuid.v4();
     const childPath = `spaceDP/${userId}/${photoId}`;
     const response = await fetch(image);
@@ -468,13 +468,14 @@ export const GoToSpaceScreen = ({
               {userId === data?.getSpaceDetails.adminId ? (
                 <IconButton
                   icon={(props) => (
-                    <Feather name="aperture" size={24} color="black" />
+                    <Feather name="aperture" size={20} color="black" />
                   )}
                   onPress={showOptionsModal}
                 />
               ) : null}
               {following ? (
                 <Appbar.Action
+                  size={20}
                   icon="postage-stamp"
                   onPress={() =>
                     navigation.navigate('CreatePost', {
@@ -485,12 +486,14 @@ export const GoToSpaceScreen = ({
               ) : null}
               {userId === data?.getSpaceDetails.adminId ? (
                 <Appbar.Action
+                  size={20}
                   icon="delete"
                   onPress={() => setDeleteSpaceDialog(true)}
                 />
               ) : null}
               {userId === data?.getSpaceDetails.adminId ? (
                 <Appbar.Action
+                  size={20}
                   icon="square-edit-outline"
                   onPress={() =>
                     navigation.navigate('EditSpaceScreen', {

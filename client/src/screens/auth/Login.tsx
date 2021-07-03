@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Alert, SafeAreaView, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  Alert,
+  SafeAreaView,
+  Dimensions,
+  Keyboard
+} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { IconButton, Colors } from 'react-native-paper';
+import { IconButton, Colors, ActivityIndicator } from 'react-native-paper';
 import { Button, Input } from 'react-native-elements';
 import { Button as RPButton } from 'react-native-paper';
 import { AuthNavProps } from '../../utils/AuthParamList';
@@ -17,14 +24,17 @@ export const LoginScreen = ({ navigation, route }: AuthNavProps<'Login'>) => {
   const [showPassword, setShowPassword] = useState(true);
   const [mobileWidth, setMobileWidth] = useState(0);
   const [login] = useLoginMutation();
+  const [onLoaginLoading, setOnLoginLoading] = useState(false);
 
   const onLoginHandler = async () => {
+    Keyboard.dismiss();
     if (userOrEmail === '' || password === '') {
       setError(true);
       setErrorMessage('All Fields Aree Necessary');
       return;
     }
 
+    setOnLoginLoading(true);
     const values = {
       usernameOrEmail: userOrEmail,
       password: password
@@ -42,6 +52,8 @@ export const LoginScreen = ({ navigation, route }: AuthNavProps<'Login'>) => {
         cache.evict({ fieldName: 'posts:{}' });
       }
     });
+
+    setOnLoginLoading(false);
 
     if (response.data?.login.errors) {
       if (response.data?.login.errors[0].field === 'user') {
@@ -130,47 +142,53 @@ export const LoginScreen = ({ navigation, route }: AuthNavProps<'Login'>) => {
             )}
           </View>
         </View>
-        <Button
-          buttonStyle={{
-            width: mobileWidth * 0.5,
-            margin: 10,
-            alignSelf: 'center'
-          }}
-          title="Sign In"
-          onPress={onLoginHandler}
-        />
-        <View
-          style={{
-            marginTop: 5,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <Text>Don't Have An Account ?</Text>
-          <RPButton
-            mode="text"
-            style={{ marginTop: 5 }}
-            onPress={() => navigation.replace('Register')}
-          >
-            Register
-          </RPButton>
-        </View>
+        {onLoaginLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <View>
+            <Button
+              buttonStyle={{
+                width: mobileWidth * 0.5,
+                margin: 10,
+                alignSelf: 'center'
+              }}
+              title="Sign In"
+              onPress={onLoginHandler}
+            />
+            <View
+              style={{
+                marginTop: 5,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <Text>Don't Have An Account ?</Text>
+              <RPButton
+                mode="text"
+                style={{ marginTop: 5 }}
+                onPress={() => navigation.replace('Register')}
+              >
+                Register
+              </RPButton>
+            </View>
 
-        <View
-          style={{
-            marginTop: 5,
-            flexDirection: 'row',
-            justifyContent: 'center'
-          }}
-        >
-          <RPButton
-            mode="text"
-            onPress={() => navigation.push('ForgotPassword')}
-          >
-            Forgot Password?
-          </RPButton>
-        </View>
+            <View
+              style={{
+                marginTop: 5,
+                flexDirection: 'row',
+                justifyContent: 'center'
+              }}
+            >
+              <RPButton
+                mode="text"
+                onPress={() => navigation.push('ForgotPassword')}
+              >
+                Forgot Password?
+              </RPButton>
+            </View>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );

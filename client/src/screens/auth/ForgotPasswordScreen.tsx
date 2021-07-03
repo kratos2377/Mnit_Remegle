@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, SafeAreaView, View } from 'react-native';
+import { Dimensions, Keyboard, SafeAreaView, View } from 'react-native';
 import { Button, Input, Text } from 'react-native-elements';
 import { AuthNavProps } from '../../utils/AuthParamList';
 import {
@@ -36,6 +36,7 @@ export const ForgotPasswordScreen = ({
   const [mobileWidth, setMobileWidth] = useState(0);
 
   const checkUserHandler = async () => {
+    Keyboard.dismiss();
     if (mnitID.length !== 11) {
       setErrorMessage(
         'MNIT ID is always of length 11. Check Your MNIT ID Again.'

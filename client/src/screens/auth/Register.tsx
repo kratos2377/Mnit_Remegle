@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, View } from 'react-native';
+import { Dimensions, Keyboard, View } from 'react-native';
 import { Input, Button, Text } from 'react-native-elements';
 import {
   ActivityIndicator,
@@ -30,6 +30,7 @@ export const RegisterScreen = ({ navigation }: AuthNavProps<'Register'>) => {
   const [mobileWidth, setMobileWidth] = useState(0);
 
   const checkUserHandler = async () => {
+    Keyboard.dismiss();
     if (mnitID.length !== 11) {
       setErrorMessage(
         'MNIT ID is always of length 11. Check Your MNIT ID Again.'

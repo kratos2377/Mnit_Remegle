@@ -6,7 +6,8 @@ import {
   Button,
   Picker,
   ScrollView,
-  Dimensions
+  Dimensions,
+  Keyboard
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Input } from 'react-native-elements/dist/input/Input';
@@ -50,6 +51,8 @@ export const UserRegister = ({
   const hideDialog = () => setVisible(false);
 
   const handleRegister = async () => {
+    Keyboard.dismiss();
+
     if (
       lastName == '' ||
       firstName == '' ||

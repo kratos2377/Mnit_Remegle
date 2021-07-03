@@ -11,6 +11,7 @@ import {
   Portal,
   Provider
 } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLogoutMutation } from '../../generated/graphql';
 import { MainNavProps } from '../../utils/MainParamList';
 
@@ -49,62 +50,64 @@ export const SettingsScreen = ({
   };
 
   return (
-    <View>
-      <ScrollView>
-        <Card style={{ marginVertical: 10, padding: 10 }}>
-          <List.Item
-            title="Logout"
-            description="Logout From App"
-            left={(props) => <List.Icon {...props} icon="logout" />}
-            onPress={handleLogoutOpen}
-          />
-        </Card>
-        <Card style={{ marginVertical: 10, padding: 10 }}>
-          <List.Item
-            title="Your Spaces"
-            description="Check All Of The Spaces You Have Created"
-            left={(props) => <List.Icon {...props} icon="postage-stamp" />}
-            onPress={() => navigation.navigate('YourSpaces')}
-          />
-        </Card>
-        <Card style={{ marginVertical: 10, padding: 10 }}>
-          <List.Item
-            title="Edit Profile"
-            description="Update Your Details"
-            left={(props) => <List.Icon {...props} icon="account-edit" />}
-            onPress={() => navigation.navigate('UpdateScreen')}
-          />
-        </Card>
-      </ScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1, width: '100%' }}>
+        <ScrollView>
+          <Card style={{ marginVertical: 10, padding: 10 }}>
+            <List.Item
+              title="Logout"
+              description="Logout From App"
+              left={(props) => <List.Icon {...props} icon="logout" />}
+              onPress={handleLogoutOpen}
+            />
+          </Card>
+          <Card style={{ marginVertical: 10, padding: 10 }}>
+            <List.Item
+              title="Your Spaces"
+              description="Check All Of The Spaces You Have Created"
+              left={(props) => <List.Icon {...props} icon="postage-stamp" />}
+              onPress={() => navigation.navigate('YourSpaces')}
+            />
+          </Card>
+          <Card style={{ marginVertical: 10, padding: 10 }}>
+            <List.Item
+              title="Edit Profile"
+              description="Update Your Details"
+              left={(props) => <List.Icon {...props} icon="account-edit" />}
+              onPress={() => navigation.navigate('UpdateScreen')}
+            />
+          </Card>
+        </ScrollView>
 
-      <Provider>
-        <Portal>
-          <Dialog visible={visible} onDismiss={handleClose}>
-            <Dialog.Title>Error</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>{error}</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={handleClose}>OK</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
+        <Provider>
+          <Portal>
+            <Dialog visible={visible} onDismiss={handleClose}>
+              <Dialog.Title>Error</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>{error}</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={handleClose}>OK</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
 
-      <Provider>
-        <Portal>
-          <Dialog visible={logoutVisible} onDismiss={handleLogoutClose}>
-            <Dialog.Title>Logout</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>Are You Sure You Want To Logout?</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={logoutHandler}>Yes</Button>
-              <Button onPress={handleLogoutClose}>No</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
-    </View>
+        <Provider>
+          <Portal>
+            <Dialog visible={logoutVisible} onDismiss={handleLogoutClose}>
+              <Dialog.Title>Logout</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>Are You Sure You Want To Logout?</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={logoutHandler}>Yes</Button>
+                <Button onPress={handleLogoutClose}>No</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
+      </View>
+    </SafeAreaView>
   );
 };
