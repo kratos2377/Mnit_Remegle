@@ -52,7 +52,6 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
   const [limitPost, setLimitPost] = useState<number>(15);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
-
   const hidePostDeleteDialog = () => setPostDeleteDialog(false);
 
   const onStateChange = ({ open }) => setState({ open });
@@ -67,7 +66,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
     notifyOnNetworkStatusChange: true
   });
 
-  const { data: userData } = useMeQuery();
+  const { data: userData, loading: userDetailsLoading } = useMeQuery();
 
   useEffect(() => {
     const getDetails = async () => {
@@ -289,7 +288,9 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
               source={{ uri: item.item.imageUrl }}
               style={{
                 height: height * 0.5,
+
                 width: width * 0.8,
+
                 marginBottom: 10
               }}
             />
@@ -311,7 +312,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, width: '100%' }}>
-        {loading ? (
+        {loading || userDetailsLoading ? (
           <View style={{ alignSelf: 'center' }}>
             <ActivityIndicator />
           </View>

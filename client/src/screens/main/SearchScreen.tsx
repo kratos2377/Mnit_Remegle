@@ -5,10 +5,16 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
+  Image
 } from 'react-native';
 import { Avatar, ListItem } from 'react-native-elements';
-import { Button, Colors, Searchbar } from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Button,
+  Colors,
+  Searchbar
+} from 'react-native-paper';
 import {
   RegularSpaceFragment,
   RegularUserFragment,
@@ -30,12 +36,17 @@ export const SearchScreen = ({
 
   const [display, setDispaly] = useState<'Users' | 'Spaces'>('Users');
   const [displayItem, setDisplayItem] = useState([]);
+  const [spinner, setSpinner] = useState(false);
+  const [searched, setSearched] = useState(false);
   const searchHandler = async () => {
     if (searchText == '') {
       setSpaces([]);
       setUsers([]);
+      setSearched(false);
       return;
     }
+
+    setSpinner(true);
 
     const values = {
       searchName: searchText
@@ -44,6 +55,9 @@ export const SearchScreen = ({
 
     setSpaces([...response.data?.searchQuery?.spaces]);
     setUsers([...response.data?.searchQuery?.users]);
+
+    setSpinner(false);
+    setSearched(true);
   };
 
   const changeSpaces = (id: string) => {
@@ -58,6 +72,7 @@ export const SearchScreen = ({
     if (searchText === '') {
       setSpaces([]);
       setUsers([]);
+      setSearched(false);
     }
   }, [searchText]);
 
@@ -131,13 +146,15 @@ export const SearchScreen = ({
             if (value.trim().length == 0) {
               setSpaces([]);
               setSpaces([]);
+              setSearched(false);
             }
           }}
           value={searchText}
           onIconPress={searchHandler}
         />
-
-        {searchFeedSpaces.length !== 0 || searchFeedUsers.length !== 0 ? (
+        {spinner ? (
+          <ActivityIndicator />
+        ) : searchFeedSpaces.length !== 0 || searchFeedUsers.length !== 0 ? (
           <View style={{ flex: 1, width: '100%' }}>
             <View
               style={{
@@ -181,6 +198,25 @@ export const SearchScreen = ({
                 renderItem={renderSpaceItem}
               />
             )}
+          </View>
+        ) : searched ? (
+          <View
+            style={{
+              alignSelf: 'center',
+              alignContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Text style={{ fontSize: 20, margin: 20 }}>No Results Found </Text>
+            <Image
+              source={{
+                uri: 'https://media.giphy.com/media/zLCiUWVfex7ji/source.gif'
+              }}
+              style={{
+                width: 300,
+                height: 300
+              }}
+            />
           </View>
         ) : (
           <View style={{ alignSelf: 'center' }}>

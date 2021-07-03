@@ -361,7 +361,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     margin: 10,
     padding: 15,
-    fontSize: 20
+    fontSize: 20,
+    borderColor: '#000000',
+    borderWidth: 2,
+    borderRadius: 10
   },
   container: {
     flex: 1,

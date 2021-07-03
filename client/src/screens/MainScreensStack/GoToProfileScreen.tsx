@@ -38,14 +38,18 @@ export const GoToProfileScreen = ({
   navigation,
   route
 }: MainNavProps<'GoToProfile'>) => {
-  const { data, error, variables } = useGetPostsByUserIdQuery({
+  const { data, error, variables, loading } = useGetPostsByUserIdQuery({
     variables: {
       id: route.params?.id
     },
     notifyOnNetworkStatusChange: true
   });
 
-  const { data: userData, error: userError } = useStudentDetailsQuery({
+  const {
+    data: userData,
+    error: userError,
+    loading: detailsLoading
+  } = useStudentDetailsQuery({
     variables: {
       id: route.params?.id
     }
@@ -296,77 +300,83 @@ export const GoToProfileScreen = ({
   );
   return (
     <View style={{ flex: 1, width: '100%' }}>
-      <ScrollView>
-        <Appbar.Header style={{ backgroundColor: 'white' }}>
-          <Appbar.BackAction onPress={() => navigation.pop()} />
-          <Appbar.Content
-            title={userData?.studentDetails?.username}
-            subtitle={userData?.studentDetails?.studentId}
-          />
-        </Appbar.Header>
-
-        <View style={{ marginBottom: 10, marginTop: 10 }}>
-          <Card
-            style={{
-              width: '100%',
-              padding: 10,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Image
-              style={{ width: 200, height: 200, borderRadius: 100 }}
-              source={{ uri: userData?.studentDetails?.avatarUrl }}
+      {loading || detailsLoading ? (
+        <ActivityIndicator />
+      ) : (
+        <ScrollView>
+          <Appbar.Header style={{ backgroundColor: 'white' }}>
+            <Appbar.BackAction onPress={() => navigation.pop()} />
+            <Appbar.Content
+              title={userData?.studentDetails?.username}
+              subtitle={userData?.studentDetails?.studentId}
             />
-            <Text style={{ marginBottom: 10 }}>
-              {userData?.studentDetails?.fullName}
-            </Text>
-            <Text style={{ marginBottom: 10 }}>
-              {userData?.studentDetails?.bio}
-            </Text>
-            <View style={{ flexDirection: 'row' }}>
-              {userData?.studentDetails?.instagramAcc.length === 0 ? null : (
-                <SocialIcon
-                  type="instagram"
-                  onPress={() =>
-                    Linking.openURL(userData?.studentDetails?.instagramAcc)
-                  }
-                />
-              )}
-              {userData?.studentDetails?.twitterAcc.length === 0 ? null : (
-                <SocialIcon
-                  type="twitter"
-                  onPress={() =>
-                    Linking.openURL(userData?.studentDetails?.twitterAcc)
-                  }
-                />
-              )}
-            </View>
-          </Card>
-        </View>
-        {data?.getPostsByUserId?.length === 0 ? (
-          <View style={{ alignSelf: 'center' }}>
-            <Card style={{ margin: 10, flexDirection: 'column', padding: 10 }}>
-              <IconButton
-                icon="block-helper"
-                color={Colors.red500}
-                size={100}
-                onPress={() => {}}
+          </Appbar.Header>
+
+          <View style={{ marginBottom: 10, marginTop: 10 }}>
+            <Card
+              style={{
+                width: '100%',
+                padding: 10,
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Image
+                style={{ width: 200, height: 200, borderRadius: 100 }}
+                source={{ uri: userData?.studentDetails?.avatarUrl }}
               />
-              <Text>Users Have No Posts</Text>
+              <Text style={{ marginBottom: 10 }}>
+                {userData?.studentDetails?.fullName}
+              </Text>
+              <Text style={{ marginBottom: 10 }}>
+                {userData?.studentDetails?.bio}
+              </Text>
+              <View style={{ flexDirection: 'row' }}>
+                {userData?.studentDetails?.instagramAcc.length === 0 ? null : (
+                  <SocialIcon
+                    type="instagram"
+                    onPress={() =>
+                      Linking.openURL(userData?.studentDetails?.instagramAcc)
+                    }
+                  />
+                )}
+                {userData?.studentDetails?.twitterAcc.length === 0 ? null : (
+                  <SocialIcon
+                    type="twitter"
+                    onPress={() =>
+                      Linking.openURL(userData?.studentDetails?.twitterAcc)
+                    }
+                  />
+                )}
+              </View>
             </Card>
           </View>
-        ) : (
-          <View style={{ flex: 1 }}>
-            <FlatList
-              numColumns={1}
-              data={data?.getPostsByUserId}
-              keyExtractor={(item) => item.id}
-              renderItem={renderPostCardItem}
-            />
-          </View>
-        )}
-      </ScrollView>
+          {data?.getPostsByUserId?.length === 0 ? (
+            <View style={{ alignSelf: 'center' }}>
+              <Card
+                style={{ margin: 10, flexDirection: 'column', padding: 10 }}
+              >
+                <IconButton
+                  icon="block-helper"
+                  color={Colors.red500}
+                  size={100}
+                  onPress={() => {}}
+                />
+                <Text>Users Have No Posts</Text>
+              </Card>
+            </View>
+          ) : (
+            <View style={{ flex: 1 }}>
+              <FlatList
+                numColumns={1}
+                data={data?.getPostsByUserId}
+                keyExtractor={(item) => item.id}
+                renderItem={renderPostCardItem}
+              />
+            </View>
+          )}
+        </ScrollView>
+      )}
 
       <Provider>
         <Portal>

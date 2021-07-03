@@ -1,45 +1,45 @@
-import AsyncStorage from "@react-native-community/async-storage";
-import LottieView from "lottie-react-native";
-import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
+import LottieView from 'lottie-react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import {
   Appbar,
   Button,
   Dialog,
   Paragraph,
   Portal,
-  Provider,
-} from "react-native-paper";
-import { useCreateSpaceMutation } from "../../generated/graphql";
-import { MainNavProps } from "../../utils/MainParamList";
+  Provider
+} from 'react-native-paper';
+import { useCreateSpaceMutation } from '../../generated/graphql';
+import { MainNavProps } from '../../utils/MainParamList';
 
 interface CreateSpaceScreenProps {}
 
 export const CreateSpaceScreen = ({
-  navigation,
-}: MainNavProps<"CreateSpace">) => {
-  var userId: string = "";
-  const [spaceName, setSpaceName] = useState("");
-  const [spaceDescription, setSpaceDescription] = useState("");
+  navigation
+}: MainNavProps<'CreateSpace'>) => {
+  var userId: string = '';
+  const [spaceName, setSpaceName] = useState('');
+  const [spaceDescription, setSpaceDescription] = useState('');
   const [visible, setVisible] = useState(false);
   const [postVisible, setPostVisible] = useState(false);
   const [successVisible, setSuccessVisible] = useState(false);
-  const [postError, setPostError] = useState("");
+  const [postError, setPostError] = useState('');
 
   const [createSpace] = useCreateSpaceMutation();
 
   const showDialog = () => setVisible(true);
 
   const handleYes = () => {
-    setSpaceName("");
-    setSpaceDescription("");
+    setSpaceName('');
+    setSpaceDescription('');
     setVisible(false);
     navigation.pop();
   };
   const handleNo = () => setVisible(false);
   const handlePostNo = () => setPostVisible(false);
   const handleSuccessNo = () => {
-    setSuccessVisible(false)
+    setSuccessVisible(false);
     navigation.pop();
   };
 
@@ -54,31 +54,31 @@ export const CreateSpaceScreen = ({
 
   const _createSpace = async () => {
     if (spaceName.trim().length === 0 || spaceDescription.trim().length === 0) {
-      setPostError("All Fields Are Necesarry");
+      setPostError('All Fields Are Necesarry');
       setPostVisible(true);
       return;
     }
 
     if (spaceName.trim().length <= 5) {
-      setPostError("Space Name Length Must Be Grater 5");
+      setPostError('Space Name Length Must Be Grater 5');
       setPostVisible(true);
       return;
     }
 
     if (spaceDescription.trim().length <= 10) {
-      setPostError("Space Description Must Be Greater Than 10");
+      setPostError('Space Description Must Be Greater Than 10');
       setPostVisible(true);
       return;
     }
     const response = await createSpace({
       variables: {
         spaceName: spaceName,
-        spaceDescription: spaceDescription,
-      },
+        spaceDescription: spaceDescription
+      }
     });
 
     if (!response.data?.createSpace) {
-      setPostError("Space With This Name Exists. Try A Different Name");
+      setPostError('Space With This Name Exists. Try A Different Name');
       setPostVisible(true);
       return;
     }
@@ -102,7 +102,7 @@ export const CreateSpaceScreen = ({
           value={spaceName}
         />
         <Text
-          style={{ alignItems: "flex-end", textAlign: "right", marginRight: 5 }}
+          style={{ alignItems: 'flex-end', textAlign: 'right', marginRight: 5 }}
         >
           {spaceName.length}/40
         </Text>
@@ -118,7 +118,7 @@ export const CreateSpaceScreen = ({
           value={spaceDescription}
         />
         <Text
-          style={{ alignItems: "flex-end", textAlign: "right", marginRight: 5 }}
+          style={{ alignItems: 'flex-end', textAlign: 'right', marginRight: 5 }}
         >
           {spaceDescription.length}/200
         </Text>
@@ -160,7 +160,7 @@ export const CreateSpaceScreen = ({
           <Dialog visible={successVisible} onDismiss={handleSuccessNo}>
             <Dialog.Title>Success</Dialog.Title>
             <Dialog.Content>
-              <LottieView source={require("../../../assets/success.json")} />
+              <LottieView source={require('../../../assets/success.json')} />
             </Dialog.Content>
             <Dialog.Actions>
               <Button onPress={handleSuccessNo}>Ok</Button>
@@ -177,5 +177,8 @@ const styles = StyleSheet.create({
     margin: 10,
     padding: 15,
     fontSize: 20,
-  },
+    borderColor: '#000000',
+    borderWidth: 2,
+    borderRadius: 10
+  }
 });

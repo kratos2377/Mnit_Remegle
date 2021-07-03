@@ -39,14 +39,19 @@ import * as ImagePicker from 'expo-image-picker';
 import { v4 as uuidv4 } from 'uuid';
 import firebase from 'firebase/app';
 import { updateAfterUserAvatar } from '../../functions/updateAfterUserAvatar';
+import { SafeAreaView } from 'react-native-safe-area-context';
 require('firebase/firestore');
 require('firebase/firebase-storage');
 
 interface ProfileScreenProps {}
 
 export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
-  const { data, error, variables } = useGetAllUserPostsQuery();
-  const { data: userData, error: userError } = useMeQuery();
+  const { data, error, variables, loading } = useGetAllUserPostsQuery();
+  const {
+    data: userData,
+    error: userError,
+    loading: userDetailsLoading
+  } = useMeQuery();
 
   const [voteMut] = useVoteMutation();
   const [loadingState, setLoadingState] = useState<
@@ -329,7 +334,11 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
     setImageUrl(url);
   };
 
-  const containerStyle = { backgroundColor: 'white', padding: 20, margin: 20 };
+  const containerStyle = {
+    backgroundColor: 'white',
+    padding: 20,
+    margin: 10
+  };
 
   const pickImageGallery = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -369,91 +378,99 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
   };
 
   return (
-    <ScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, width: '100%' }}>
-        <ScrollView>
-          <Appbar.Header style={{ backgroundColor: 'white' }}>
-            <Appbar.Content
-              title={userData?.me?.username}
-              subtitle={userData?.me.studentId}
-            />
-            <Appbar.Action
-              icon="dots-vertical-circle"
-              onPress={() => navigation.navigate('Settings')}
-            />
-          </Appbar.Header>
+        {loading || userDetailsLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <ScrollView>
+            <Appbar.Header style={{ backgroundColor: 'white' }}>
+              <Appbar.Content
+                title={userData?.me?.username}
+                subtitle={userData?.me.studentId}
+              />
+              <Appbar.Action
+                icon="dots-vertical-circle"
+                onPress={() => navigation.navigate('Settings')}
+              />
+            </Appbar.Header>
 
-          <View style={{ marginBottom: 10, marginTop: 10 }}>
-            <Card
-              style={{
-                width: '100%',
-                padding: 10,
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <View style={{ alignSelf: 'center' }}>
-                <Image
-                  style={{ width: 200, height: 200, borderRadius: 100 }}
-                  source={{ uri: userData?.me?.avatarUrl }}
-                />
-              </View>
-              <View style={{ alignSelf: 'center' }}>
-                <Text style={{ marginBottom: 10, marginTop: 10 }}>
-                  {userData?.me?.fullName}
-                </Text>
-                <Text style={{ marginBottom: 10 }}>{userData?.me?.bio}</Text>
-              </View>
-              <View
+            <View style={{ marginBottom: 10, marginTop: 10 }}>
+              <Card
                 style={{
-                  flexDirection: 'row',
-                  alignSelf: 'center',
-                  marginBottom: 10
+                  width: '100%',
+                  padding: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                {userData?.me?.instagramAcc.length === 0 ? null : (
-                  <SocialIcon
-                    type="instagram"
-                    onPress={() => Linking.openURL(userData?.me?.instagramAcc)}
+                <View style={{ alignSelf: 'center' }}>
+                  <Image
+                    style={{ width: 200, height: 200, borderRadius: 100 }}
+                    source={{ uri: userData?.me?.avatarUrl }}
                   />
-                )}
-                {userData?.me?.twitterAcc.length === 0 ? null : (
-                  <SocialIcon
-                    type="twitter"
-                    onPress={() => Linking.openURL(userData?.me?.twitterAcc)}
-                  />
-                )}
-              </View>
+                </View>
+                <View style={{ alignSelf: 'center' }}>
+                  <Text style={{ marginBottom: 10, marginTop: 10 }}>
+                    {userData?.me?.fullName}
+                  </Text>
+                  <Text style={{ marginBottom: 10 }}>{userData?.me?.bio}</Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignSelf: 'center',
+                    marginBottom: 10
+                  }}
+                >
+                  {userData?.me?.instagramAcc.length === 0 ? null : (
+                    <SocialIcon
+                      type="instagram"
+                      onPress={() =>
+                        Linking.openURL(userData?.me?.instagramAcc)
+                      }
+                    />
+                  )}
+                  {userData?.me?.twitterAcc.length === 0 ? null : (
+                    <SocialIcon
+                      type="twitter"
+                      onPress={() => Linking.openURL(userData?.me?.twitterAcc)}
+                    />
+                  )}
+                </View>
 
-              <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
-                <Button onPress={() => setModalOptions(true)}>Change DP</Button>
-              </View>
-            </Card>
-          </View>
-          {data?.getAllUserPosts?.length === 0 ? (
-            <View style={{ alignSelf: 'center' }}>
-              <Card
-                style={{ margin: 10, flexDirection: 'column', padding: 10 }}
-              >
-                <IconButton
-                  icon="block-helper"
-                  color={Colors.red500}
-                  size={100}
-                  onPress={() => {}}
-                />
-                <Text>You Have No Posts</Text>
+                <View style={{ flexDirection: 'row', alignSelf: 'center' }}>
+                  <Button onPress={() => setModalOptions(true)}>
+                    Change DP
+                  </Button>
+                </View>
               </Card>
             </View>
-          ) : (
-            <View style={{ flex: 1 }}>
-              <FlatList
-                data={data?.getAllUserPosts}
-                keyExtractor={(item) => item.id}
-                renderItem={renderPostCardItem}
-              />
-            </View>
-          )}
-        </ScrollView>
+            {data?.getAllUserPosts?.length === 0 ? (
+              <View style={{ alignSelf: 'center' }}>
+                <Card
+                  style={{ margin: 10, flexDirection: 'column', padding: 10 }}
+                >
+                  <IconButton
+                    icon="block-helper"
+                    color={Colors.red500}
+                    size={100}
+                    onPress={() => {}}
+                  />
+                  <Text>You Have No Posts</Text>
+                </Card>
+              </View>
+            ) : (
+              <View style={{ flex: 1 }}>
+                <FlatList
+                  data={data?.getAllUserPosts}
+                  keyExtractor={(item) => item.id}
+                  renderItem={renderPostCardItem}
+                />
+              </View>
+            )}
+          </ScrollView>
+        )}
 
         <Provider>
           <Portal>
@@ -494,6 +511,9 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
             <Modal
               visible={modalOptions}
               onDismiss={hideOptionsModal}
+              style={{
+                justifyContent: 'center'
+              }}
               contentContainerStyle={containerStyle}
             >
               <List.Item
@@ -551,6 +571,6 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
           </Portal>
         </Provider>
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 };

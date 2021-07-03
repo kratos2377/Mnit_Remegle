@@ -73,7 +73,7 @@ export const GoToSpaceScreen = ({
   const [postDelete] = useDeletePostMutation();
 
   const hidePostDeleteDialog = () => setPostDeleteDialog(false);
-  const { data: postData } = useGetPostsOfSpacesQuery({
+  const { data: postData, loading: postLoading } = useGetPostsOfSpacesQuery({
     variables: {
       postSpaceId: route?.params.id
     }
@@ -458,7 +458,7 @@ export const GoToSpaceScreen = ({
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, width: '100%' }}>
-        {pageLoading ? (
+        {loading || postLoading ? (
           <ActivityIndicator style={{ justifyContent: 'center' }} />
         ) : (
           <ScrollView style={{ width: '100%' }}>
