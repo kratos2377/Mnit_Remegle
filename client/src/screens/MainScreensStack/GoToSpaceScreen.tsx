@@ -45,7 +45,7 @@ import firebase from 'firebase/app';
 require('firebase/firestore');
 require('firebase/firebase-storage');
 import * as ImagePicker from 'expo-image-picker';
-import { v4 as uuidv4 } from 'uuid';
+import uuid from 'react-native-uuid';
 import { updateAfterSpaceAvatar } from '../../functions/updateSpaceAvatar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -406,7 +406,7 @@ export const GoToSpaceScreen = ({
   };
 
   const uploadImage = async (image) => {
-    let photoId = uuidv4();
+    let photoId = uuid.v4();
     const childPath = `spaceDP/${userId}/${photoId}`;
     const response = await fetch(image);
     const blob = await response.blob();
@@ -420,9 +420,9 @@ export const GoToSpaceScreen = ({
 
   const pickImageGallery = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1
     });
     setModalVisible(false);
@@ -439,18 +439,17 @@ export const GoToSpaceScreen = ({
 
   const pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1
     });
     setModalVisible(false);
-    result;
 
     if (!result.cancelled) {
       setImage(result.uri);
       setPhotoUploading(true);
-      await uploadImage(image);
+      await uploadImage(result.uri);
       // stop loading
       setPhotoUploading(false);
     }

@@ -28,7 +28,7 @@ import {
 } from '../../generated/graphql';
 import { MainNavProps } from '../../utils/MainParamList';
 import * as ImagePicker from 'expo-image-picker';
-import { v4 as uuidv4 } from 'uuid';
+import uuid from 'react-native-uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebase from 'firebase/app';
 require('firebase/firestore');
@@ -126,11 +126,13 @@ export const CreatePostScreen = ({
   }, []);
 
   const uploadImage = async (image) => {
-    let photoId = uuidv4();
+    let photoId = uuid.v4();
     const childPath = `post/${userId}/${photoId}`;
+    console.log('Done till here');
+    console.log(image);
     const response = await fetch(image);
     const blob = await response.blob();
-
+    console.log('This also done Blob');
     const task = await firebase.storage().ref().child(childPath).put(blob);
 
     let url = await task.ref.getDownloadURL();
@@ -140,9 +142,9 @@ export const CreatePostScreen = ({
 
   const pickImageGallery = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      ImagesowsEditing: true,
+      aspect: [1, 1],
       quality: 1
     });
     setModalVisible(false);
@@ -158,9 +160,9 @@ export const CreatePostScreen = ({
 
   const pickImageCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1
     });
     setModalVisible(false);
@@ -168,7 +170,7 @@ export const CreatePostScreen = ({
     if (!result.cancelled) {
       setImage(result.uri);
       setPhotoUploading(true);
-      await uploadImage(image);
+      await uploadImage(result.uri);
       // stop loading
       setPhotoUploading(false);
     }

@@ -49,11 +49,11 @@
     "react-native-spinkit": "^1.5.1",
     "react-native-tab-view": "^2.16.0",
     "react-native-text-size": "^4.0.0-rc.1",
+    "react-native-uuid": "^2.0.1",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
     "react-native-web-lottie": "^1.4.4",
-    "react-spring": "^9.2.3",
-    "uuid": "^8.3.2"
+    "react-spring": "^9.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
