@@ -17,6 +17,7 @@ import { Updoot } from './entity/Updoot';
 import { Spaces } from './entity/Spaces';
 import { MnitStudent } from './entity/MnitStudent';
 import dotenv from 'dotenv';
+import { OnlineUser } from './entity/onlineUser';
 
 const main = async () => {
   dotenv.config();
@@ -26,7 +27,7 @@ const main = async () => {
     url: process.env.DATABASE_URL,
     logging: true,
     synchronize: true,
-    entities: [Post, User, Updoot, Spaces, MnitStudent],
+    entities: [Post, User, Updoot, Spaces, MnitStudent, OnlineUser],
     extra: {
       ssl: {
         rejectUnauthorized: false

@@ -4,10 +4,18 @@ import { buildSchema } from 'type-graphql';
 import { HelloResolver } from '../resolvers/helloResolver';
 import { UserResolver } from '../resolvers/userResolver';
 import { SearchResolver } from '../resolvers/searchResolver';
+import { VideoChatResolver } from 'src/resolvers/videoChatResolver';
 
 export const createBuildSchema = () =>
   buildSchema({
-    resolvers: [HelloResolver, UserResolver, PostResolver, SpaceResolver , SearchResolver],
+    resolvers: [
+      HelloResolver,
+      UserResolver,
+      PostResolver,
+      SpaceResolver,
+      SearchResolver,
+      VideoChatResolver
+    ],
     authChecker: ({ context: { req } }) => {
       return !!req.session.userId;
     }
