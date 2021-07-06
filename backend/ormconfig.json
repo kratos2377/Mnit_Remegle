@@ -8,6 +8,6 @@
   "database": "mnit_reddit",
   "synchronize": true,
   "logging": false,
-  "entities": ["src/entity/*.ts"],
-  "migrations": ["src/migration/*.ts"]
+  "entities": ["dist/entity/*.js"],
+  "migrations": ["dist/migration/*.js"]
 }

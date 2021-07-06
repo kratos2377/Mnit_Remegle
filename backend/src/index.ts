@@ -10,7 +10,6 @@ import cors from 'cors';
 import { createUpdootLoader } from './dataloader/createUpdootLoader';
 import { postUserLoader } from './dataloader/postUserLoader';
 import { spaceUserLoader } from './dataloader/spaceUserLoader';
-import http from 'http';
 //import path from 'path';
 import { Post } from './entity/Post';
 import { User } from './entity/User';
@@ -19,21 +18,23 @@ import { Spaces } from './entity/Spaces';
 import { MnitStudent } from './entity/MnitStudent';
 import dotenv from 'dotenv';
 import { OnlineUser } from './entity/onlineUser';
-import { Socket } from 'socket.io';
-// import * as socketio from "socket.io";
 
 const main = async () => {
   dotenv.config();
 
   await createConnection({
     type: 'postgres',
-    url: 'postgresql://postgres:postgres@localhost:5432/mnit_reddit',
+    url: process.env.DATABASE_URL,
     logging: true,
     synchronize: true,
-    entities: [Post, User, Updoot, Spaces, MnitStudent, OnlineUser]
+    entities: [Post, User, Updoot, Spaces, MnitStudent, OnlineUser],
+    extra: {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    }
   });
   const app = Express();
-  const httpServer = http.createServer(app);
 
   const RedisStore = connectRedis(session);
   app.set('trust proxy', 1);
@@ -82,13 +83,9 @@ const main = async () => {
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
-  const io = require('socket.io')(httpServer);
-  io.on('connection', (socket: Socket) => {
-    console.log('Socket Connected');
-    console.log(socket);
-  });
+
   const port = process.env.PORT || 5000;
-  httpServer.listen(port, () => console.log('SERVER STARTED AT PORT ' + port));
+  app.listen(port, () => console.log('SERVER STARTED AT PORT ' + port));
 };
 
 main().catch((err) => {
