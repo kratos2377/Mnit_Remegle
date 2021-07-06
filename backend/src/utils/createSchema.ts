@@ -4,7 +4,7 @@ import { buildSchema } from 'type-graphql';
 import { HelloResolver } from '../resolvers/helloResolver';
 import { UserResolver } from '../resolvers/userResolver';
 import { SearchResolver } from '../resolvers/searchResolver';
-import { VideoChatResolver } from 'src/resolvers/videoChatResolver';
+import { VideoChatResolver } from '../resolvers/videoChatResolver';
 
 export const createBuildSchema = () =>
   buildSchema({
