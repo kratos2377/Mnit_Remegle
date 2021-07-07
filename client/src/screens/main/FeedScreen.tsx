@@ -356,6 +356,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
                 source={{ uri: userData?.me?.avatarUrl }}
               />
               <Text style={{ fontSize: 20 }}>{userData?.me?.studentId}</Text>
+              {userData?.me?.godAdmin ? <Text> God </Text> : <View></View>}
             </Appbar.Header>
             <FlatList
               data={data?.getFeedPosts.posts}

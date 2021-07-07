@@ -25,12 +25,14 @@ import {
 } from 'react-native-paper';
 import { Feather } from '@expo/vector-icons';
 import {
-  useCreateSpaceMutation,
+  GetSpaceDetailsDocument,
+  GetSpaceDetailsQuery,
   useDeletePostMutation,
   useDeleteSpaceMutation,
   useFollowSpaceMutation,
   useGetPostsOfSpacesQuery,
   useGetSpaceDetailsQuery,
+  useIsAdminOfSpaceMutation,
   useUnFollowSpaceMutation,
   useUpdateSpaceAvatarUrlMutation,
   useVoteMutation
@@ -48,6 +50,8 @@ import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
 import { updateAfterSpaceAvatar } from '../../functions/updateSpaceAvatar';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import gql from 'graphql-tag';
+import { GET_SPACE_DETAILS } from '../../cache-queries-mutations/cacheQueriesMutations';
 
 interface GoToSpaceScreenProps {}
 
@@ -90,6 +94,7 @@ export const GoToSpaceScreen = ({
   const [snackVisible, setSnackVisible] = useState(false);
   const [display, setDisplay] = useState<'Post' | 'User'>('Post');
   const [voteMut] = useVoteMutation();
+  const [dataSetting, setDataSetting] = useState(true);
   const [spaceDeleteLoadingError, setSpaceDeleteLoadingError] = useState(false);
   const [loadingState, setLoadingState] = useState<
     'updoot-loading' | 'downdoot-loading' | 'not-loading'
@@ -103,6 +108,9 @@ export const GoToSpaceScreen = ({
   const [photoUploading, setPhotoUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [updateSpaceAvatar] = useUpdateSpaceAvatarUrlMutation();
+  const [spaceUsers, setSpaceUsers] = useState([]);
+  const [statusChanging, setStatusChanging] = useState(false);
+  const [isAdmin] = useIsAdminOfSpaceMutation();
 
   const deletePostHandler = async () => {
     setPostDeletingLoading(true);
@@ -144,6 +152,7 @@ export const GoToSpaceScreen = ({
 
   useEffect(() => {
     const getDetails = async () => {
+      setSpaceUsers([...data?.getSpaceDetails?.followingIds]);
       const userData = await AsyncStorage.getItem('userData');
       const newData = JSON.parse(userData);
       setUserId(newData.id);
@@ -152,14 +161,17 @@ export const GoToSpaceScreen = ({
         if (data?.getSpaceDetails.followingIds[i].id == newData.id) {
           setFollowing(true);
           setPageLoading(false);
+          setDataSetting(false);
           break;
         }
       }
 
       setPageLoading(false);
+      setDataSetting(false);
     };
     setWidth(Dimensions.get('window').width);
     setHeight(Dimensions.get('window').height);
+
     getDetails();
   }, [data]);
 
@@ -369,11 +381,49 @@ export const GoToSpaceScreen = ({
   const containerStyle = { backgroundColor: 'white', padding: 20, margin: 20 };
 
   const unFollow = async () => {
-    const response = await unFollowSpace({
+    setStatusChanging(true);
+
+    const adminResponse = await isAdmin({
       variables: {
         spaceId: data?.getSpaceDetails.id
       }
     });
+
+    if (adminResponse.data?.isAdminOfSpace) {
+      setSnackVisible(true);
+      return;
+    }
+
+    const response = await unFollowSpace({
+      variables: {
+        spaceId: data?.getSpaceDetails.id
+      },
+      update: (cache) => {
+        //updateAfterUnfollowSpace(data?.getSpaceDetails.id, userId, cache)
+
+        const spaceStore = cache.readQuery({
+          query: GET_SPACE_DETAILS,
+          variables: {
+            spaceId: data?.getSpaceDetails.id
+          }
+        });
+
+        const newItem = spaceStore.getSpaceDetails.followingIds.filter(
+          (item) => item.id !== userId
+        );
+        setSpaceUsers([...newItem]);
+        cache.writeQuery({
+          query: GET_SPACE_DETAILS,
+          variables: {
+            spaceId: data?.getSpaceDetails.id
+          },
+          data: {
+            followingIds: [...newItem]
+          }
+        });
+      }
+    });
+    setStatusChanging(false);
     if (response?.data?.unfollowSpace) {
       setFollowing(false);
       setFollowingLength(followingLength - 1);
@@ -383,12 +433,32 @@ export const GoToSpaceScreen = ({
   };
 
   const Follow = async () => {
+    setStatusChanging(true);
     const response = await followSpace({
       variables: {
         spaceId: data?.getSpaceDetails.id
+      },
+
+      update: (cache) => {
+        const spaceStore = cache.readQuery({
+          query: GET_SPACE_DETAILS,
+          variables: {
+            spaceId: data?.getSpaceDetails.id
+          }
+        });
+        setSpaceUsers([...spaceStore.getSpaceDetails.followingIds]);
+        cache.writeQuery({
+          query: GET_SPACE_DETAILS,
+          variables: {
+            spaceId: data?.getSpaceDetails.id
+          },
+          data: {
+            followingIds: [...spaceStore.getSpaceDetails.followingIds]
+          }
+        });
       }
     });
-
+    setStatusChanging(false);
     if (response?.data?.followSpace) {
       setFollowing(true);
       setFollowingLength(followingLength + 1);
@@ -460,7 +530,7 @@ export const GoToSpaceScreen = ({
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, width: '100%' }}>
-        {loading || postLoading ? (
+        {loading || postLoading || dataSetting ? (
           <ActivityIndicator style={{ justifyContent: 'center' }} />
         ) : (
           <ScrollView style={{ width: '100%' }}>
@@ -506,7 +576,9 @@ export const GoToSpaceScreen = ({
                   }
                 />
               ) : null}
-              {following ? (
+              {statusChanging ? (
+                <ActivityIndicator size="small" />
+              ) : following ? (
                 <Button mode="text" color="red" onPress={unFollow}>
                   Unfollow
                 </Button>
@@ -538,7 +610,7 @@ export const GoToSpaceScreen = ({
               }}
             >
               <Button icon="postage-stamp" onPress={() => setDisplay('Post')}>
-                Spaces
+                Posts
               </Button>
               <Button icon="account" onPress={() => setDisplay('User')}>
                 Users
@@ -554,7 +626,7 @@ export const GoToSpaceScreen = ({
             ) : (
               <FlatList
                 numColumns={1}
-                data={data?.getSpaceDetails.followingIds}
+                data={spaceUsers}
                 keyExtractor={(item) => item.id}
                 renderItem={renderUserItem}
               />

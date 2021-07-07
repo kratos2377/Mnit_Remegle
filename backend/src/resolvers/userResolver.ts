@@ -388,6 +388,32 @@ export class UserResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
+  async changePassword(
+    @Arg('currentPassword') currentPassword: string,
+    @Arg('newPassword') newPassword: string,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
+    const user = (await User.findOne({ id: req.session.userId })) as User;
+
+    if (!user) {
+      return false;
+    }
+
+    const valid = await argon2.verify(user.password, currentPassword);
+
+    if (!valid) {
+      return false;
+    }
+
+    const hashedPassword = await argon2.hash(newPassword);
+
+    await User.update({ id: req.session.userId }, { password: hashedPassword });
+
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
   async doesUsernameExist(
     @Arg('username') username: string,
     @Ctx() { req }: MyContext

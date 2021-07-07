@@ -208,6 +208,21 @@ export class SpaceResolver {
     return true;
   }
 
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async isAdminOfSpace(
+    @Arg('spaceId') spaceId: string,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
+    const space = (await Spaces.findOne({ id: spaceId })) as Spaces;
+
+    if (space.adminId !== req.session.userId) {
+      return false;
+    }
+
+    return true;
+  }
+
   @Query(() => [Post], { nullable: true })
   async getPostsofSpace(
     @Arg('postSpaceId') postSpaceId: string

@@ -51,6 +51,7 @@ export type Mutation = {
   createSpace: Scalars['Boolean'];
   followSpace: Scalars['Boolean'];
   unfollowSpace: Scalars['Boolean'];
+  isAdminOfSpace: Scalars['Boolean'];
   changeSpaceType: SpaceResponse;
   updateSpaceDetails: Scalars['Boolean'];
   deleteSpace: SpaceResponse;
@@ -73,6 +74,8 @@ export type Mutation = {
   deleteUser: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   searchQuery?: Maybe<UserandSpaces>;
+  userEntry: Scalars['Boolean'];
+  userExit: Scalars['Boolean'];
 };
 
 
@@ -119,6 +122,11 @@ export type MutationFollowSpaceArgs = {
 
 
 export type MutationUnfollowSpaceArgs = {
+  spaceId: Scalars['String'];
+};
+
+
+export type MutationIsAdminOfSpaceArgs = {
   spaceId: Scalars['String'];
 };
 
@@ -240,6 +248,16 @@ export type MutationDeleteUserArgs = {
 
 export type MutationSearchQueryArgs = {
   searchName: Scalars['String'];
+};
+
+
+export type MutationUserEntryArgs = {
+  data: OnlineUserInput;
+};
+
+
+export type MutationUserExitArgs = {
+  id: Scalars['String'];
 };
 
 export type PaginatedPosts = {
@@ -388,6 +406,15 @@ export type UserandSpaces = {
   __typename?: 'UserandSpaces';
   users?: Maybe<Array<User>>;
   spaces?: Maybe<Array<Spaces>>;
+};
+
+export type OnlineUserInput = {
+  id: Scalars['String'];
+  studentId: Scalars['String'];
+  name: Scalars['String'];
+  username: Scalars['String'];
+  avatarUrl: Scalars['String'];
+  gender: Scalars['String'];
 };
 
 export type PostSnippetFragment = (
@@ -789,6 +816,16 @@ export type GetSpaceDetailsQuery = (
       & Pick<User, 'id' | 'fullName' | 'username' | 'avatarUrl' | 'studentId'>
     )> }
   ) }
+);
+
+export type IsAdminOfSpaceMutationVariables = Exact<{
+  spaceId: Scalars['String'];
+}>;
+
+
+export type IsAdminOfSpaceMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'isAdminOfSpace'>
 );
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
@@ -1818,6 +1855,37 @@ export function useGetSpaceDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type GetSpaceDetailsQueryHookResult = ReturnType<typeof useGetSpaceDetailsQuery>;
 export type GetSpaceDetailsLazyQueryHookResult = ReturnType<typeof useGetSpaceDetailsLazyQuery>;
 export type GetSpaceDetailsQueryResult = Apollo.QueryResult<GetSpaceDetailsQuery, GetSpaceDetailsQueryVariables>;
+export const IsAdminOfSpaceDocument = gql`
+    mutation IsAdminOfSpace($spaceId: String!) {
+  isAdminOfSpace(spaceId: $spaceId)
+}
+    `;
+export type IsAdminOfSpaceMutationFn = Apollo.MutationFunction<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>;
+
+/**
+ * __useIsAdminOfSpaceMutation__
+ *
+ * To run a mutation, you first call `useIsAdminOfSpaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useIsAdminOfSpaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [isAdminOfSpaceMutation, { data, loading, error }] = useIsAdminOfSpaceMutation({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *   },
+ * });
+ */
+export function useIsAdminOfSpaceMutation(baseOptions?: Apollo.MutationHookOptions<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>(IsAdminOfSpaceDocument, options);
+      }
+export type IsAdminOfSpaceMutationHookResult = ReturnType<typeof useIsAdminOfSpaceMutation>;
+export type IsAdminOfSpaceMutationResult = Apollo.MutationResult<IsAdminOfSpaceMutation>;
+export type IsAdminOfSpaceMutationOptions = Apollo.BaseMutationOptions<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>;
 export const MeDocument = gql`
     query me {
   me {

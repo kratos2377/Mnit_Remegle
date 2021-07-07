@@ -1,0 +1,3 @@
+mutation IsAdminOfSpace($spaceId: String!) {
+  isAdminOfSpace(spaceId: $spaceId)
+}
