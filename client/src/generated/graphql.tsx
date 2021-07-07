@@ -69,6 +69,7 @@ export type Mutation = {
   updateUserDetails: UserResponse;
   generateforgotPasswordUrl: Scalars['Boolean'];
   changeForgotPassword: Scalars['Boolean'];
+  changePassword: Scalars['Boolean'];
   doesUsernameExist: Scalars['Boolean'];
   forgotPassword: UserResponse;
   deleteUser: Scalars['Boolean'];
@@ -227,6 +228,12 @@ export type MutationChangeForgotPasswordArgs = {
   confirmnewPassword: Scalars['String'];
   newPassword: Scalars['String'];
   token: Scalars['String'];
+};
+
+
+export type MutationChangePasswordArgs = {
+  newPassword: Scalars['String'];
+  currentPassword: Scalars['String'];
 };
 
 
@@ -495,6 +502,17 @@ export type UserAndSpacesResponseFragment = (
   )>> }
 );
 
+export type ChangePasswordMutationVariables = Exact<{
+  currentPassword: Scalars['String'];
+  newPassword: Scalars['String'];
+}>;
+
+
+export type ChangePasswordMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'changePassword'>
+);
+
 export type ConfirmUserCheckMutationVariables = Exact<{
   studentId: Scalars['String'];
 }>;
@@ -586,6 +604,16 @@ export type GenerateForgotPasswordUrlMutationVariables = Exact<{
 export type GenerateForgotPasswordUrlMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'generateforgotPasswordUrl'>
+);
+
+export type IsAdminOfSpaceMutationVariables = Exact<{
+  spaceId: Scalars['String'];
+}>;
+
+
+export type IsAdminOfSpaceMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'isAdminOfSpace'>
 );
 
 export type LoginMutationVariables = Exact<{
@@ -818,16 +846,6 @@ export type GetSpaceDetailsQuery = (
   ) }
 );
 
-export type IsAdminOfSpaceMutationVariables = Exact<{
-  spaceId: Scalars['String'];
-}>;
-
-
-export type IsAdminOfSpaceMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'isAdminOfSpace'>
-);
-
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -964,6 +982,38 @@ export const UserAndSpacesResponseFragmentDoc = gql`
 }
     ${RegularUserFragmentDoc}
 ${RegularSpaceFragmentDoc}`;
+export const ChangePasswordDocument = gql`
+    mutation ChangePassword($currentPassword: String!, $newPassword: String!) {
+  changePassword(currentPassword: $currentPassword, newPassword: $newPassword)
+}
+    `;
+export type ChangePasswordMutationFn = Apollo.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>;
+
+/**
+ * __useChangePasswordMutation__
+ *
+ * To run a mutation, you first call `useChangePasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangePasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changePasswordMutation, { data, loading, error }] = useChangePasswordMutation({
+ *   variables: {
+ *      currentPassword: // value for 'currentPassword'
+ *      newPassword: // value for 'newPassword'
+ *   },
+ * });
+ */
+export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptions<ChangePasswordMutation, ChangePasswordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument, options);
+      }
+export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
+export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
+export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
 export const ConfirmUserCheckDocument = gql`
     mutation ConfirmUserCheck($studentId: String!) {
   confirmUserCheck(studentId: $studentId) {
@@ -1227,6 +1277,37 @@ export function useGenerateForgotPasswordUrlMutation(baseOptions?: Apollo.Mutati
 export type GenerateForgotPasswordUrlMutationHookResult = ReturnType<typeof useGenerateForgotPasswordUrlMutation>;
 export type GenerateForgotPasswordUrlMutationResult = Apollo.MutationResult<GenerateForgotPasswordUrlMutation>;
 export type GenerateForgotPasswordUrlMutationOptions = Apollo.BaseMutationOptions<GenerateForgotPasswordUrlMutation, GenerateForgotPasswordUrlMutationVariables>;
+export const IsAdminOfSpaceDocument = gql`
+    mutation IsAdminOfSpace($spaceId: String!) {
+  isAdminOfSpace(spaceId: $spaceId)
+}
+    `;
+export type IsAdminOfSpaceMutationFn = Apollo.MutationFunction<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>;
+
+/**
+ * __useIsAdminOfSpaceMutation__
+ *
+ * To run a mutation, you first call `useIsAdminOfSpaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useIsAdminOfSpaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [isAdminOfSpaceMutation, { data, loading, error }] = useIsAdminOfSpaceMutation({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *   },
+ * });
+ */
+export function useIsAdminOfSpaceMutation(baseOptions?: Apollo.MutationHookOptions<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>(IsAdminOfSpaceDocument, options);
+      }
+export type IsAdminOfSpaceMutationHookResult = ReturnType<typeof useIsAdminOfSpaceMutation>;
+export type IsAdminOfSpaceMutationResult = Apollo.MutationResult<IsAdminOfSpaceMutation>;
+export type IsAdminOfSpaceMutationOptions = Apollo.BaseMutationOptions<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {
@@ -1855,37 +1936,6 @@ export function useGetSpaceDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type GetSpaceDetailsQueryHookResult = ReturnType<typeof useGetSpaceDetailsQuery>;
 export type GetSpaceDetailsLazyQueryHookResult = ReturnType<typeof useGetSpaceDetailsLazyQuery>;
 export type GetSpaceDetailsQueryResult = Apollo.QueryResult<GetSpaceDetailsQuery, GetSpaceDetailsQueryVariables>;
-export const IsAdminOfSpaceDocument = gql`
-    mutation IsAdminOfSpace($spaceId: String!) {
-  isAdminOfSpace(spaceId: $spaceId)
-}
-    `;
-export type IsAdminOfSpaceMutationFn = Apollo.MutationFunction<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>;
-
-/**
- * __useIsAdminOfSpaceMutation__
- *
- * To run a mutation, you first call `useIsAdminOfSpaceMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useIsAdminOfSpaceMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [isAdminOfSpaceMutation, { data, loading, error }] = useIsAdminOfSpaceMutation({
- *   variables: {
- *      spaceId: // value for 'spaceId'
- *   },
- * });
- */
-export function useIsAdminOfSpaceMutation(baseOptions?: Apollo.MutationHookOptions<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>(IsAdminOfSpaceDocument, options);
-      }
-export type IsAdminOfSpaceMutationHookResult = ReturnType<typeof useIsAdminOfSpaceMutation>;
-export type IsAdminOfSpaceMutationResult = Apollo.MutationResult<IsAdminOfSpaceMutation>;
-export type IsAdminOfSpaceMutationOptions = Apollo.BaseMutationOptions<IsAdminOfSpaceMutation, IsAdminOfSpaceMutationVariables>;
 export const MeDocument = gql`
     query me {
   me {

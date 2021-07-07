@@ -55,14 +55,6 @@ export const SettingsScreen = ({
         <ScrollView>
           <Card style={{ marginVertical: 10, padding: 10 }}>
             <List.Item
-              title="Logout"
-              description="Logout From App"
-              left={(props) => <List.Icon {...props} icon="logout" />}
-              onPress={handleLogoutOpen}
-            />
-          </Card>
-          <Card style={{ marginVertical: 10, padding: 10 }}>
-            <List.Item
               title="Your Spaces"
               description="Check All Of The Spaces You Have Created"
               left={(props) => <List.Icon {...props} icon="postage-stamp" />}
@@ -75,6 +67,24 @@ export const SettingsScreen = ({
               description="Update Your Details"
               left={(props) => <List.Icon {...props} icon="account-edit" />}
               onPress={() => navigation.navigate('UpdateScreen')}
+            />
+          </Card>
+
+          <Card style={{ marginVertical: 10, padding: 10 }}>
+            <List.Item
+              title="Change Password"
+              description="Change Your Password"
+              left={(props) => <List.Icon {...props} icon="key-change" />}
+              onPress={() => navigation.navigate('ChangePassword')}
+            />
+          </Card>
+
+          <Card style={{ marginVertical: 10, padding: 10 }}>
+            <List.Item
+              title="Logout"
+              description="Logout From App"
+              left={(props) => <List.Icon {...props} icon="logout" />}
+              onPress={handleLogoutOpen}
             />
           </Card>
         </ScrollView>
