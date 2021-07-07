@@ -6,7 +6,8 @@ import {
   Text,
   StyleSheet,
   Image,
-  Modal
+  Modal,
+  Keyboard
 } from 'react-native';
 import {
   ActivityIndicator,
@@ -59,6 +60,8 @@ export const UpdateScreen = ({ navigation }: MainNavProps<'UpdateScreen'>) => {
   }, []);
 
   const _updateProfile = async () => {
+    Keyboard.dismiss();
+
     if (username.trim().length < 5) {
       setError(
         'Username Length Must Be Greater than or equal to 5 and less than 40'
@@ -117,157 +120,159 @@ export const UpdateScreen = ({ navigation }: MainNavProps<'UpdateScreen'>) => {
   };
 
   return (
-    <View>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <View>
-          <Appbar.Header>
-            <Appbar.BackAction onPress={_goBack} />
-            <Appbar.Content title="Edit Profile" />
-            <Appbar.Action icon="check" onPress={_updateProfile} />
-          </Appbar.Header>
-          <ScrollView>
-            <Card
-              style={{
-                width: '100%',
-                padding: 10,
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Image
+    <ScrollView style={{ flex: 1, width: '100%' }}>
+      <View style={{ flex: 1 }}>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <View>
+            <Appbar.Header>
+              <Appbar.BackAction onPress={_goBack} />
+              <Appbar.Content title="Edit Profile" />
+              <Appbar.Action icon="check" onPress={_updateProfile} />
+            </Appbar.Header>
+            <ScrollView>
+              <Card
                 style={{
-                  width: 200,
-                  height: 200,
-                  borderRadius: 100,
-                  margin: 20
-                }}
-                source={{ uri: data?.me?.avatarUrl }}
-              />
-            </Card>
-            <View style={{ margin: 10 }}>
-              <TextInput
-                style={styles.inputContainer}
-                placeholder="Username"
-                maxLength={40}
-                onChangeText={(value) => setUsername(value)}
-                value={username}
-              />
-              <Text
-                style={{
-                  alignItems: 'flex-end',
-                  textAlign: 'right',
-                  marginRight: 5
+                  width: '100%',
+                  padding: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
-                {username.length}/40
-              </Text>
-            </View>
-            <View style={{ margin: 10 }}>
-              <TextInput
-                style={styles.inputContainer}
-                multiline={true}
-                numberOfLines={5}
-                placeholder="Your Bio..."
-                maxLength={100}
-                onChangeText={(value) => setBio(value)}
-                value={bio}
-              />
-              <Text
-                style={{
-                  alignItems: 'flex-end',
-                  textAlign: 'right',
-                  marginRight: 5
-                }}
-              >
-                {bio.length}/100
-              </Text>
-            </View>
-            <View style={{ margin: 10 }}>
-              <TextInput
-                style={styles.inputContainer}
-                multiline={true}
-                numberOfLines={2}
-                placeholder="Instagram Acc. For Eg:- https://www.instagram.com/selenagomez"
-                onChangeText={(value) => setInstaAcc(value)}
-                value={instaAcc}
-              />
-            </View>
-            <View style={{ margin: 10 }}>
-              <TextInput
-                style={styles.inputContainer}
-                multiline={true}
-                numberOfLines={2}
-                placeholder="Twitter Acc. For Eg:- https://twitter.com/TheRock"
-                maxLength={100}
-                onChangeText={(value) => setTwitterAcc(value)}
-                value={twitterAcc}
-              />
-            </View>
-          </ScrollView>
-          <Provider>
-            <Portal>
-              <Dialog visible={visible} onDismiss={() => {}}>
-                <Dialog.Content>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      padding: 10,
-                      alignSelf: 'center',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <ActivityIndicator size="small" color="#7d827f" />
-                    <Text style={{ marginLeft: 10, fontSize: 30 }}>
-                      Updating...
-                    </Text>
-                  </View>
-                </Dialog.Content>
-              </Dialog>
-            </Portal>
-          </Provider>
+                <Image
+                  style={{
+                    width: 200,
+                    height: 200,
+                    borderRadius: 100,
+                    margin: 20
+                  }}
+                  source={{ uri: data?.me?.avatarUrl }}
+                />
+              </Card>
+              <View style={{ margin: 10 }}>
+                <TextInput
+                  style={styles.inputContainer}
+                  placeholder="Username"
+                  maxLength={40}
+                  onChangeText={(value) => setUsername(value)}
+                  value={username}
+                />
+                <Text
+                  style={{
+                    alignItems: 'flex-end',
+                    textAlign: 'right',
+                    marginRight: 5
+                  }}
+                >
+                  {username.length}/40
+                </Text>
+              </View>
+              <View style={{ margin: 10 }}>
+                <TextInput
+                  style={styles.inputContainer}
+                  multiline={true}
+                  numberOfLines={5}
+                  placeholder="Your Bio..."
+                  maxLength={100}
+                  onChangeText={(value) => setBio(value)}
+                  value={bio}
+                />
+                <Text
+                  style={{
+                    alignItems: 'flex-end',
+                    textAlign: 'right',
+                    marginRight: 5
+                  }}
+                >
+                  {bio.length}/100
+                </Text>
+              </View>
+              <View style={{ margin: 10 }}>
+                <TextInput
+                  style={styles.inputContainer}
+                  multiline={true}
+                  numberOfLines={2}
+                  placeholder="Instagram Acc. For Eg:- https://www.instagram.com/selenagomez"
+                  onChangeText={(value) => setInstaAcc(value)}
+                  value={instaAcc}
+                />
+              </View>
+              <View style={{ margin: 10 }}>
+                <TextInput
+                  style={styles.inputContainer}
+                  multiline={true}
+                  numberOfLines={2}
+                  placeholder="Twitter Acc. For Eg:- https://twitter.com/TheRock"
+                  maxLength={100}
+                  onChangeText={(value) => setTwitterAcc(value)}
+                  value={twitterAcc}
+                />
+              </View>
+            </ScrollView>
+            <Provider>
+              <Portal>
+                <Dialog visible={visible} onDismiss={() => {}}>
+                  <Dialog.Content>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        padding: 10,
+                        alignSelf: 'center',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <ActivityIndicator size="small" color="#7d827f" />
+                      <Text style={{ marginLeft: 10, fontSize: 30 }}>
+                        Updating...
+                      </Text>
+                    </View>
+                  </Dialog.Content>
+                </Dialog>
+              </Portal>
+            </Provider>
 
-          <Provider>
-            <Portal>
-              <Dialog visible={errorVisible} onDismiss={() => {}}>
-                <Dialog.Title>Error!</Dialog.Title>
-                <Dialog.Content>
-                  <Paragraph>{error}</Paragraph>
-                </Dialog.Content>
-                <Dialog.Actions>
-                  <Button onPress={() => setErrorVisible(false)}>OK</Button>
-                </Dialog.Actions>
-              </Dialog>
-            </Portal>
-          </Provider>
-          <Provider>
-            <Portal>
-              <Dialog visible={dialogVisible} onDismiss={() => {}}>
-                <Dialog.Title>Cancel Edit!</Dialog.Title>
-                <Dialog.Content>
-                  <Paragraph>
-                    Do You want to Cancel the Changes and Go back to previous
-                    Screen?
-                  </Paragraph>
-                </Dialog.Content>
-                <Dialog.Actions>
-                  <Button
-                    onPress={() => {
-                      setDialogVisible(false);
-                      navigation.pop();
-                    }}
-                  >
-                    Yes
-                  </Button>
-                  <Button onPress={() => setDialogVisible(false)}>No</Button>
-                </Dialog.Actions>
-              </Dialog>
-            </Portal>
-          </Provider>
-        </View>
-      )}
-    </View>
+            <Provider>
+              <Portal>
+                <Dialog visible={errorVisible} onDismiss={() => {}}>
+                  <Dialog.Title>Error!</Dialog.Title>
+                  <Dialog.Content>
+                    <Paragraph>{error}</Paragraph>
+                  </Dialog.Content>
+                  <Dialog.Actions>
+                    <Button onPress={() => setErrorVisible(false)}>OK</Button>
+                  </Dialog.Actions>
+                </Dialog>
+              </Portal>
+            </Provider>
+            <Provider>
+              <Portal>
+                <Dialog visible={dialogVisible} onDismiss={() => {}}>
+                  <Dialog.Title>Cancel Edit!</Dialog.Title>
+                  <Dialog.Content>
+                    <Paragraph>
+                      Do You want to Cancel the Changes and Go back to previous
+                      Screen?
+                    </Paragraph>
+                  </Dialog.Content>
+                  <Dialog.Actions>
+                    <Button
+                      onPress={() => {
+                        setDialogVisible(false);
+                        navigation.pop();
+                      }}
+                    >
+                      Yes
+                    </Button>
+                    <Button onPress={() => setDialogVisible(false)}>No</Button>
+                  </Dialog.Actions>
+                </Dialog>
+              </Portal>
+            </Provider>
+          </View>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 

@@ -27,6 +27,7 @@ import { ForgotPasswordScreen } from './auth/ForgotPasswordScreen';
 import { EditSpaceScreen } from './extra-screens/EditSpaceScreen';
 import { DeletingSpace } from './extra-screens/DeletingSpace';
 import * as SplashScreen from 'expo-splash-screen';
+import { CreatePostScreenFAB } from './MainScreensStack/CreatePostScreenFAB';
 
 export default function HomeScreen() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -138,6 +139,11 @@ export default function HomeScreen() {
         <MainStack.Screen
           name="DeletingSpace"
           component={DeletingSpace}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="CreatePostFAB"
+          component={CreatePostScreenFAB}
           options={{ headerShown: false }}
         />
       </MainStack.Navigator>

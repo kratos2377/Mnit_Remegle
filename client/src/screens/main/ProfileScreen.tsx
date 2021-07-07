@@ -195,64 +195,7 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
     </View>
   );
   const renderPostCardItem = (item) => (
-    <View style={{ flexDirection: 'row' }}>
-      <Card
-        style={{
-          marginVertical: 10
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'column',
-            flex: 1,
-            alignSelf: 'center',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <IconButton
-            icon="chevron-triple-up"
-            size={20}
-            color={item.item.voteStatus === 1 ? 'green' : 'black'}
-            onPress={async () => {
-              if (item.item.voteStatus === 1) {
-                return;
-              }
-              setLoadingState('updoot-loading');
-              await voteMut({
-                variables: {
-                  postId: item.item.id,
-                  value: 1
-                },
-                update: (cache) => updateAfterVote(1, item.item.id, cache)
-              });
-              setLoadingState('not-loading');
-            }}
-          />
-
-          <Text>{item.item.points}</Text>
-          <IconButton
-            icon="chevron-triple-down"
-            size={20}
-            color={item.item.voteStatus === -1 ? 'red' : 'black'}
-            onPress={async () => {
-              if (item.item.voteStatus === -1) {
-                return;
-              }
-              setLoadingState('downdoot-loading');
-              await voteMut({
-                variables: {
-                  postId: item.item.id,
-                  value: -1
-                },
-                update: (cache) => updateAfterVote(-1, item.item.id, cache)
-              });
-              setLoadingState('not-loading');
-            }}
-          />
-        </View>
-      </Card>
-
+    <View style={{ flexDirection: 'column' }}>
       <Card style={{ marginVertical: 10, flex: 1, marginHorizontal: 5 }}>
         <Card.Title
           title={item.item.creator.fullName}
@@ -302,6 +245,65 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
           ) : (
             <View></View>
           )}
+        </View>
+      </Card>
+
+      <Card
+        style={{
+          marginBottom: 10,
+          marginHorizontal: 5
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'space-evenly'
+          }}
+        >
+          <IconButton
+            icon="thumb-up"
+            size={20}
+            onPress={async () => {
+              if (item.item.voteStatus === 1) {
+                return;
+              }
+              setLoadingState('updoot-loading');
+              await voteMut({
+                variables: {
+                  postId: item.item.id,
+                  value: 1
+                },
+                update: (cache) => updateAfterVote(1, item.item.id, cache)
+              });
+              setLoadingState('not-loading');
+            }}
+            color={item.item.voteStatus === 1 ? 'green' : 'black'}
+            aria-label="updoot post"
+          />
+
+          <Text>{item.item.points}</Text>
+          <IconButton
+            icon="thumb-down"
+            size={20}
+            onPress={async () => {
+              if (item.item.voteStatus === -1) {
+                return;
+              }
+              setLoadingState('downdoot-loading');
+              await voteMut({
+                variables: {
+                  postId: item.item.id,
+                  value: -1
+                },
+                update: (cache) => updateAfterVote(-1, item.item.id, cache)
+              });
+              setLoadingState('not-loading');
+            }}
+            color={item.item.voteStatus === -1 ? 'red' : 'black'}
+            aria-label="downdoot post"
+          />
         </View>
       </Card>
     </View>
