@@ -391,6 +391,7 @@ export const GoToSpaceScreen = ({
 
     if (adminResponse.data?.isAdminOfSpace) {
       setSnackVisible(true);
+      setStatusChanging(false);
       return;
     }
 

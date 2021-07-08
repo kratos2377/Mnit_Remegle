@@ -31,6 +31,7 @@ import * as ImagePicker from 'expo-image-picker';
 import uuid from 'react-native-uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebase from 'firebase/app';
+import { SafeAreaView } from 'react-native-safe-area-context';
 require('firebase/firestore');
 require('firebase/firebase-storage');
 
@@ -176,184 +177,187 @@ export const CreatePostScreen = ({
     }
   };
   return (
-    <View>
-      <Appbar.Header style={{ backgroundColor: 'white' }}>
-        <Appbar.BackAction onPress={_goBack} />
-        <Appbar.Content title="Create Post" />
-        <Appbar.Action icon="file-image" onPress={showOptionsModal} />
-        <Appbar.Action icon="check" onPress={_createPost} />
-      </Appbar.Header>
-      <ScrollView>
-        <View style={{ margin: 10 }}>
-          <TextInput
-            style={styles.inputContainer}
-            multiline={true}
-            numberOfLines={5}
-            placeholder="Set Title"
-            maxLength={100}
-            onChangeText={(value) => setTitle(value)}
-            value={title}
-          />
-          <Text
-            style={{
-              alignItems: 'flex-end',
-              textAlign: 'right',
-              marginRight: 5
-            }}
-          >
-            {title.length}/100
-          </Text>
-        </View>
-        <View style={{ margin: 10, padding: 10 }}>
-          <TextInput
-            style={styles.inputContainer}
-            multiline={true}
-            numberOfLines={12}
-            placeholder="Set Content"
-            maxLength={1000}
-            onChangeText={(value) => setContent(value)}
-            value={content}
-          />
-          <Text
-            style={{
-              alignItems: 'flex-end',
-              textAlign: 'right',
-              marginRight: 5
-            }}
-          >
-            {content.length}/1000
-          </Text>
-        </View>
-
-        <View style={{ flexDirection: 'column', alignSelf: 'center' }}>
-          {image && (
-            <Image
-              source={{ uri: image }}
+    <SafeAreaView style={{ flex: 1, width: '100%' }}>
+      <View style={{ flex: 1 }}>
+        <Appbar.Header style={{ backgroundColor: 'white' }}>
+          <Appbar.BackAction onPress={_goBack} />
+          <Appbar.Content title="Create Post" />
+          <Appbar.Action icon="file-image" onPress={showOptionsModal} />
+          <Appbar.Action icon="check" onPress={_createPost} />
+        </Appbar.Header>
+        <ScrollView>
+          <View style={{ margin: 10 }}>
+            <TextInput
+              style={styles.inputContainer}
+              multiline={true}
+              numberOfLines={5}
+              placeholder="Set Title"
+              maxLength={100}
+              onChangeText={(value) => setTitle(value)}
+              value={title}
+            />
+            <Text
               style={{
-                width: width * 0.8,
-                height: height * 0.5,
-                marginBottom: 10
+                alignItems: 'flex-end',
+                textAlign: 'right',
+                marginRight: 5
               }}
+            >
+              {title.length}/100
+            </Text>
+          </View>
+          <View style={{ margin: 10, padding: 10 }}>
+            <TextInput
+              style={styles.inputContainer}
+              multiline={true}
+              numberOfLines={12}
+              placeholder="Set Content"
+              maxLength={1000}
+              onChangeText={(value) => setContent(value)}
+              value={content}
             />
-          )}
-          {image && (
-            <Button onPress={() => setImage(null)}>Remove Image</Button>
-          )}
-        </View>
-      </ScrollView>
+            <Text
+              style={{
+                alignItems: 'flex-end',
+                textAlign: 'right',
+                marginRight: 5
+              }}
+            >
+              {content.length}/1000
+            </Text>
+          </View>
 
-      <Provider>
-        <Portal>
-          <Modal
-            visible={modal}
-            onDismiss={hideOptionsModal}
-            contentContainerStyle={containerStyle}
-          >
-            <List.Item
-              onPress={pickImageGallery}
-              title="Gallery"
-              description="Take Media Form Gallery"
-              left={(props) => <List.Icon {...props} icon="folder-image" />}
-            />
-
-            <List.Item
-              onPress={pickImageCamera}
-              title="Camera"
-              description="Take Media From Camera"
-              left={(props) => <List.Icon {...props} icon="camera" />}
-            />
-          </Modal>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog}>
-            <Dialog.Title>Alert</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>
-                Do You Want To Cancel This Post and Go Back to Previous Screen?
-              </Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button
-                onPress={() => {
-                  setTitle('');
-                  setContent('');
-                  navigation.pop();
+          <View style={{ flexDirection: 'column', alignSelf: 'center' }}>
+            {image && (
+              <Image
+                source={{ uri: image }}
+                style={{
+                  width: width * 0.8,
+                  height: height * 0.5,
+                  marginBottom: 10
                 }}
-              >
-                Yes
-              </Button>
-              <Button onPress={hideDialog}>No</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
+              />
+            )}
+            {image && (
+              <Button onPress={() => setImage(null)}>Remove Image</Button>
+            )}
+          </View>
+        </ScrollView>
 
-      <Provider>
-        <Portal>
-          <Dialog visible={showError} onDismiss={hideError}>
-            <Dialog.Title>Error</Dialog.Title>
-            <Dialog.Content>
-              <Paragraph>{error}</Paragraph>
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={hideError}>OK</Button>
-            </Dialog.Actions>
-          </Dialog>
-        </Portal>
-      </Provider>
+        <Provider>
+          <Portal>
+            <Modal
+              visible={modal}
+              onDismiss={hideOptionsModal}
+              contentContainerStyle={containerStyle}
+            >
+              <List.Item
+                onPress={pickImageGallery}
+                title="Gallery"
+                description="Take Media Form Gallery"
+                left={(props) => <List.Icon {...props} icon="folder-image" />}
+              />
 
-      <Provider>
-        <Portal>
-          <Dialog
-            style={{ justifyContent: 'center' }}
-            visible={creating}
-            onDismiss={() => {}}
+              <List.Item
+                onPress={pickImageCamera}
+                title="Camera"
+                description="Take Media From Camera"
+                left={(props) => <List.Icon {...props} icon="camera" />}
+              />
+            </Modal>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={visible} onDismiss={hideDialog}>
+              <Dialog.Title>Alert</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>
+                  Do You Want To Cancel This Post and Go Back to Previous
+                  Screen?
+                </Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button
+                  onPress={() => {
+                    setTitle('');
+                    setContent('');
+                    navigation.pop();
+                  }}
+                >
+                  Yes
+                </Button>
+                <Button onPress={hideDialog}>No</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={showError} onDismiss={hideError}>
+              <Dialog.Title>Error</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>{error}</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={hideError}>OK</Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog
+              style={{ justifyContent: 'center' }}
+              visible={creating}
+              onDismiss={() => {}}
+            >
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row', padding: 10 }}>
+                  <ActivityIndicator />
+                  <Text style={{ marginLeft: 10 }}>Creating Post...</Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog
+              style={{ justifyContent: 'center' }}
+              visible={photoUploading}
+              onDismiss={() => {}}
+            >
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row', padding: 10 }}>
+                  <ActivityIndicator />
+                  <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <View>
+          <Snackbar
+            visible={snackVisible}
+            onDismiss={onDismissSnackBar}
+            action={{
+              label: 'OK',
+              onPress: () => {
+                // Do something
+              }
+            }}
           >
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row', padding: 10 }}>
-                <ActivityIndicator />
-                <Text style={{ marginLeft: 10 }}>Creating Post...</Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <Provider>
-        <Portal>
-          <Dialog
-            style={{ justifyContent: 'center' }}
-            visible={photoUploading}
-            onDismiss={() => {}}
-          >
-            <Dialog.Content>
-              <View style={{ flexDirection: 'row', padding: 10 }}>
-                <ActivityIndicator />
-                <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
-              </View>
-            </Dialog.Content>
-          </Dialog>
-        </Portal>
-      </Provider>
-
-      <View>
-        <Snackbar
-          visible={snackVisible}
-          onDismiss={onDismissSnackBar}
-          action={{
-            label: 'OK',
-            onPress: () => {
-              // Do something
-            }
-          }}
-        >
-          Post Created...!!
-        </Snackbar>
+            Post Created...!!
+          </Snackbar>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

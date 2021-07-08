@@ -29,9 +29,9 @@ interface ChangePasswordProps {}
 export const ChangePassword = ({
   navigation
 }: MainNavProps<'ChangePassword'>) => {
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showNewConfirmPassword, setShowNewConfirmPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(true);
+  const [showNewPassword, setShowNewPassword] = useState(true);
+  const [showNewConfirmPassword, setShowNewConfirmPassword] = useState(true);
   const [mobileWidth, setMobileWidth] = useState(0);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -97,21 +97,22 @@ export const ChangePassword = ({
     }
 
     setChanged(true);
-    setInterval(() => {
-      setChanged(false);
-      navigation.pop();
-    }, 1000);
   };
-
+  const containerStyle = {
+    backgroundColor: 'white',
+    padding: 20,
+    margin: 10
+  };
   return (
-    <SafeAreaView style={{ flex: 1, width: '100%' }}>
-      <View style={{ flex: 1 }}>
-        <Appbar>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1, width: '100%' }}>
+        <Appbar.Header>
           <Appbar.BackAction onPress={_goBack} />
-
+          <Appbar.Content title="Change Password" subtitle={''} />
           <Appbar.Action icon="check" onPress={changePasswordHandle} />
-        </Appbar>
-        <ScrollView style={{ flex: 1 }}>
+        </Appbar.Header>
+
+        <View style={{ flex: 1 }}>
           <View
             style={{
               margin: 5,
@@ -210,7 +211,7 @@ export const ChangePassword = ({
               />
             )}
           </View>
-        </ScrollView>
+        </View>
 
         <Provider>
           <Portal>
@@ -251,17 +252,30 @@ export const ChangePassword = ({
 
         <Provider>
           <Portal>
-            <Modal visible={changing}>
-              <ActivityIndicator />
-              <Text>Changing Password....</Text>
-            </Modal>
+            <Dialog visible={changing} onDismiss={() => {}}>
+              <Dialog.Title>Updating...</Dialog.Title>
+              <Dialog.Content>
+                <View style={{ flexDirection: 'row' }}>
+                  <ActivityIndicator />
+                  <Text style={{ fontSize: 15, marginLeft: 10 }}>
+                    Changing Password....
+                  </Text>
+                </View>
+              </Dialog.Content>
+            </Dialog>
           </Portal>
         </Provider>
         <Provider>
           <Portal>
-            <Modal visible={changed} onDismiss={hideModal}>
-              <Text>Password Changed.</Text>
-            </Modal>
+            <Dialog visible={changed} onDismiss={() => {}}>
+              <Dialog.Title>Success</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>Password Changed</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={() => navigation.pop()}>OK</Button>
+              </Dialog.Actions>
+            </Dialog>
           </Portal>
         </Provider>
       </View>
