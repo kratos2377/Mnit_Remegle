@@ -302,13 +302,6 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
     </View>
   );
 
-  const rendernewItem = (item) => (
-    <View>
-      <Text>{item.item.title}</Text>
-      <Text>{item.item.content}</Text>
-      <Text>{item.item.points}</Text>
-    </View>
-  );
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, width: '100%' }}>
@@ -460,7 +453,10 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
                 {
                   icon: 'postage-stamp',
                   label: 'Create Post',
-                  onPress: () => navigation.navigate('CreatePostFAB')
+                  onPress: () =>
+                    navigation.navigate('CreatePostFAB', {
+                      spaces: userData?.me.spaces
+                    })
                 }
               ]}
               onStateChange={onStateChange}

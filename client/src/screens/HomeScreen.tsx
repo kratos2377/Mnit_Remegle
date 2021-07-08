@@ -42,11 +42,15 @@ export default function HomeScreen() {
 
     if (userData) {
       setLoggedIn(true);
+      setInterval(async () => {
+        await SplashScreen.hideAsync();
+      }, 500);
     } else {
       setLoggedIn(false);
+      setInterval(async () => {
+        await SplashScreen.hideAsync();
+      }, 500);
     }
-
-    await SplashScreen.hideAsync();
   };
 
   useEffect(() => {

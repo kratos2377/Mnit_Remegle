@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
-export async function sendEmail(email: string, url: string) {
+export async function sendPasswordEmail(email: string, url: string) {
   dotenv.config();
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -19,7 +19,7 @@ export async function sendEmail(email: string, url: string) {
     to: email, // list of receivers
     subject: 'Confirm User', // Subject line
     text: 'Click Here To Confirm User', // plain text body
-    html: `<p>Click Here To Confirm this Email <p><a href="${url}">${url}</a></p> </p>` // html body
+    html: `<p>Click Here To Change Your Password <p><a href="${url}">${url}</a></p> </p>` // html body
   };
 
   await transporter.sendMail(mailOptions);

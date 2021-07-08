@@ -11,4 +11,9 @@ fragment RegularUser on User {
   twitterAcc
   isBanned
   bio
+  spaces {
+    id
+    spaceName
+    spaceAvatarUrl
+  }
 }

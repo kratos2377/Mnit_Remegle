@@ -301,6 +301,7 @@ export const GoToProfileScreen = ({
       </Card>
     </View>
   );
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, width: '100%' }}>
@@ -351,7 +352,9 @@ export const GoToProfileScreen = ({
                     <SocialIcon
                       type="instagram"
                       onPress={() =>
-                        Linking.openURL(userData?.studentDetails?.instagramAcc)
+                        Linking.openURL(
+                          `https://www.instagram.com/${userData?.studentDetails?.instagramAcc}/`
+                        )
                       }
                     />
                   )}
@@ -359,7 +362,9 @@ export const GoToProfileScreen = ({
                     <SocialIcon
                       type="twitter"
                       onPress={() =>
-                        Linking.openURL(userData?.studentDetails?.twitterAcc)
+                        Linking.openURL(
+                          `https://twitter.com/${userData?.studentDetails?.twitterAcc}`
+                        )
                       }
                     />
                   )}

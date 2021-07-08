@@ -25,6 +25,7 @@ import { isGodAdmin } from '../middleware/isGodAdmin';
 import { COOKIE_NAME } from '../constants';
 import { Spaces } from '../entity/Spaces';
 import dotenv from 'dotenv';
+import { sendPasswordEmail } from '../utils/sendPasswordEmail';
 
 @ObjectType()
 class FieldError {
@@ -357,7 +358,10 @@ export class UserResolver {
 
     let studentEmail = studentId + '@mnit.ac.in';
 
-    await sendEmail(studentEmail, await createPasswordChangeUrl(studentId));
+    await sendPasswordEmail(
+      studentEmail,
+      await createPasswordChangeUrl(studentId)
+    );
 
     return true;
   }

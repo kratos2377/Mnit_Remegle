@@ -193,7 +193,7 @@ export const UpdateScreen = ({ navigation }: MainNavProps<'UpdateScreen'>) => {
                   style={styles.inputContainer}
                   multiline={true}
                   numberOfLines={2}
-                  placeholder="Instagram Acc. For Eg:- https://www.instagram.com/selenagomez"
+                  placeholder="Enter Your Instagram Username For Eg:- necromanceramv"
                   onChangeText={(value) => setInstaAcc(value)}
                   value={instaAcc}
                 />
@@ -203,8 +203,7 @@ export const UpdateScreen = ({ navigation }: MainNavProps<'UpdateScreen'>) => {
                   style={styles.inputContainer}
                   multiline={true}
                   numberOfLines={2}
-                  placeholder="Twitter Acc. For Eg:- https://twitter.com/TheRock"
-                  maxLength={100}
+                  placeholder="Enter Your Twitter Username For Eg:- mrbeastincart"
                   onChangeText={(value) => setTwitterAcc(value)}
                   value={twitterAcc}
                 />

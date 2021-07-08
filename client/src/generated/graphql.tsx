@@ -475,6 +475,10 @@ export type RegularSpaceResponseFragment = (
 export type RegularUserFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'username' | 'fullName' | 'email' | 'studentId' | 'gender' | 'godAdmin' | 'avatarUrl' | 'instagramAcc' | 'twitterAcc' | 'isBanned' | 'bio'>
+  & { spaces: Array<(
+    { __typename?: 'Spaces' }
+    & Pick<Spaces, 'id' | 'spaceName' | 'spaceAvatarUrl'>
+  )> }
 );
 
 export type RegularUserResponseFragment = (
@@ -954,6 +958,11 @@ export const RegularUserFragmentDoc = gql`
   twitterAcc
   isBanned
   bio
+  spaces {
+    id
+    spaceName
+    spaceAvatarUrl
+  }
 }
     `;
 export const RegularUserResponseFragmentDoc = gql`

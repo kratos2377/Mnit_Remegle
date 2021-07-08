@@ -30,6 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebase from 'firebase/app';
 import { useCreatePostsMutation } from '../../generated/graphql';
 import { MainNavProps } from '../../utils/MainParamList';
+import { FlatList } from 'react-native-gesture-handler';
 require('firebase/firestore');
 require('firebase/firebase-storage');
 
@@ -39,6 +40,7 @@ export const CreatePostScreenFAB = ({
   navigation,
   route
 }: MainNavProps<'CreatePostFAB'>) => {
+  const [spacesArray, setSpacesArray] = useState([]);
   const [visible, setVisible] = useState(false);
   const [snackVisible, setSnackVisible] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -56,6 +58,11 @@ export const CreatePostScreenFAB = ({
   const [photoUploading, setPhotoUploading] = useState(false);
   const [spaceName, setSpaceName] = useState('');
   const [spaceSelected, setSpaceSelected] = useState(false);
+  const [spaceModal, setSpaceModal] = useState(false);
+
+  useEffect(() => {
+    setSpacesArray([...route.params.spaces]);
+  }, []);
 
   const _goBack = () => {
     setVisible(true);
@@ -116,7 +123,15 @@ export const CreatePostScreenFAB = ({
   const showOptionsModal = () => setModalVisible(true);
   const hideOptionsModal = () => setModalVisible(false);
 
+  const hideSpaceModal = () => setSpaceModal(false);
+
   const containerStyle = { backgroundColor: 'white', padding: 20, margin: 20 };
+  const containerSpaceModalStyle = {
+    backgroundColor: 'white',
+    padding: 20,
+    margin: 20,
+    heigth: height * 0.8
+  };
 
   useEffect(() => {
     setWidth(Dimensions.get('window').width);
@@ -183,7 +198,30 @@ export const CreatePostScreenFAB = ({
     }
   };
 
-  const RightContent = (props) => <Avatar.Icon {...props} icon="folder" />;
+  const RightContent = () => (
+    <Button onPress={() => setSpaceModal(true)}>Choose Space</Button>
+  );
+
+  const LeftSpaceModalContent = (url: string) => (
+    <Image
+      style={{ width: 50, height: 50, borderRadius: 25 }}
+      source={{ uri: url }}
+    />
+  );
+
+  const spaceListRenderItem = (item: any) => (
+    <View style={{ flex: 1 }}>
+      <List.Item
+        onPress={() => {
+          setSpaceSelected(true);
+          setSpaceName(item.item.spaceName);
+          setSpaceModal(false);
+        }}
+        title={item.item.spaceName}
+        left={() => LeftSpaceModalContent(item.item.spaceAvatarUrl)}
+      />
+    </View>
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, width: '100%' }}>
@@ -345,6 +383,26 @@ export const CreatePostScreenFAB = ({
                 </View>
               </Dialog.Content>
             </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Modal
+              visible={spaceModal}
+              onDismiss={hideSpaceModal}
+              contentContainerStyle={containerStyle}
+            >
+              <View style={{ width: width * 0.9, height: height * 0.6 }}>
+                <ScrollView style={{ flex: 1 }}>
+                  <FlatList
+                    data={spacesArray}
+                    keyExtractor={(item) => item.id}
+                    renderItem={spaceListRenderItem}
+                  />
+                </ScrollView>
+              </View>
+            </Modal>
           </Portal>
         </Provider>
 
