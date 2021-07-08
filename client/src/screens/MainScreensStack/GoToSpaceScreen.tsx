@@ -75,6 +75,7 @@ export const GoToSpaceScreen = ({
   const [postDeleteSuccess, setPostDeleteSuccess] = useState(false);
   const [postIdDelete, setpostIdDelete] = useState('');
   const [postDelete] = useDeletePostMutation();
+  const [userBanned, setuserBanned] = useState(false);
 
   const hidePostDeleteDialog = () => setPostDeleteDialog(false);
   const { data: postData, loading: postLoading } = useGetPostsOfSpacesQuery({
@@ -157,6 +158,12 @@ export const GoToSpaceScreen = ({
       const newData = JSON.parse(userData);
       setUserId(newData.id);
       setFollowingLength(data?.getSpaceDetails.followingIds.length);
+      for (var i = 0; i < data.getSpaceDetails.bannedUserIds.length; i++) {
+        if (data?.getSpaceDetails.bannedUserIds[i] == newData.id) {
+          setuserBanned(true);
+          break;
+        }
+      }
       for (var i = 0; i < data?.getSpaceDetails?.followingIds?.length; i++) {
         if (data?.getSpaceDetails.followingIds[i].id == newData.id) {
           setFollowing(true);
@@ -373,6 +380,7 @@ export const GoToSpaceScreen = ({
             </ListItem.Title>
             <ListItem.Subtitle>{item.item.studentId}</ListItem.Subtitle>
           </ListItem.Content>
+          <Button>Ban User</Button>
         </ListItem>
       </View>
     </TouchableOpacity>
@@ -625,12 +633,42 @@ export const GoToSpaceScreen = ({
                 renderItem={renderPostCardItem}
               />
             ) : (
-              <FlatList
-                numColumns={1}
-                data={spaceUsers}
-                keyExtractor={(item) => item.id}
-                renderItem={renderUserItem}
-              />
+              <View style={{ flex: 1 }}>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    marginHorizontal: 10,
+                    justifyContent: 'space-evenly',
+                    alignSelf: 'stretch'
+                  }}
+                >
+                  {userId === data?.getSpaceDetails.adminId ? (
+                    <Button
+                      icon="bandage"
+                      color={Colors.purple500}
+                      onPress={() => {}}
+                    >
+                      Banned users
+                    </Button>
+                  ) : null}
+                  {userId === data?.getSpaceDetails.adminId ? (
+                    <Button
+                      icon="magnify"
+                      color={Colors.purple500}
+                      onPress={() => {}}
+                    >
+                      Search Users
+                    </Button>
+                  ) : null}
+                </View>
+                <FlatList
+                  numColumns={1}
+                  data={spaceUsers}
+                  keyExtractor={(item) => item.id}
+                  renderItem={renderUserItem}
+                />
+              </View>
             )}
           </ScrollView>
         )}
@@ -698,6 +736,20 @@ export const GoToSpaceScreen = ({
                   <Text style={{ marginLeft: 10 }}>Uploading Image...</Text>
                 </View>
               </Dialog.Content>
+            </Dialog>
+          </Portal>
+        </Provider>
+
+        <Provider>
+          <Portal>
+            <Dialog visible={userBanned} onDismiss={() => {}}>
+              <Dialog.Title>Alert</Dialog.Title>
+              <Dialog.Content>
+                <Paragraph>You Are Banned From This Space</Paragraph>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={() => navigation.pop()}>Leave</Button>
+              </Dialog.Actions>
             </Dialog>
           </Portal>
         </Provider>

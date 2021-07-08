@@ -393,25 +393,26 @@ export class SpaceResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
-  async banUser(
-    @Arg('spaceName') spaceName: string,
-    @Arg('idTobeBanned') idToBeBanned: string,
+  async banUserFromSpace(
+    @Arg('spaceId') spaceId: string,
+    @Arg('idTobeBanned') idTobeBanned: string,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
     const space = (await Spaces.findOne({
-      where: { spaceName: spaceName }
+      where: { id: spaceId }
     })) as Spaces;
-    const user = (await User.findOne({ where: { id: idToBeBanned } })) as User;
 
     if (space.adminId !== req.session.userId) {
       return false;
     }
 
+    const user = (await User.findOne({ where: { id: idTobeBanned } })) as User;
+
     user.spacesFollowed = user.spacesFollowed.filter(
-      (space) => space !== spaceName
+      (space) => space !== spaceId
     );
 
-    space.bannedUserIds = [idToBeBanned, ...space.bannedUserIds];
+    space.bannedUserIds = [idTobeBanned, ...space.bannedUserIds];
 
     await user.save();
     await space.save();
@@ -421,20 +422,20 @@ export class SpaceResolver {
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
-  async unBanUser(
-    @Arg('spaceName') spaceName: string,
-    @Arg('idtoUnban') idToUnban: string,
+  async unBanUserFromSpace(
+    @Arg('spaceId') spaceId: string,
+    @Arg('idtoUnban') idtoUnban: string,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
     const space = (await Spaces.findOne({
-      where: { spaceName: spaceName }
+      where: { id: spaceId }
     })) as Spaces;
 
     if (space.adminId !== req.session.userId) {
       return false;
     }
 
-    space.bannedUserIds = space.bannedUserIds.filter((id) => id !== idToUnban);
+    space.bannedUserIds = space.bannedUserIds.filter((id) => id !== idtoUnban);
 
     await space.save();
 

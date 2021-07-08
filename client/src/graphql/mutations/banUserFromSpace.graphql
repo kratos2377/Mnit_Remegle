@@ -1,0 +1,3 @@
+mutation BanUserFromSpace($spaceId: String!, $idTobeBanned: String!) {
+  banUserFromSpace(spaceId: $spaceId, idTobeBanned: $idTobeBanned)
+}

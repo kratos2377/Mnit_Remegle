@@ -57,8 +57,8 @@ export type Mutation = {
   deleteSpace: SpaceResponse;
   updateSpaceavatarUrl: Scalars['Boolean'];
   removeUserFromSpace: Scalars['Boolean'];
-  banUser: Scalars['Boolean'];
-  unBanUser: Scalars['Boolean'];
+  banUserFromSpace: Scalars['Boolean'];
+  unBanUserFromSpace: Scalars['Boolean'];
   confirmTheUser: Scalars['Boolean'];
   confirmUserCheck: UserResponse;
   sendConfirmationMail: Scalars['Boolean'];
@@ -73,6 +73,7 @@ export type Mutation = {
   doesUsernameExist: Scalars['Boolean'];
   forgotPassword: UserResponse;
   deleteUser: Scalars['Boolean'];
+  banUser: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   searchQuery?: Maybe<UserandSpaces>;
   userEntry: Scalars['Boolean'];
@@ -163,14 +164,15 @@ export type MutationRemoveUserFromSpaceArgs = {
 };
 
 
-export type MutationBanUserArgs = {
-  studentId: Scalars['String'];
+export type MutationBanUserFromSpaceArgs = {
+  idTobeBanned: Scalars['String'];
+  spaceId: Scalars['String'];
 };
 
 
-export type MutationUnBanUserArgs = {
+export type MutationUnBanUserFromSpaceArgs = {
   idtoUnban: Scalars['String'];
-  spaceName: Scalars['String'];
+  spaceId: Scalars['String'];
 };
 
 
@@ -249,6 +251,11 @@ export type MutationForgotPasswordArgs = {
 
 
 export type MutationDeleteUserArgs = {
+  studentId: Scalars['String'];
+};
+
+
+export type MutationBanUserArgs = {
   studentId: Scalars['String'];
 };
 
@@ -506,6 +513,17 @@ export type UserAndSpacesResponseFragment = (
   )>> }
 );
 
+export type BanUserFromSpaceMutationVariables = Exact<{
+  spaceId: Scalars['String'];
+  idTobeBanned: Scalars['String'];
+}>;
+
+
+export type BanUserFromSpaceMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'banUserFromSpace'>
+);
+
 export type ChangePasswordMutationVariables = Exact<{
   currentPassword: Scalars['String'];
   newPassword: Scalars['String'];
@@ -686,6 +704,17 @@ export type UnFollowSpaceMutationVariables = Exact<{
 export type UnFollowSpaceMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'unfollowSpace'>
+);
+
+export type UnBanUserFromSpaceMutationVariables = Exact<{
+  spaceId: Scalars['String'];
+  idtoUnban: Scalars['String'];
+}>;
+
+
+export type UnBanUserFromSpaceMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'unBanUserFromSpace'>
 );
 
 export type UpdateAvatarUrlMutationVariables = Exact<{
@@ -991,6 +1020,38 @@ export const UserAndSpacesResponseFragmentDoc = gql`
 }
     ${RegularUserFragmentDoc}
 ${RegularSpaceFragmentDoc}`;
+export const BanUserFromSpaceDocument = gql`
+    mutation BanUserFromSpace($spaceId: String!, $idTobeBanned: String!) {
+  banUserFromSpace(spaceId: $spaceId, idTobeBanned: $idTobeBanned)
+}
+    `;
+export type BanUserFromSpaceMutationFn = Apollo.MutationFunction<BanUserFromSpaceMutation, BanUserFromSpaceMutationVariables>;
+
+/**
+ * __useBanUserFromSpaceMutation__
+ *
+ * To run a mutation, you first call `useBanUserFromSpaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useBanUserFromSpaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [banUserFromSpaceMutation, { data, loading, error }] = useBanUserFromSpaceMutation({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *      idTobeBanned: // value for 'idTobeBanned'
+ *   },
+ * });
+ */
+export function useBanUserFromSpaceMutation(baseOptions?: Apollo.MutationHookOptions<BanUserFromSpaceMutation, BanUserFromSpaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<BanUserFromSpaceMutation, BanUserFromSpaceMutationVariables>(BanUserFromSpaceDocument, options);
+      }
+export type BanUserFromSpaceMutationHookResult = ReturnType<typeof useBanUserFromSpaceMutation>;
+export type BanUserFromSpaceMutationResult = Apollo.MutationResult<BanUserFromSpaceMutation>;
+export type BanUserFromSpaceMutationOptions = Apollo.BaseMutationOptions<BanUserFromSpaceMutation, BanUserFromSpaceMutationVariables>;
 export const ChangePasswordDocument = gql`
     mutation ChangePassword($currentPassword: String!, $newPassword: String!) {
   changePassword(currentPassword: $currentPassword, newPassword: $newPassword)
@@ -1509,6 +1570,38 @@ export function useUnFollowSpaceMutation(baseOptions?: Apollo.MutationHookOption
 export type UnFollowSpaceMutationHookResult = ReturnType<typeof useUnFollowSpaceMutation>;
 export type UnFollowSpaceMutationResult = Apollo.MutationResult<UnFollowSpaceMutation>;
 export type UnFollowSpaceMutationOptions = Apollo.BaseMutationOptions<UnFollowSpaceMutation, UnFollowSpaceMutationVariables>;
+export const UnBanUserFromSpaceDocument = gql`
+    mutation UnBanUserFromSpace($spaceId: String!, $idtoUnban: String!) {
+  unBanUserFromSpace(spaceId: $spaceId, idtoUnban: $idtoUnban)
+}
+    `;
+export type UnBanUserFromSpaceMutationFn = Apollo.MutationFunction<UnBanUserFromSpaceMutation, UnBanUserFromSpaceMutationVariables>;
+
+/**
+ * __useUnBanUserFromSpaceMutation__
+ *
+ * To run a mutation, you first call `useUnBanUserFromSpaceMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnBanUserFromSpaceMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unBanUserFromSpaceMutation, { data, loading, error }] = useUnBanUserFromSpaceMutation({
+ *   variables: {
+ *      spaceId: // value for 'spaceId'
+ *      idtoUnban: // value for 'idtoUnban'
+ *   },
+ * });
+ */
+export function useUnBanUserFromSpaceMutation(baseOptions?: Apollo.MutationHookOptions<UnBanUserFromSpaceMutation, UnBanUserFromSpaceMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UnBanUserFromSpaceMutation, UnBanUserFromSpaceMutationVariables>(UnBanUserFromSpaceDocument, options);
+      }
+export type UnBanUserFromSpaceMutationHookResult = ReturnType<typeof useUnBanUserFromSpaceMutation>;
+export type UnBanUserFromSpaceMutationResult = Apollo.MutationResult<UnBanUserFromSpaceMutation>;
+export type UnBanUserFromSpaceMutationOptions = Apollo.BaseMutationOptions<UnBanUserFromSpaceMutation, UnBanUserFromSpaceMutationVariables>;
 export const UpdateAvatarUrlDocument = gql`
     mutation UpdateAvatarUrl($userId: String!, $avatarUrl: String!) {
   updateAvatarUrl(userId: $userId, avatarUrl: $avatarUrl)

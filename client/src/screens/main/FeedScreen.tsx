@@ -441,7 +441,7 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
               icon={open ? 'feather' : 'fountain-pen-tip'}
               actions={[
                 {
-                  icon: 'postage-stamp',
+                  icon: 'face-profile',
                   label: 'Edit Profile',
                   onPress: () => navigation.navigate('UpdateScreen')
                 },
