@@ -57,7 +57,9 @@ export const SettingsScreen = ({
             <List.Item
               title="Your Spaces"
               description="Check All Of The Spaces You Have Created"
-              left={(props) => <List.Icon {...props} icon="postage-stamp" />}
+              left={(props) => (
+                <List.Icon {...props} icon="google-circles-communities" />
+              )}
               onPress={() => navigation.navigate('YourSpaces')}
             />
           </Card>

@@ -1,8 +1,14 @@
 fragment RegularSpace on Spaces {
+  id
+  adminId
+  type
+  spaceName
+  spaceAvatarUrl
+  spaceDescription
+  bannedUserIds {
     id
-    adminId
-    type
-    spaceName
-    spaceAvatarUrl
-    spaceDescription
+    avatarUrl
+    fullName
+    studentId
+  }
 }

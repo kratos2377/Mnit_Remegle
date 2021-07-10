@@ -453,6 +453,10 @@ export type RegularErrorFragment = (
 export type RegularSpaceFragment = (
   { __typename?: 'Spaces' }
   & Pick<Spaces, 'id' | 'adminId' | 'type' | 'spaceName' | 'spaceAvatarUrl' | 'spaceDescription'>
+  & { bannedUserIds: Array<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'avatarUrl' | 'fullName' | 'studentId'>
+  )> }
 );
 
 export type RegularSpaceBoolErrorFragment = (
@@ -944,6 +948,12 @@ export const RegularSpaceFragmentDoc = gql`
   spaceName
   spaceAvatarUrl
   spaceDescription
+  bannedUserIds {
+    id
+    avatarUrl
+    fullName
+    studentId
+  }
 }
     `;
 export const RegularSpaceResponseFragmentDoc = gql`

@@ -429,14 +429,20 @@ export const ProfileScreen = ({ navigation }: MainNavProps<'Profile'>) => {
                     <SocialIcon
                       type="instagram"
                       onPress={() =>
-                        Linking.openURL(userData?.me?.instagramAcc)
+                        Linking.openURL(
+                          `https://www.instagram.com/${userData?.me?.instagramAcc}/`
+                        )
                       }
                     />
                   )}
                   {userData?.me?.twitterAcc.length === 0 ? null : (
                     <SocialIcon
                       type="twitter"
-                      onPress={() => Linking.openURL(userData?.me?.twitterAcc)}
+                      onPress={() =>
+                        Linking.openURL(
+                          `https://twitter.com/${userData?.me?.twitterAcc}`
+                        )
+                      }
                     />
                   )}
                 </View>

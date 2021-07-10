@@ -433,41 +433,45 @@ export const FeedScreen = ({ navigation }: MainNavProps<'Feed'>) => {
           </Portal>
         </Provider>
 
-        <Provider>
-          <Portal>
-            <FAB.Group
-              visible={true}
-              open={open}
-              icon={open ? 'feather' : 'fountain-pen-tip'}
-              actions={[
-                {
-                  icon: 'face-profile',
-                  label: 'Edit Profile',
-                  onPress: () => navigation.navigate('UpdateScreen')
-                },
-                {
-                  icon: 'account-group',
-                  label: 'Create Space',
-                  onPress: () => navigation.navigate('CreateSpace')
-                },
-                {
-                  icon: 'postage-stamp',
-                  label: 'Create Post',
-                  onPress: () =>
-                    navigation.navigate('CreatePostFAB', {
-                      spaces: userData?.me.spaces
-                    })
-                }
-              ]}
-              onStateChange={onStateChange}
-              onPress={() => {
-                if (open) {
-                  // do something if the speed dial is open
-                }
-              }}
-            />
-          </Portal>
-        </Provider>
+        {loading || userDetailsLoading ? (
+          <View> </View>
+        ) : (
+          <Provider>
+            <Portal>
+              <FAB.Group
+                visible={true}
+                open={open}
+                icon={open ? 'feather' : 'fountain-pen-tip'}
+                actions={[
+                  {
+                    icon: 'face-profile',
+                    label: 'Edit Profile',
+                    onPress: () => navigation.navigate('UpdateScreen')
+                  },
+                  {
+                    icon: 'account-group',
+                    label: 'Create Space',
+                    onPress: () => navigation.navigate('CreateSpace')
+                  },
+                  {
+                    icon: 'postage-stamp',
+                    label: 'Create Post',
+                    onPress: () =>
+                      navigation.navigate('CreatePostFAB', {
+                        spaces: userData?.me.spaces
+                      })
+                  }
+                ]}
+                onStateChange={onStateChange}
+                onPress={() => {
+                  if (open) {
+                    // do something if the speed dial is open
+                  }
+                }}
+              />
+            </Portal>
+          </Provider>
+        )}
       </View>
     </SafeAreaView>
   );

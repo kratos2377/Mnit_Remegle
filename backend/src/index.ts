@@ -27,12 +27,12 @@ const main = async () => {
     url: process.env.DATABASE_URL,
     logging: true,
     synchronize: true,
-    entities: [Post, User, Updoot, Spaces, MnitStudent, OnlineUser]
-    // extra: {
-    //   ssl: {
-    //     rejectUnauthorized: false
-    //   }
-    // }
+    entities: [Post, User, Updoot, Spaces, MnitStudent, OnlineUser],
+    extra: {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    }
   });
   const app = Express();
 
